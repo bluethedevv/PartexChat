@@ -259,6 +259,28 @@
       margin-bottom: 20px;
       padding-bottom: 10px;
       border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .server-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .server-action-btn {
+      background: #333;
+      color: #2ecc71;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .server-action-btn:hover {
+      background: #444;
     }
 
     .channels-container {
@@ -408,6 +430,10 @@
       font-size: 14px;
     }
 
+    .message.dm .message-avatar {
+      background: #3498db;
+    }
+
     .message-sender {
       color: #2ecc71;
       font-weight: bold;
@@ -528,6 +554,31 @@
     .modal-btn.secondary {
       background: #333;
       color: white;
+    }
+
+    /* Invite Modal */
+    .invite-link {
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      word-break: break-all;
+      font-family: monospace;
+      border: 1px solid #333;
+    }
+
+    .copy-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .copy-btn:hover {
+      background: #2980b9;
     }
 
     /* Profile Modal */
@@ -657,7 +708,13 @@
 
       <!-- Channels Sidebar -->
       <div class="channels-sidebar" id="channelsSidebar">
-        <div class="server-header" id="serverName">Global Server</div>
+        <div class="server-header" id="serverName">
+          <span>Global Server</span>
+          <div class="server-actions" id="serverActions" style="display: none;">
+            <button class="server-action-btn" onclick="showInviteModal()" title="Einladen">📨</button>
+            <button class="server-action-btn" onclick="showServerSettings()" title="Einstellungen">⚙️</button>
+          </div>
+        </div>
         
         <div class="channels-container">
           <!-- Channels for servers -->
@@ -734,6 +791,18 @@
     </div>
   </div>
 
+  <div class="modal" id="inviteModal">
+    <div class="modal-content">
+      <h3>📨 Server Einladung</h3>
+      <p>Teile diesen Link um Leute einzuladen:</p>
+      <div class="invite-link" id="inviteLink">Lade Einladung...</div>
+      <button class="copy-btn" onclick="copyInviteLink()">Link kopieren</button>
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="hideInviteModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="profileModal">
     <div class="modal-content profile-modal">
       <h3>👤 Dein Profil</h3>
@@ -794,6 +863,7 @@
     let servers = {};
     let friends = {};
     let messageListener = null;
+    let currentUserData = null;
 
     console.log("Firebase initialized");
 
@@ -899,6 +969,8 @@
       onValue(userRef, (snapshot) => {
         const userData = snapshot.val();
         if (userData) {
+          currentUserData = userData;
+          
           // Update UI
           document.getElementById('userUsername').textContent = userData.username;
           document.getElementById('userEmail').textContent = userData.email;
@@ -949,10 +1021,11 @@
       if (msg.trim() === "") return;
 
       try {
-        // Get user data for username
-        const userRef = ref(db, 'users/' + user.uid);
-        const userSnapshot = await get(userRef);
-        const userData = userSnapshot.val();
+        // Use cached user data to avoid undefined errors
+        if (!currentUserData) {
+          alert("User Daten werden noch geladen...");
+          return;
+        }
 
         let messageRef;
         
@@ -965,13 +1038,16 @@
           messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
         }
 
-        await push(messageRef, { 
-          text: msg, 
-          sender: userData.username,
+        const messageData = {
+          text: msg,
+          sender: currentUserData.username,
           senderId: user.uid,
-          senderAvatar: userData.avatar,
+          senderAvatar: currentUserData.avatar,
           timestamp: new Date().toISOString()
-        });
+        };
+
+        console.log("Sending message:", messageData);
+        await push(messageRef, messageData);
         
         document.getElementById('messageInput').value = "";
       } catch (error) {
@@ -1003,6 +1079,13 @@
 
       messageListener = onChildAdded(messagesRef, (snapshot) => {
         const msg = snapshot.val();
+        
+        // Check if message data is valid
+        if (!msg || !msg.sender) {
+          console.warn("Invalid message data:", msg);
+          return;
+        }
+
         const messageDiv = document.createElement("div");
         messageDiv.className = currentServer === 'dms' ? "message dm" : "message";
         
@@ -1013,7 +1096,7 @@
         
         messageDiv.innerHTML = `
           <div class="message-header">
-            <div class="message-avatar">${msg.senderAvatar}</div>
+            <div class="message-avatar">${msg.senderAvatar || '?'}</div>
             <div class="message-sender">${msg.sender}</div>
             <div class="message-timestamp">${time}</div>
           </div>
@@ -1047,19 +1130,29 @@
       const channelsList = document.getElementById('channelsList');
       const friendsSection = document.getElementById('friendsSection');
       const createChannelBtn = document.getElementById('createChannelBtn');
+      const serverActions = document.getElementById('serverActions');
       
       if (serverId === 'dms') {
-        document.getElementById('serverName').textContent = 'Direct Messages';
+        document.getElementById('serverName').innerHTML = '<span>Direct Messages</span>';
         channelsList.style.display = 'none';
         friendsSection.style.display = 'block';
         createChannelBtn.style.display = 'none';
+        serverActions.style.display = 'none';
         document.getElementById('chatHeader').textContent = 'Wähle einen Freund für DM';
+        document.getElementById('messageInput').placeholder = 'Wähle einen Freund zum Schreiben...';
       } else {
         const serverName = serverId === 'global' ? 'Global Server' : servers[serverId]?.name || 'Unbekannt';
-        document.getElementById('serverName').textContent = serverName;
+        document.getElementById('serverName').innerHTML = `
+          <span>${serverName}</span>
+          <div class="server-actions">
+            <button class="server-action-btn" onclick="showInviteModal()" title="Einladen">📨</button>
+            <button class="server-action-btn" onclick="showServerSettings()" title="Einstellungen">⚙️</button>
+          </div>
+        `;
         channelsList.style.display = 'block';
         friendsSection.style.display = 'none';
         createChannelBtn.style.display = 'block';
+        serverActions.style.display = 'flex';
         selectChannel('general');
       }
       
@@ -1088,9 +1181,11 @@
     function startDM(friendId) {
       currentDM = friendId;
       const friend = friends[friendId];
-      document.getElementById('chatHeader').textContent = `💬 ${friend.username}`;
-      document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht an ${friend.username}...`;
-      loadMessages();
+      if (friend) {
+        document.getElementById('chatHeader').textContent = `💬 ${friend.username}`;
+        document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht an ${friend.username}...`;
+        loadMessages();
+      }
     }
 
     function getChannelName(channelId) {
@@ -1130,12 +1225,51 @@
       document.getElementById('friendUsernameInput').value = '';
     }
 
+    window.showInviteModal = function() {
+      document.getElementById('inviteModal').style.display = 'flex';
+      generateInviteLink();
+    }
+
+    window.hideInviteModal = function() {
+      document.getElementById('inviteModal').style.display = 'none';
+    }
+
     window.showProfileModal = function() {
       document.getElementById('profileModal').style.display = 'flex';
     }
 
     window.hideProfileModal = function() {
       document.getElementById('profileModal').style.display = 'none';
+    }
+
+    // Generate Invite Link
+    function generateInviteLink() {
+      const inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+      const inviteLink = `https://partexchat.netlify.app/?invite=${currentServer}&code=${inviteCode}`;
+      
+      // Save invite to database
+      const inviteRef = ref(db, `servers/${currentServer}/invites/${inviteCode}`);
+      set(inviteRef, {
+        createdBy: auth.currentUser.uid,
+        createdAt: new Date().toISOString(),
+        uses: 0,
+        maxUses: 10
+      });
+      
+      document.getElementById('inviteLink').textContent = inviteLink;
+    }
+
+    // Copy Invite Link
+    window.copyInviteLink = function() {
+      const inviteLink = document.getElementById('inviteLink').textContent;
+      navigator.clipboard.writeText(inviteLink).then(() => {
+        alert("Einladungslink kopiert! 📋");
+      });
+    }
+
+    // Server Settings
+    window.showServerSettings = function() {
+      alert(`Server Einstellungen für ${servers[currentServer]?.name || currentServer}\n\nHier kannst du später:\n• Server umbenennen\n• Mitglieder verwalten\n• Rollen erstellen\n• Channel verwalten`);
     }
 
     // Create Server
@@ -1320,26 +1454,22 @@
             const friendRef = ref(db, 'users/' + friendId);
             const friendSnapshot = await get(friendRef);
             if (friendSnapshot.exists()) {
-              friends[friendId] = friendSnapshot.val();
-              return friendSnapshot.val();
-            }
-            return null;
-          });
-
-          const friendsData = await Promise.all(friendPromises);
-          
-          friendsData.forEach(friend => {
-            if (friend) {
+              const friendData = friendSnapshot.val();
+              friends[friendId] = friendData;
+              
               const friendItem = document.createElement('div');
               friendItem.className = 'friend-item';
               friendItem.innerHTML = `
-                <div class="friend-avatar">${friend.avatar}</div>
-                <span>${friend.username}</span>
+                <div class="friend-avatar">${friendData.avatar}</div>
+                <span>${friendData.username}</span>
               `;
               friendItem.onclick = () => startDM(friendId);
               friendsList.appendChild(friendItem);
             }
+            return null;
           });
+
+          await Promise.all(friendPromises);
         } else {
           const noFriends = document.createElement('div');
           noFriends.className = 'friend-item';
@@ -1359,6 +1489,17 @@
         }
       });
     }
+
+    // Check for invite links on page load
+    window.addEventListener('load', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const inviteServer = urlParams.get('invite');
+      const inviteCode = urlParams.get('code');
+      
+      if (inviteServer && inviteCode) {
+        alert(`🎉 Du wurdest zu Server ${inviteServer} eingeladen!\n\nEinladungscode: ${inviteCode}\n\n(Server Beitritt Funktion kommt bald!)`);
+      }
+    });
   </script>
 </body>
 </html>
