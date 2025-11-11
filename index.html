@@ -16,6 +16,7 @@
       background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
       color: white;
       height: 100vh;
+      overflow: hidden;
     }
 
     /* Login/Register Screen */
@@ -130,9 +131,47 @@
       gap: 15px;
     }
 
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #2ecc71;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .username {
+      font-weight: bold;
+      color: #2ecc71;
+    }
+
     .user-email {
       color: #ccc;
-      font-size: 14px;
+      font-size: 12px;
+    }
+
+    .partex-plus-badge {
+      background: linear-gradient(45deg, #ff6b6b, #ffa726);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: bold;
+      margin-left: 5px;
     }
 
     .nav-button {
@@ -165,6 +204,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
+      overflow-y: auto;
     }
 
     .server-icon {
@@ -180,6 +220,7 @@
       font-size: 18px;
       transition: all 0.3s;
       border: 2px solid transparent;
+      position: relative;
     }
 
     .server-icon:hover {
@@ -190,6 +231,10 @@
     .server-icon.active {
       border-color: #2ecc71;
       transform: scale(1.1);
+    }
+
+    .server-icon.dm {
+      background: #3498db;
     }
 
     .add-server {
@@ -204,6 +249,8 @@
       background: #1a1a1a;
       border-right: 1px solid #333;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
     }
 
     .server-header {
@@ -212,6 +259,11 @@
       margin-bottom: 20px;
       padding-bottom: 10px;
       border-bottom: 1px solid #333;
+    }
+
+    .channels-container {
+      flex: 1;
+      overflow-y: auto;
     }
 
     .channels-list {
@@ -226,6 +278,9 @@
       cursor: pointer;
       transition: background 0.3s;
       color: #ccc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .channel-item:hover {
@@ -253,6 +308,49 @@
       background: #444;
     }
 
+    /* Friends Section */
+    .friends-section {
+      margin-top: 20px;
+    }
+
+    .friends-header {
+      color: #3498db;
+      font-size: 16px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .friend-item {
+      padding: 10px 15px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      color: #ccc;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .friend-item:hover {
+      background: #222;
+      color: white;
+    }
+
+    .friend-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #3498db;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
     /* Chat Area */
     .chat-area {
       flex: 1;
@@ -267,6 +365,9 @@
       border-bottom: 1px solid #333;
       color: #2ecc71;
       font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .messages-container {
@@ -284,16 +385,45 @@
       border-left: 3px solid #2ecc71;
     }
 
-    .message .sender {
-      color: #2ecc71;
-      font-weight: bold;
+    .message.dm {
+      border-left-color: #3498db;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 5px;
     }
 
-    .message .timestamp {
+    .message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #2ecc71;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .message-sender {
+      color: #2ecc71;
+      font-weight: bold;
+    }
+
+    .message.dm .message-sender {
+      color: #3498db;
+    }
+
+    .message-timestamp {
       color: #888;
       font-size: 12px;
-      margin-left: 10px;
+    }
+
+    .message-content {
+      margin-left: 42px;
     }
 
     .message-input-container {
@@ -399,6 +529,75 @@
       background: #333;
       color: white;
     }
+
+    /* Profile Modal */
+    .profile-modal {
+      max-width: 500px;
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #2ecc71;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: bold;
+    }
+
+    .profile-details {
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .profile-detail {
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .profile-detail label {
+      color: #ccc;
+    }
+
+    .profile-detail span {
+      color: #2ecc71;
+      font-weight: bold;
+    }
+
+    /* PartexPlus Features */
+    .partex-features {
+      background: linear-gradient(45deg, #ff6b6b, #ffa726);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .partex-features h4 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: white;
+    }
+
+    .feature-list {
+      list-style: none;
+    }
+
+    .feature-list li {
+      margin: 5px 0;
+      color: white;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
@@ -420,6 +619,7 @@
       <div id="registerDiv" style="display:none;">
         <h2>Account erstellen</h2>
         <div id="registerError" class="error-message"></div>
+        <input type="text" id="registerUsername" class="auth-input" placeholder="Username">
         <input type="email" id="registerEmail" class="auth-input" placeholder="Email">
         <input type="password" id="registerPassword" class="auth-input" placeholder="Passwort">
         <button class="auth-button" onclick="register()">Account erstellen</button>
@@ -435,8 +635,14 @@
     <header>
       <h1>PartexChat</h1>
       <div class="user-menu">
-        <span class="user-email" id="userEmail">user@example.com</span>
-        <button class="nav-button" onclick="showSettings()">Einstellungen</button>
+        <div class="user-info" onclick="showProfileModal()" style="cursor: pointer;">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-details">
+            <div class="username" id="userUsername">Username</div>
+            <div class="user-email" id="userEmail">user@example.com</div>
+          </div>
+        </div>
+        <button class="nav-button" onclick="showProfileModal()">Profil</button>
       </div>
     </header>
 
@@ -444,6 +650,7 @@
       <!-- Servers Sidebar -->
       <div class="servers-sidebar" id="serversSidebar">
         <div class="server-icon active" onclick="selectServer('global')">🌍</div>
+        <div class="server-icon dm" onclick="selectServer('dms')">💬</div>
         <div class="server-icon add-server" onclick="showCreateServerModal()">+</div>
         <!-- Servers will be added here dynamically -->
       </div>
@@ -451,12 +658,28 @@
       <!-- Channels Sidebar -->
       <div class="channels-sidebar" id="channelsSidebar">
         <div class="server-header" id="serverName">Global Server</div>
-        <ul class="channels-list" id="channelsList">
-          <li class="channel-item active" onclick="selectChannel('general')"># 💬 Allgemein</li>
-          <li class="channel-item" onclick="selectChannel('games')"># 🎮 Gaming</li>
-          <li class="channel-item" onclick="selectChannel('music')"># 🎵 Musik</li>
-        </ul>
-        <button class="create-channel-btn" onclick="showCreateChannelModal()">+ Channel erstellen</button>
+        
+        <div class="channels-container">
+          <!-- Channels for servers -->
+          <ul class="channels-list" id="channelsList">
+            <li class="channel-item active" onclick="selectChannel('general')"># 💬 Allgemein</li>
+            <li class="channel-item" onclick="selectChannel('games')"># 🎮 Gaming</li>
+            <li class="channel-item" onclick="selectChannel('music')"># 🎵 Musik</li>
+          </ul>
+
+          <!-- Friends list for DMs -->
+          <div class="friends-section" id="friendsSection" style="display: none;">
+            <div class="friends-header">
+              <span>DIRECT MESSAGES</span>
+              <button class="create-channel-btn" onclick="showAddFriendModal()" style="padding: 5px 10px; font-size: 12px;">Freund hinzufügen</button>
+            </div>
+            <div id="friendsList">
+              <!-- Friends will be added here -->
+            </div>
+          </div>
+        </div>
+
+        <button class="create-channel-btn" onclick="showCreateChannelModal()" id="createChannelBtn">+ Channel erstellen</button>
       </div>
 
       <!-- Chat Area -->
@@ -477,7 +700,7 @@
     </div>
   </div>
 
-  <!-- Create Server Modal -->
+  <!-- Modals -->
   <div class="modal" id="createServerModal">
     <div class="modal-content">
       <h3>🚀 Server erstellen</h3>
@@ -489,7 +712,6 @@
     </div>
   </div>
 
-  <!-- Create Channel Modal -->
   <div class="modal" id="createChannelModal">
     <div class="modal-content">
       <h3>🔊 Channel erstellen</h3>
@@ -501,13 +723,43 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
-  <div class="modal" id="settingsModal">
+  <div class="modal" id="addFriendModal">
     <div class="modal-content">
-      <h3>⚙️ Einstellungen</h3>
-      <p>Eingeloggt als: <strong id="settingsUserEmail">user@example.com</strong></p>
+      <h3>👥 Freund hinzufügen</h3>
+      <input type="text" id="friendUsernameInput" class="modal-input" placeholder="Username des Freundes">
       <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideSettingsModal()">Schließen</button>
+        <button class="modal-btn secondary" onclick="hideAddFriendModal()">Abbrechen</button>
+        <button class="modal-btn primary" onclick="addFriend()">Hinzufügen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="profileModal">
+    <div class="modal-content profile-modal">
+      <h3>👤 Dein Profil</h3>
+      <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">U</div>
+        <h4 id="profileUsername">Username</h4>
+        <div id="profilePartexPlus"></div>
+      </div>
+      
+      <div class="profile-details">
+        <div class="profile-detail">
+          <label>Email:</label>
+          <span id="profileEmail">user@example.com</span>
+        </div>
+        <div class="profile-detail">
+          <label>Mitglied seit:</label>
+          <span id="profileCreatedAt">-</span>
+        </div>
+        <div class="profile-detail">
+          <label>User ID:</label>
+          <span id="profileUserId">-</span>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="hideProfileModal()">Schließen</button>
         <button class="modal-btn primary" onclick="logout()" style="background: #e74c3c;">🚪 Ausloggen</button>
       </div>
     </div>
@@ -516,7 +768,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, set, onValue, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -538,7 +790,10 @@
     // Global Variables
     let currentServer = 'global';
     let currentChannel = 'general';
+    let currentDM = null;
     let servers = {};
+    let friends = {};
+    let messageListener = null;
 
     console.log("Firebase initialized");
 
@@ -561,11 +816,12 @@
 
     // Register
     window.register = async function() {
+      const username = document.getElementById('registerUsername').value;
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
       
-      if (!email || !password) {
-        showError('register', "Bro, vergiss nicht Email und Passwort! 🚨");
+      if (!username || !email || !password) {
+        showError('register', "Bro, vergiss nicht Username, Email und Passwort! 🚨");
         return;
       }
 
@@ -573,12 +829,19 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("User registered:", userCredential.user);
         
-        // User in Database speichern
+        // User in Database speichern mit Username
         const userRef = ref(db, 'users/' + userCredential.user.uid);
         await set(userRef, {
+          username: username,
           email: email,
-          createdAt: new Date().toISOString()
+          avatar: username.charAt(0).toUpperCase(),
+          createdAt: new Date().toISOString(),
+          hasPartexPlus: email === 'memberfarm3@gmail.com' // PartexPlus für deine Email
         });
+
+        // Username auch in usernames index speichern
+        const usernameRef = ref(db, 'usernames/' + username.toLowerCase());
+        await set(usernameRef, userCredential.user.uid);
         
         alert("Geil! Account erstellt! 🎉");
       } catch (error) {
@@ -621,18 +884,61 @@
       if (user) {
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'flex';
-        document.getElementById('userEmail').textContent = user.email;
-        document.getElementById('settingsUserEmail').textContent = user.email;
+        loadUserProfile(user.uid);
         loadServers();
-        loadMessages();
+        loadFriends();
       } else {
         document.getElementById('authSection').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
       }
     });
 
+    // Load User Profile
+    function loadUserProfile(userId) {
+      const userRef = ref(db, 'users/' + userId);
+      onValue(userRef, (snapshot) => {
+        const userData = snapshot.val();
+        if (userData) {
+          // Update UI
+          document.getElementById('userUsername').textContent = userData.username;
+          document.getElementById('userEmail').textContent = userData.email;
+          document.getElementById('userAvatar').textContent = userData.avatar;
+          
+          // Update profile modal
+          document.getElementById('profileUsername').textContent = userData.username;
+          document.getElementById('profileEmail').textContent = userData.email;
+          document.getElementById('profileAvatar').textContent = userData.avatar;
+          document.getElementById('profileUserId').textContent = userId;
+          document.getElementById('profileCreatedAt').textContent = new Date(userData.createdAt).toLocaleDateString('de-DE');
+          
+          // PartexPlus Badge
+          const partexPlusBadge = document.getElementById('profilePartexPlus');
+          if (userData.hasPartexPlus) {
+            partexPlusBadge.innerHTML = '<div class="partex-plus-badge">PARTEX PLUS 🔥</div>';
+            
+            // Add PartexPlus features to modal
+            const featuresHTML = `
+              <div class="partex-features">
+                <h4>🎉 PartexPlus Features</h4>
+                <ul class="feature-list">
+                  <li>✅ Größere Datei-Uploads</li>
+                  <li>✅ HD Video Streaming</li>
+                  <li>✅ Spezielle Emojis</li>
+                  <li>✅ Server Boosts</li>
+                  <li>✅ Premium Support</li>
+                </ul>
+              </div>
+            `;
+            partexPlusBadge.insertAdjacentHTML('afterend', featuresHTML);
+          } else {
+            partexPlusBadge.innerHTML = '';
+          }
+        }
+      });
+    }
+
     // Send Message
-    window.sendMessage = function() {
+    window.sendMessage = async function() {
       const user = auth.currentUser;
       if (!user) {
         alert("Bitte erst einloggen!");
@@ -642,15 +948,36 @@
       const msg = document.getElementById('messageInput').value;
       if (msg.trim() === "") return;
 
-      const messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-      push(messageRef, { 
-        text: msg, 
-        sender: user.email,
-        senderId: user.uid,
-        timestamp: new Date().toISOString()
-      });
-      
-      document.getElementById('messageInput').value = "";
+      try {
+        // Get user data for username
+        const userRef = ref(db, 'users/' + user.uid);
+        const userSnapshot = await get(userRef);
+        const userData = userSnapshot.val();
+
+        let messageRef;
+        
+        if (currentServer === 'dms' && currentDM) {
+          // DM Nachricht
+          const dmId = [user.uid, currentDM].sort().join('_');
+          messageRef = ref(db, `dms/${dmId}/messages`);
+        } else {
+          // Server Nachricht
+          messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
+        }
+
+        await push(messageRef, { 
+          text: msg, 
+          sender: userData.username,
+          senderId: user.uid,
+          senderAvatar: userData.avatar,
+          timestamp: new Date().toISOString()
+        });
+        
+        document.getElementById('messageInput').value = "";
+      } catch (error) {
+        console.error("Error sending message:", error);
+        alert("Fehler beim Senden der Nachricht: " + error.message);
+      }
     }
 
     // Load Messages
@@ -658,12 +985,26 @@
       const messagesContainer = document.getElementById('messagesContainer');
       messagesContainer.innerHTML = '';
 
-      const messagesRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
+      // Remove previous listener to prevent duplicates
+      if (messageListener) {
+        messageListener();
+      }
+
+      let messagesRef;
       
-      onChildAdded(messagesRef, (snapshot) => {
+      if (currentServer === 'dms' && currentDM) {
+        // DM Nachrichten
+        const dmId = [auth.currentUser.uid, currentDM].sort().join('_');
+        messagesRef = ref(db, `dms/${dmId}/messages`);
+      } else {
+        // Server Nachrichten
+        messagesRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
+      }
+
+      messageListener = onChildAdded(messagesRef, (snapshot) => {
         const msg = snapshot.val();
         const messageDiv = document.createElement("div");
-        messageDiv.className = "message";
+        messageDiv.className = currentServer === 'dms' ? "message dm" : "message";
         
         const time = new Date(msg.timestamp).toLocaleTimeString('de-DE', { 
           hour: '2-digit', 
@@ -671,11 +1012,12 @@
         });
         
         messageDiv.innerHTML = `
-          <div class="sender">
-            ${msg.sender}
-            <span class="timestamp">${time}</span>
+          <div class="message-header">
+            <div class="message-avatar">${msg.senderAvatar}</div>
+            <div class="message-sender">${msg.sender}</div>
+            <div class="message-timestamp">${time}</div>
           </div>
-          <div>${msg.text}</div>
+          <div class="message-content">${msg.text}</div>
         `;
         
         messagesContainer.appendChild(messageDiv);
@@ -693,6 +1035,7 @@
     // Server Functions
     window.selectServer = function(serverId) {
       currentServer = serverId;
+      currentDM = null;
       
       // Update UI
       document.querySelectorAll('.server-icon').forEach(icon => {
@@ -700,16 +1043,32 @@
       });
       event.target.classList.add('active');
       
-      // Update server name
-      const serverName = serverId === 'global' ? 'Global Server' : servers[serverId]?.name || 'Unbekannt';
-      document.getElementById('serverName').textContent = serverName;
+      // Update server name and show/hide sections
+      const channelsList = document.getElementById('channelsList');
+      const friendsSection = document.getElementById('friendsSection');
+      const createChannelBtn = document.getElementById('createChannelBtn');
       
-      // Reset to general channel
-      selectChannel('general');
+      if (serverId === 'dms') {
+        document.getElementById('serverName').textContent = 'Direct Messages';
+        channelsList.style.display = 'none';
+        friendsSection.style.display = 'block';
+        createChannelBtn.style.display = 'none';
+        document.getElementById('chatHeader').textContent = 'Wähle einen Freund für DM';
+      } else {
+        const serverName = serverId === 'global' ? 'Global Server' : servers[serverId]?.name || 'Unbekannt';
+        document.getElementById('serverName').textContent = serverName;
+        channelsList.style.display = 'block';
+        friendsSection.style.display = 'none';
+        createChannelBtn.style.display = 'block';
+        selectChannel('general');
+      }
+      
+      loadMessages();
     }
 
     window.selectChannel = function(channelId) {
       currentChannel = channelId;
+      currentDM = null;
       
       // Update UI
       document.querySelectorAll('.channel-item').forEach(item => {
@@ -722,7 +1081,15 @@
       document.getElementById('chatHeader').textContent = `# ${channelName}`;
       document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht in #${channelName}...`;
       
-      // Load messages for this channel
+      loadMessages();
+    }
+
+    // Start DM with friend
+    function startDM(friendId) {
+      currentDM = friendId;
+      const friend = friends[friendId];
+      document.getElementById('chatHeader').textContent = `💬 ${friend.username}`;
+      document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht an ${friend.username}...`;
       loadMessages();
     }
 
@@ -754,12 +1121,21 @@
       document.getElementById('channelNameInput').value = '';
     }
 
-    window.showSettings = function() {
-      document.getElementById('settingsModal').style.display = 'flex';
+    window.showAddFriendModal = function() {
+      document.getElementById('addFriendModal').style.display = 'flex';
     }
 
-    window.hideSettingsModal = function() {
-      document.getElementById('settingsModal').style.display = 'none';
+    window.hideAddFriendModal = function() {
+      document.getElementById('addFriendModal').style.display = 'none';
+      document.getElementById('friendUsernameInput').value = '';
+    }
+
+    window.showProfileModal = function() {
+      document.getElementById('profileModal').style.display = 'flex';
+    }
+
+    window.hideProfileModal = function() {
+      document.getElementById('profileModal').style.display = 'none';
     }
 
     // Create Server
@@ -790,7 +1166,6 @@
           }
         });
 
-        // Add server to UI
         addServerToUI(serverId, serverName);
         hideCreateServerModal();
         alert(`Server "${serverName}" erstellt! 🎉`);
@@ -826,7 +1201,7 @@
         const channelsList = document.getElementById('channelsList');
         const channelItem = document.createElement('li');
         channelItem.className = 'channel-item';
-        channelItem.textContent = `# ${channelName}`;
+        channelItem.innerHTML = `# ${channelName}`;
         channelItem.onclick = () => selectChannel(channelId);
         channelsList.appendChild(channelItem);
 
@@ -839,6 +1214,58 @@
       }
     }
 
+    // Add Friend
+    window.addFriend = async function() {
+      const friendUsername = document.getElementById('friendUsernameInput').value.toLowerCase();
+      if (!friendUsername) {
+        alert("Gib einen Username ein!");
+        return;
+      }
+
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        // Check if username exists
+        const usernameRef = ref(db, 'usernames/' + friendUsername);
+        const usernameSnapshot = await get(usernameRef);
+        
+        if (!usernameSnapshot.exists()) {
+          alert("User mit diesem Username existiert nicht! ❌");
+          return;
+        }
+
+        const friendId = usernameSnapshot.val();
+        
+        // Check if not adding yourself
+        if (friendId === user.uid) {
+          alert("Du kannst nicht dich selbst als Freund hinzufügen! 🙄");
+          return;
+        }
+
+        // Check if already friends
+        const friendCheckRef = ref(db, `friends/${user.uid}/${friendId}`);
+        const friendCheckSnapshot = await get(friendCheckRef);
+        
+        if (friendCheckSnapshot.exists()) {
+          alert("Dieser User ist bereits dein Freund! ✅");
+          return;
+        }
+
+        // Add friend
+        await set(friendCheckRef, {
+          addedAt: new Date().toISOString()
+        });
+
+        hideAddFriendModal();
+        alert("Freund hinzugefügt! 🎉");
+
+      } catch (error) {
+        console.error("Error adding friend:", error);
+        alert("Fehler beim Hinzufügen des Freundes: " + error.message);
+      }
+    }
+
     // Load Servers
     function loadServers() {
       const serversRef = ref(db, 'servers');
@@ -848,10 +1275,10 @@
         const data = snapshot.val();
         servers = data || {};
 
-        // Clear existing servers (keep global and add button)
-        const existingServers = serversSidebar.querySelectorAll('.server-icon:not(.add-server)');
+        // Clear existing servers (keep global, dms and add button)
+        const existingServers = serversSidebar.querySelectorAll('.server-icon:not(.add-server):not(.dm)');
         existingServers.forEach(server => {
-          if (!server.onclick || !server.onclick.toString().includes('global')) {
+          if (!server.onclick || (!server.onclick.toString().includes('global') && !server.onclick.toString().includes('dms'))) {
             server.remove();
           }
         });
@@ -873,6 +1300,54 @@
       // Insert before the add server button
       const addServerBtn = serversSidebar.querySelector('.add-server');
       serversSidebar.insertBefore(serverIcon, addServerBtn);
+    }
+
+    // Load Friends
+    function loadFriends() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const friendsRef = ref(db, 'friends/' + user.uid);
+      onValue(friendsRef, async (snapshot) => {
+        const data = snapshot.val();
+        const friendsList = document.getElementById('friendsList');
+        friendsList.innerHTML = '';
+        friends = {};
+
+        if (data) {
+          // Get friend details
+          const friendPromises = Object.keys(data).map(async (friendId) => {
+            const friendRef = ref(db, 'users/' + friendId);
+            const friendSnapshot = await get(friendRef);
+            if (friendSnapshot.exists()) {
+              friends[friendId] = friendSnapshot.val();
+              return friendSnapshot.val();
+            }
+            return null;
+          });
+
+          const friendsData = await Promise.all(friendPromises);
+          
+          friendsData.forEach(friend => {
+            if (friend) {
+              const friendItem = document.createElement('div');
+              friendItem.className = 'friend-item';
+              friendItem.innerHTML = `
+                <div class="friend-avatar">${friend.avatar}</div>
+                <span>${friend.username}</span>
+              `;
+              friendItem.onclick = () => startDM(friendId);
+              friendsList.appendChild(friendItem);
+            }
+          });
+        } else {
+          const noFriends = document.createElement('div');
+          noFriends.className = 'friend-item';
+          noFriends.textContent = "Noch keine Freunde 😢";
+          noFriends.style.color = '#888';
+          friendsList.appendChild(noFriends);
+        }
+      });
     }
 
     // Close modals when clicking outside
