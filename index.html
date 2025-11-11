@@ -71,6 +71,16 @@
       text-align: center;
       padding: 20px;
     }
+    .message {
+      margin: 5px 0;
+      padding: 8px;
+      background: #2a2a2a;
+      border-radius: 5px;
+    }
+    .message .sender {
+      color: #2ecc71;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -108,7 +118,7 @@
   <div id="chat" class="container">
     <h2>Global Chat</h2>
     <div id="chatBox"></div>
-    <input type="text" id="messageInput" placeholder="Type your message...">
+    <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
     <button onclick="sendMessage()">Send</button>
   </div>
 
@@ -131,19 +141,19 @@
     // Import Firebase SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // 🟩 Insert your Firebase Config here:
-   const firebaseConfig = {
-  apiKey: "AIzaSyBWxwGrVmF2IQEGIyEZCtwp9vsRdpGAnRs",
-  authDomain: "partexchat.firebaseapp.com",
-  databaseURL: "https://partexchat-default-rtdb.firebaseio.com/",
-  projectId: "partexchat",
-  storageBucket: "partexchat.firebasestorage.app",
-  messagingSenderId: "348087049579",
-  appId: "1:348087049579:web:a61c4aef9e7272505d802e",
-  measurementId: "G-KY5XWKYY0D"
-};
+    // 🔥 DEINE FIREBASE KONFIGURATION
+    const firebaseConfig = {
+      apiKey: "AIzaSyBWxwGrVmF2IQEGIyEZCtwp9vsRdpGAnRs",
+      authDomain: "partexchat.firebaseapp.com",
+      databaseURL: "https://partexchat-default-rtdb.firebaseio.com/",
+      projectId: "partexchat",
+      storageBucket: "partexchat.firebasestorage.app",
+      messagingSenderId: "348087049579",
+      appId: "1:348087049579:web:a61c4aef9e7272505d802e",
+      measurementId: "G-KY5XWKYY0D"
+    };
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
@@ -151,7 +161,7 @@
     const db = getDatabase();
 
     // Auth Toggle
-    function toggleAuth() {
+    window.toggleAuth = function() {
       const loginDiv = document.getElementById("loginDiv");
       const registerDiv = document.getElementById("registerDiv");
       loginDiv.style.display = loginDiv.style.display === "none" ? "block" : "none";
@@ -160,32 +170,71 @@
 
     // Register
     window.register = function() {
-      const email = registerEmail.value;
-      const password = registerPassword.value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      
+      if (!email || !password) {
+        alert("Bitte Email und Passwort eingeben!");
+        return;
+      }
+
       createUserWithEmailAndPassword(auth, email, password)
-        .then(() => alert("Registered successfully!"))
-        .catch(err => alert(err.message));
+        .then((userCredential) => {
+          alert("Erfolgreich registriert!");
+          // User in der Datenbank speichern
+          const user = userCredential.user;
+          const userRef = ref(db, 'users/' + user.uid);
+          set(userRef, {
+            email: email,
+            createdAt: new Date().toISOString()
+          });
+        })
+        .catch((error) => {
+          console.error("Registrierungsfehler:", error);
+          alert("Fehler: " + error.message);
+        });
     }
 
     // Login
     window.login = function() {
-      const email = loginEmail.value;
-      const password = loginPassword.value;
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        alert("Bitte Email und Passwort eingeben!");
+        return;
+      }
+
       signInWithEmailAndPassword(auth, email, password)
-        .catch(err => alert(err.message));
+        .then(() => {
+          console.log("Erfolgreich eingeloggt");
+        })
+        .catch((error) => {
+          console.error("Login Fehler:", error);
+          alert("Fehler: " + error.message);
+        });
     }
 
     // Logout
     window.logout = function() {
-      signOut(auth);
+      signOut(auth)
+        .then(() => {
+          alert("Erfolgreich ausgeloggt");
+        })
+        .catch((error) => {
+          console.error("Logout Fehler:", error);
+        });
     }
 
-    // Auth State
-    onAuthStateChanged(auth, user => {
+    // Auth State Observer
+    onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log("User ist eingeloggt:", user.email);
         document.getElementById("authSection").style.display = "none";
         document.getElementById("chat").classList.add("active");
+        loadFriends();
       } else {
+        console.log("User ist nicht eingeloggt");
         document.getElementById("authSection").style.display = "block";
         document.querySelectorAll(".container").forEach(c => c.classList.remove("active"));
       }
@@ -193,21 +242,41 @@
 
     // Send Message
     window.sendMessage = function() {
-      const msg = messageInput.value;
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Bitte erst einloggen!");
+        return;
+      }
+
+      const msg = document.getElementById('messageInput').value;
       if (msg.trim() === "") return;
+
       const chatRef = ref(db, "messages");
-      push(chatRef, { text: msg, sender: auth.currentUser.email });
-      messageInput.value = "";
+      push(chatRef, { 
+        text: msg, 
+        sender: user.email,
+        timestamp: new Date().toISOString(),
+        senderId: user.uid
+      });
+      document.getElementById('messageInput').value = "";
+    }
+
+    // Enter Key für Nachrichten
+    window.handleKeyPress = function(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
     }
 
     // Receive Messages
     const chatBox = document.getElementById("chatBox");
     const chatRef = ref(db, "messages");
-    onChildAdded(chatRef, snapshot => {
+    onChildAdded(chatRef, (snapshot) => {
       const msg = snapshot.val();
-      const div = document.createElement("div");
-      div.textContent = `${msg.sender}: ${msg.text}`;
-      chatBox.appendChild(div);
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message";
+      messageDiv.innerHTML = `<span class="sender">${msg.sender}:</span> ${msg.text}`;
+      chatBox.appendChild(messageDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     });
 
@@ -217,15 +286,42 @@
       document.getElementById(tabId).classList.add("active");
     }
 
-    // Add Friend (demo)
+    // Add Friend
     window.addFriend = function() {
-      const friendEmail = document.getElementById("friendEmail").value;
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const friendEmail = document.getElementById('friendEmail').value;
       if (friendEmail) {
-        const li = document.createElement("li");
-        li.textContent = friendEmail;
-        document.getElementById("friendsList").appendChild(li);
-        friendEmail.value = "";
+        // Friend zur Freundesliste hinzufügen
+        const friendsRef = ref(db, 'friends/' + user.uid);
+        push(friendsRef, {
+          email: friendEmail,
+          addedAt: new Date().toISOString()
+        });
+        document.getElementById('friendEmail').value = "";
       }
+    }
+
+    // Load Friends
+    function loadFriends() {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const friendsRef = ref(db, 'friends/' + user.uid);
+      onValue(friendsRef, (snapshot) => {
+        const friendsList = document.getElementById('friendsList');
+        friendsList.innerHTML = '';
+        
+        const data = snapshot.val();
+        if (data) {
+          Object.values(data).forEach(friend => {
+            const li = document.createElement("li");
+            li.textContent = friend.email;
+            friendsList.appendChild(li);
+          });
+        }
+      });
     }
   </script>
 </body>
