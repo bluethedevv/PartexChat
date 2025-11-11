@@ -306,6 +306,7 @@
       color: #ccc;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
     }
 
@@ -321,6 +322,29 @@
 
     .channel-item.welcome {
       color: #ffa726;
+    }
+
+    .channel-actions {
+      display: none;
+    }
+
+    .channel-item:hover .channel-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .channel-action-btn {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+
+    .channel-action-btn:hover {
+      background: #333;
+      color: white;
     }
 
     .create-channel-btn {
@@ -405,6 +429,12 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .member-item:hover {
+      background: #222;
     }
 
     .member-avatar {
@@ -430,6 +460,15 @@
       background: #2ecc71;
       border-radius: 50%;
       margin-left: auto;
+    }
+
+    .role-badge {
+      background: #3498db;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      margin-left: 5px;
     }
 
     /* Chat Area */
@@ -501,6 +540,7 @@
       justify-content: center;
       font-weight: bold;
       font-size: 14px;
+      cursor: pointer;
     }
 
     .message.dm .message-avatar {
@@ -510,6 +550,7 @@
     .message-sender {
       color: #2ecc71;
       font-weight: bold;
+      cursor: pointer;
     }
 
     .message.dm .message-sender {
@@ -604,6 +645,19 @@
       color: white;
     }
 
+    .modal-textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: white;
+      resize: vertical;
+      min-height: 80px;
+      font-family: Arial;
+    }
+
     .modal-buttons {
       display: flex;
       gap: 10px;
@@ -629,6 +683,11 @@
       color: white;
     }
 
+    .modal-btn.danger {
+      background: #e74c3c;
+      color: white;
+    }
+
     /* Server Settings */
     .settings-section {
       background: #222;
@@ -640,6 +699,27 @@
     .settings-section h4 {
       color: #2ecc71;
       margin-bottom: 10px;
+    }
+
+    .roles-list {
+      margin: 10px 0;
+    }
+
+    .role-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      margin: 5px 0;
+      background: #333;
+      border-radius: 5px;
+    }
+
+    .role-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      margin-right: 10px;
     }
 
     .boost-section {
@@ -711,6 +791,16 @@
       justify-content: center;
       font-size: 32px;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    .profile-bio {
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-style: italic;
+      color: #ccc;
     }
 
     .profile-details {
@@ -757,6 +847,34 @@
       margin: 5px 0;
       color: white;
       font-size: 14px;
+    }
+
+    /* Context Menu */
+    .context-menu {
+      position: fixed;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 8px 0;
+      z-index: 1001;
+      min-width: 150px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+
+    .context-menu-item {
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #ccc;
+    }
+
+    .context-menu-item:hover {
+      background: #2ecc71;
+      color: white;
+    }
+
+    .context-menu-item.danger:hover {
+      background: #e74c3c;
     }
   </style>
 </head>
@@ -875,6 +993,9 @@
     </div>
   </div>
 
+  <!-- Context Menu -->
+  <div class="context-menu" id="contextMenu" style="display: none;"></div>
+
   <!-- Modals -->
   <div class="modal" id="createServerModal">
     <div class="modal-content">
@@ -924,11 +1045,25 @@
   <div class="modal" id="serverSettingsModal">
     <div class="modal-content">
       <h3>⚙️ Server Einstellungen</h3>
+      
       <div class="settings-section">
         <h4>Allgemein</h4>
         <p><strong>Server Name:</strong> <span id="settingsServerName">Loading...</span></p>
         <p><strong>Besitzer:</strong> <span id="settingsServerOwner">Loading...</span></p>
         <p><strong>Mitglieder:</strong> <span id="settingsMemberCount">0</span></p>
+      </div>
+
+      <div class="settings-section">
+        <h4>🎨 Rollen Verwalten</h4>
+        <div class="roles-list" id="rolesList">
+          <!-- Roles will be added here -->
+        </div>
+        <button class="modal-btn primary" onclick="showCreateRoleModal()" style="width: 100%; margin-top: 10px;">+ Rolle erstellen</button>
+      </div>
+
+      <div class="settings-section">
+        <h4>🔊 Channel Verwalten</h4>
+        <button class="modal-btn secondary" onclick="showCreateChannelModal(); hideServerSettingsModal();" style="width: 100%; margin: 5px 0;">+ Channel erstellen</button>
       </div>
 
       <div class="boost-section">
@@ -939,13 +1074,20 @@
         <p style="font-size: 12px; margin-top: 10px;">Benötigt PartexPlus</p>
       </div>
 
-      <div class="settings-section">
-        <h4>Channel Verwalten</h4>
-        <button class="modal-btn secondary" onclick="showCreateChannelModal(); hideServerSettingsModal();" style="width: 100%; margin: 5px 0;">+ Channel erstellen</button>
-      </div>
-
       <div class="modal-buttons">
         <button class="modal-btn secondary" onclick="hideServerSettingsModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="createRoleModal">
+    <div class="modal-content">
+      <h3>🎨 Rolle erstellen</h3>
+      <input type="text" id="roleNameInput" class="modal-input" placeholder="Rollen Name">
+      <input type="color" id="roleColorInput" class="modal-input" value="#3498db">
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="hideCreateRoleModal()">Abbrechen</button>
+        <button class="modal-btn primary" onclick="createRole()">Erstellen</button>
       </div>
     </div>
   </div>
@@ -954,9 +1096,13 @@
     <div class="modal-content profile-modal">
       <h3>👤 Dein Profil</h3>
       <div class="profile-header">
-        <div class="profile-avatar" id="profileAvatar">U</div>
+        <div class="profile-avatar" id="profileAvatar" onclick="editProfile()">U</div>
         <h4 id="profileUsername">Username</h4>
         <div id="profilePartexPlus"></div>
+      </div>
+
+      <div class="profile-bio" id="profileBio" onclick="editProfile()">
+        Klicke hier um deine Bio zu bearbeiten...
       </div>
       
       <div class="profile-details">
@@ -977,6 +1123,47 @@
       <div class="modal-buttons">
         <button class="modal-btn secondary" onclick="hideProfileModal()">Schließen</button>
         <button class="modal-btn primary" onclick="logout()" style="background: #e74c3c;">🚪 Ausloggen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="editProfileModal">
+    <div class="modal-content">
+      <h3>✏️ Profil bearbeiten</h3>
+      <textarea id="profileBioInput" class="modal-textarea" placeholder="Schreibe etwas über dich..."></textarea>
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="hideEditProfileModal()">Abbrechen</button>
+        <button class="modal-btn primary" onclick="saveProfile()">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="userProfileModal">
+    <div class="modal-content profile-modal">
+      <h3>👤 Benutzerprofil</h3>
+      <div class="profile-header">
+        <div class="profile-avatar" id="userProfileAvatar">U</div>
+        <h4 id="userProfileUsername">Username</h4>
+      </div>
+
+      <div class="profile-bio" id="userProfileBio">
+        Dieser User hat noch keine Bio...
+      </div>
+      
+      <div class="profile-details">
+        <div class="profile-detail">
+          <label>Mitglied seit:</label>
+          <span id="userProfileCreatedAt">-</span>
+        </div>
+        <div class="profile-detail">
+          <label>Status:</label>
+          <span id="userProfileStatus">Online</span>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="hideUserProfileModal()">Schließen</button>
+        <button class="modal-btn primary" onclick="startDMFromProfile()">💬 Nachricht senden</button>
       </div>
     </div>
   </div>
@@ -1012,6 +1199,8 @@
     let messageListener = null;
     let currentUserData = null;
     let onlineUsers = {};
+    let roles = {};
+    let selectedUserId = null;
 
     console.log("Firebase initialized");
 
@@ -1053,8 +1242,9 @@
           username: username,
           email: email,
           avatar: username.charAt(0).toUpperCase(),
+          bio: "Klicke hier um deine Bio zu bearbeiten...",
           createdAt: new Date().toISOString(),
-          hasPartexPlus: email === 'memberfarm3@gmail.com', // PartexPlus für deine Email
+          hasPartexPlus: email === 'memberfarm3@gmail.com',
           isOnline: true,
           lastSeen: new Date().toISOString()
         });
@@ -1135,6 +1325,7 @@
         loadServers();
         loadFriends();
         loadOnlineUsers();
+        loadRoles();
       } else {
         document.getElementById('authSection').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
@@ -1158,6 +1349,7 @@
           document.getElementById('profileUsername').textContent = userData.username;
           document.getElementById('profileEmail').textContent = userData.email;
           document.getElementById('profileAvatar').textContent = userData.avatar;
+          document.getElementById('profileBio').textContent = userData.bio || "Klicke hier um deine Bio zu bearbeiten...";
           document.getElementById('profileUserId').textContent = userId;
           document.getElementById('profileCreatedAt').textContent = new Date(userData.createdAt).toLocaleDateString('de-DE');
           
@@ -1187,7 +1379,7 @@
       });
     }
 
-    // Send Message - FIXED VERSION
+    // Send Message
     window.sendMessage = async function() {
       const user = auth.currentUser;
       if (!user) {
@@ -1199,7 +1391,6 @@
       if (msg.trim() === "") return;
 
       try {
-        // Use cached user data to avoid undefined errors
         if (!currentUserData) {
           alert("User Daten werden noch geladen...");
           return;
@@ -1208,15 +1399,12 @@
         let messageRef;
         
         if (currentServer === 'dms' && currentDM) {
-          // DM Nachricht
           const dmId = [user.uid, currentDM].sort().join('_');
           messageRef = ref(db, `dms/${dmId}/messages`);
         } else {
-          // Server Nachricht - KORRIGIERTER PATH
           messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
         }
 
-        // VALIDIERTE Nachrichtendaten
         const messageData = {
           text: msg,
           sender: currentUserData.username || 'Unbekannt',
@@ -1228,7 +1416,6 @@
         console.log("Sending message to:", messageRef.toString());
         console.log("Message data:", messageData);
 
-        // VALIDATION: Check if all required fields are present
         if (!messageData.sender || !messageData.senderId) {
           throw new Error("User data is incomplete");
         }
@@ -1242,12 +1429,11 @@
       }
     }
 
-    // Load Messages - FIXED VERSION
+    // Load Messages
     function loadMessages() {
       const messagesContainer = document.getElementById('messagesContainer');
       messagesContainer.innerHTML = '';
 
-      // Remove previous listener to prevent duplicates
       if (messageListener) {
         messageListener();
       }
@@ -1255,11 +1441,9 @@
       let messagesRef;
       
       if (currentServer === 'dms' && currentDM) {
-        // DM Nachrichten
         const dmId = [auth.currentUser.uid, currentDM].sort().join('_');
         messagesRef = ref(db, `dms/${dmId}/messages`);
       } else {
-        // Server Nachrichten - KORRIGIERTER PATH
         messagesRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
       }
 
@@ -1268,7 +1452,6 @@
       messageListener = onChildAdded(messagesRef, (snapshot) => {
         const msg = snapshot.val();
         
-        // Check if message data is valid
         if (!msg) {
           console.warn("Invalid message data:", msg);
           return;
@@ -1292,8 +1475,8 @@
           
           messageDiv.innerHTML = `
             <div class="message-header">
-              <div class="message-avatar">${msg.senderAvatar || '?'}</div>
-              <div class="message-sender">${msg.sender || 'Unbekannt'}</div>
+              <div class="message-avatar" onclick="showUserProfile('${msg.senderId}')">${msg.senderAvatar || '?'}</div>
+              <div class="message-sender" onclick="showUserProfile('${msg.senderId}')">${msg.sender || 'Unbekannt'}</div>
               <div class="message-timestamp">${time}</div>
             </div>
             <div class="message-content">${msg.text}</div>
@@ -1319,13 +1502,11 @@
       currentServer = serverId;
       currentDM = null;
       
-      // Update UI
       document.querySelectorAll('.server-icon').forEach(icon => {
         icon.classList.remove('active');
       });
       event.target.classList.add('active');
       
-      // Update server name and show/hide sections
       const channelsList = document.getElementById('channelsList');
       const friendsSection = document.getElementById('friendsSection');
       const createChannelBtn = document.getElementById('createChannelBtn');
@@ -1368,13 +1549,11 @@
       currentChannel = channelId;
       currentDM = null;
       
-      // Update UI
       document.querySelectorAll('.channel-item').forEach(item => {
         item.classList.remove('active');
       });
       event.target.classList.add('active');
       
-      // Update chat header
       const channelName = getChannelName(channelId);
       document.getElementById('chatHeader').textContent = `# ${channelName}`;
       document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht in #${channelName}...`;
@@ -1404,6 +1583,158 @@
       }
     }
 
+    // Context Menu for Channels
+    window.showChannelContextMenu = function(channelId, event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      const contextMenu = document.getElementById('contextMenu');
+      contextMenu.innerHTML = `
+        <div class="context-menu-item" onclick="deleteChannel('${channelId}')">🗑️ Channel löschen</div>
+      `;
+      
+      contextMenu.style.display = 'block';
+      contextMenu.style.left = event.pageX + 'px';
+      contextMenu.style.top = event.pageY + 'px';
+    }
+
+    // Delete Channel
+    window.deleteChannel = async function(channelId) {
+      if (!confirm(`Bist du sicher, dass du den Channel #${getChannelName(channelId)} löschen willst?`)) return;
+      
+      try {
+        const channelRef = ref(db, `servers/${currentServer}/channels/${channelId}`);
+        await remove(channelRef);
+        
+        // Remove from UI
+        const channelItem = document.querySelector(`.channel-item[onclick="selectChannel('${channelId}')"]`);
+        if (channelItem) channelItem.remove();
+        
+        hideContextMenu();
+        alert("Channel gelöscht! 🗑️");
+      } catch (error) {
+        console.error("Error deleting channel:", error);
+        alert("Fehler beim Löschen des Channels: " + error.message);
+      }
+    }
+
+    // Hide Context Menu
+    window.hideContextMenu = function() {
+      document.getElementById('contextMenu').style.display = 'none';
+    }
+
+    // Load Roles
+    function loadRoles() {
+      const rolesRef = ref(db, `servers/${currentServer}/roles`);
+      onValue(rolesRef, (snapshot) => {
+        const data = snapshot.val();
+        roles = data || {};
+        
+        const rolesList = document.getElementById('rolesList');
+        rolesList.innerHTML = '';
+        
+        Object.keys(roles).forEach(roleId => {
+          const role = roles[roleId];
+          const roleItem = document.createElement('div');
+          roleItem.className = 'role-item';
+          roleItem.innerHTML = `
+            <div style="display: flex; align-items: center;">
+              <div class="role-color" style="background: ${role.color};"></div>
+              <span>${role.name}</span>
+            </div>
+            <button class="channel-action-btn" onclick="assignRole('${roleId}')">👥</button>
+          `;
+          rolesList.appendChild(roleItem);
+        });
+      });
+    }
+
+    // Create Role
+    window.createRole = async function() {
+      const roleName = document.getElementById('roleNameInput').value;
+      const roleColor = document.getElementById('roleColorInput').value;
+      
+      if (!roleName) {
+        alert("Gib einen Rollen-Namen ein!");
+        return;
+      }
+
+      try {
+        const roleId = roleName.toLowerCase().replace(/\s+/g, '-');
+        const roleRef = ref(db, `servers/${currentServer}/roles/${roleId}`);
+        
+        await set(roleRef, {
+          name: roleName,
+          color: roleColor,
+          createdBy: auth.currentUser.uid,
+          createdAt: new Date().toISOString()
+        });
+
+        hideCreateRoleModal();
+        alert(`Rolle "${roleName}" erstellt! 🎨`);
+      } catch (error) {
+        console.error("Error creating role:", error);
+        alert("Fehler beim Erstellen der Rolle: " + error.message);
+      }
+    }
+
+    // Assign Role (simplified version)
+    window.assignRole = function(roleId) {
+      alert(`Rollen-Zuweisung Feature kommt bald!\n\nHier könntest du Mitgliedern die Rolle "${roles[roleId].name}" zuweisen.`);
+    }
+
+    // Show User Profile
+    window.showUserProfile = function(userId) {
+      const userRef = ref(db, 'users/' + userId);
+      get(userRef).then((snapshot) => {
+        const userData = snapshot.val();
+        if (userData) {
+          selectedUserId = userId;
+          
+          document.getElementById('userProfileUsername').textContent = userData.username;
+          document.getElementById('userProfileAvatar').textContent = userData.avatar;
+          document.getElementById('userProfileBio').textContent = userData.bio || "Dieser User hat noch keine Bio...";
+          document.getElementById('userProfileCreatedAt').textContent = new Date(userData.createdAt).toLocaleDateString('de-DE');
+          document.getElementById('userProfileStatus').textContent = userData.isOnline ? '🟢 Online' : '🔴 Offline';
+          
+          showUserProfileModal();
+        }
+      });
+    }
+
+    // Start DM from Profile
+    window.startDMFromProfile = function() {
+      if (selectedUserId) {
+        hideUserProfileModal();
+        selectServer('dms');
+        startDM(selectedUserId);
+      }
+    }
+
+    // Edit Profile
+    window.editProfile = function() {
+      document.getElementById('profileBioInput').value = currentUserData.bio || '';
+      showEditProfileModal();
+    }
+
+    // Save Profile
+    window.saveProfile = async function() {
+      const newBio = document.getElementById('profileBioInput').value;
+      
+      try {
+        const userRef = ref(db, 'users/' + auth.currentUser.uid);
+        await update(userRef, {
+          bio: newBio
+        });
+        
+        hideEditProfileModal();
+        alert("Profil aktualisiert! ✅");
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        alert("Fehler beim Speichern: " + error.message);
+      }
+    }
+
     // Modal Functions
     window.showCreateServerModal = function() {
       document.getElementById('createServerModal').style.display = 'flex';
@@ -1421,6 +1752,15 @@
     window.hideCreateChannelModal = function() {
       document.getElementById('createChannelModal').style.display = 'none';
       document.getElementById('channelNameInput').value = '';
+    }
+
+    window.showCreateRoleModal = function() {
+      document.getElementById('createRoleModal').style.display = 'flex';
+    }
+
+    window.hideCreateRoleModal = function() {
+      document.getElementById('createRoleModal').style.display = 'none';
+      document.getElementById('roleNameInput').value = '';
     }
 
     window.showAddFriendModal = function() {
@@ -1458,12 +1798,27 @@
       document.getElementById('profileModal').style.display = 'none';
     }
 
+    window.showEditProfileModal = function() {
+      document.getElementById('editProfileModal').style.display = 'flex';
+    }
+
+    window.hideEditProfileModal = function() {
+      document.getElementById('editProfileModal').style.display = 'none';
+    }
+
+    window.showUserProfileModal = function() {
+      document.getElementById('userProfileModal').style.display = 'flex';
+    }
+
+    window.hideUserProfileModal = function() {
+      document.getElementById('userProfileModal').style.display = 'none';
+    }
+
     // Generate Invite Link
     function generateInviteLink() {
       const inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
       const inviteLink = `https://partexchat.netlify.app/?invite=${currentServer}&code=${inviteCode}`;
       
-      // Save invite to database
       const inviteRef = ref(db, `servers/${currentServer}/invites/${inviteCode}`);
       set(inviteRef, {
         createdBy: auth.currentUser.uid,
@@ -1490,7 +1845,6 @@
         document.getElementById('settingsServerName').textContent = server.name;
         document.getElementById('settingsMemberCount').textContent = Object.keys(onlineUsers).length;
         
-        // Get owner username
         const ownerRef = ref(db, 'users/' + server.owner);
         get(ownerRef).then((snapshot) => {
           const ownerData = snapshot.val();
@@ -1499,11 +1853,9 @@
           }
         });
 
-        // Load boost info
         const boosts = server.boosts || 0;
         document.getElementById('currentBoosts').textContent = boosts;
         
-        // Update boost button
         const boostBtn = document.getElementById('boostBtn');
         if (currentUserData && currentUserData.hasPartexPlus) {
           boostBtn.disabled = false;
@@ -1533,7 +1885,6 @@
           lastBoosted: new Date().toISOString()
         });
 
-        // Update server icon
         const serverIcons = document.querySelectorAll('.server-icon');
         serverIcons.forEach(icon => {
           if (icon.onclick && icon.onclick.toString().includes(currentServer)) {
@@ -1580,8 +1931,8 @@
           const memberItem = document.createElement('div');
           memberItem.className = 'member-item';
           memberItem.innerHTML = `
-            <div class="member-avatar">${user.avatar}</div>
-            <div class="member-name">${user.username}</div>
+            <div class="member-avatar" onclick="showUserProfile('${userId}')">${user.avatar}</div>
+            <div class="member-name" onclick="showUserProfile('${userId}')">${user.username}</div>
             <div class="online-indicator"></div>
           `;
           membersList.appendChild(memberItem);
@@ -1623,7 +1974,6 @@
           }
         });
 
-        // Welcome message
         const welcomeMessageRef = ref(db, `servers/${serverId}/channels/willkommen/messages`);
         await push(welcomeMessageRef, {
           text: `🎉 Willkommen im ${serverName} Server!`,
@@ -1665,12 +2015,16 @@
           createdAt: new Date().toISOString()
         });
 
-        // Add channel to UI
         const channelsList = document.getElementById('channelsList');
         const channelItem = document.createElement('li');
         channelItem.className = 'channel-item';
-        channelItem.innerHTML = `# ${channelName}`;
-        channelItem.onclick = () => selectChannel(channelId);
+        channelItem.innerHTML = `
+          # ${channelName}
+          <div class="channel-actions">
+            <button class="channel-action-btn" onclick="event.stopPropagation(); showChannelContextMenu('${channelId}', event)">⋯</button>
+          </div>
+        `;
+        channelItem.setAttribute('onclick', `selectChannel('${channelId}')`);
         channelsList.appendChild(channelItem);
 
         hideCreateChannelModal();
@@ -1694,7 +2048,6 @@
       if (!user) return;
 
       try {
-        // Check if username exists
         const usernameRef = ref(db, 'usernames/' + friendUsername);
         const usernameSnapshot = await get(usernameRef);
         
@@ -1705,13 +2058,11 @@
 
         const friendId = usernameSnapshot.val();
         
-        // Check if not adding yourself
         if (friendId === user.uid) {
           alert("Du kannst nicht dich selbst als Freund hinzufügen! 🙄");
           return;
         }
 
-        // Check if already friends
         const friendCheckRef = ref(db, `friends/${user.uid}/${friendId}`);
         const friendCheckSnapshot = await get(friendCheckRef);
         
@@ -1720,7 +2071,6 @@
           return;
         }
 
-        // Add friend
         await set(friendCheckRef, {
           addedAt: new Date().toISOString()
         });
@@ -1743,7 +2093,6 @@
         const data = snapshot.val();
         servers = data || {};
 
-        // Clear existing servers (keep global, dms and add button)
         const existingServers = serversSidebar.querySelectorAll('.server-icon:not(.add-server):not(.dm)');
         existingServers.forEach(server => {
           if (!server.onclick || (!server.onclick.toString().includes('global') && !server.onclick.toString().includes('dms'))) {
@@ -1751,7 +2100,6 @@
           }
         });
 
-        // Add servers to UI
         Object.keys(servers).forEach(serverId => {
           addServerToUI(serverId, servers[serverId].name);
         });
@@ -1768,7 +2116,6 @@
       serverIcon.textContent = serverName.charAt(0).toUpperCase();
       serverIcon.onclick = () => selectServer(serverId);
       
-      // Insert before the add server button
       const addServerBtn = serversSidebar.querySelector('.add-server');
       serversSidebar.insertBefore(serverIcon, addServerBtn);
     }
@@ -1786,7 +2133,6 @@
         friends = {};
 
         if (data) {
-          // Get friend details
           const friendPromises = Object.keys(data).map(async (friendId) => {
             const friendRef = ref(db, 'users/' + friendId);
             const friendSnapshot = await get(friendRef);
@@ -1825,18 +2171,9 @@
           modal.style.display = 'none';
         }
       });
-    }
-
-    // Check for invite links on page load
-    window.addEventListener('load', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const inviteServer = urlParams.get('invite');
-      const inviteCode = urlParams.get('code');
       
-      if (inviteServer && inviteCode) {
-        alert(`🎉 Du wurdest zu Server ${inviteServer} eingeladen!\n\nEinladungscode: ${inviteCode}\n\n(Server Beitritt Funktion kommt bald!)`);
-      }
-    });
+      hideContextMenu();
+    }
 
     // Initialize default channels for global server
     function initializeGlobalServer() {
