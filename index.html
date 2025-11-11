@@ -566,6 +566,19 @@
       margin-left: 42px;
     }
 
+    .message-image {
+      max-width: 400px;
+      max-height: 300px;
+      border-radius: 8px;
+      margin-top: 8px;
+      cursor: pointer;
+      border: 2px solid #333;
+    }
+
+    .message-image:hover {
+      border-color: #2ecc71;
+    }
+
     .message-input-container {
       padding: 20px;
       background: #151515;
@@ -575,6 +588,7 @@
     .message-input-wrapper {
       display: flex;
       gap: 10px;
+      align-items: flex-end;
     }
 
     #messageInput {
@@ -585,11 +599,28 @@
       border-radius: 8px;
       color: white;
       font-size: 14px;
+      resize: none;
+      min-height: 44px;
+      max-height: 120px;
     }
 
     #messageInput:focus {
       border-color: #2ecc71;
       outline: none;
+    }
+
+    .file-upload-btn {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .file-upload-btn:hover {
+      background: #2980b9;
     }
 
     .send-button {
@@ -604,6 +635,14 @@
 
     .send-button:hover {
       background: #27ae60;
+    }
+
+    .image-preview {
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
     }
 
     /* Modal */
@@ -876,6 +915,24 @@
     .context-menu-item.danger:hover {
       background: #e74c3c;
     }
+
+    /* Image Modal */
+    .image-modal {
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    .image-modal-content {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .enlarged-image {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -977,9 +1034,12 @@
         </div>
         <div class="message-input-container">
           <div class="message-input-wrapper">
-            <input type="text" id="messageInput" placeholder="Schreibe eine Nachricht in #willkommen..." onkeypress="handleKeyPress(event)">
+            <textarea id="messageInput" placeholder="Schreibe eine Nachricht in #willkommen..." onkeypress="handleKeyPress(event)"></textarea>
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            <button class="file-upload-btn" onclick="document.getElementById('imageUpload').click()" title="Bild hochladen">📷</button>
             <button class="send-button" onclick="sendMessage()">Senden</button>
           </div>
+          <img id="imagePreview" class="image-preview" alt="Vorschau">
         </div>
       </div>
 
@@ -1168,10 +1228,17 @@
     </div>
   </div>
 
+  <div class="modal" id="imageModal">
+    <div class="modal-content image-modal-content">
+      <img id="enlargedImage" class="enlarged-image" alt="Vergrößertes Bild">
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getDatabase, ref, push, onChildAdded, set, onValue, get, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -1189,6 +1256,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
+    const storage = getStorage(app);
 
     // Global Variables
     let currentServer = 'global';
@@ -1201,8 +1269,38 @@
     let onlineUsers = {};
     let roles = {};
     let selectedUserId = null;
+    let selectedImageFile = null;
 
     console.log("Firebase initialized");
+
+    // Image Upload Handler
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Check file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Bild ist zu groß! Maximal 5MB erlaubt.");
+          return;
+        }
+
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+          alert("Nur Bilder sind erlaubt!");
+          return;
+        }
+
+        selectedImageFile = file;
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('imagePreview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
 
     // Auth Toggle
     window.toggleAuth = function() {
@@ -1244,7 +1342,7 @@
           avatar: username.charAt(0).toUpperCase(),
           bio: "Klicke hier um deine Bio zu bearbeiten...",
           createdAt: new Date().toISOString(),
-          hasPartexPlus: email === 'memberfarm3@gmail.com',
+          hasPartexPlus: email === 'abdikanialkanat088@gmail.com', // PartexPlus für deine Email
           isOnline: true,
           lastSeen: new Date().toISOString()
         });
@@ -1363,11 +1461,12 @@
               <div class="partex-features">
                 <h4>🎉 PartexPlus Features</h4>
                 <ul class="feature-list">
-                  <li>✅ Größere Datei-Uploads</li>
+                  <li>✅ Größere Datei-Uploads (bis 50MB)</li>
                   <li>✅ HD Video Streaming</li>
                   <li>✅ Spezielle Emojis</li>
                   <li>✅ Server Boosts</li>
                   <li>✅ Premium Support</li>
+                  <li>✅ Bild-Uploads in hoher Qualität</li>
                 </ul>
               </div>
             `;
@@ -1379,7 +1478,7 @@
       });
     }
 
-    // Send Message
+    // Send Message with Image Support
     window.sendMessage = async function() {
       const user = auth.currentUser;
       if (!user) {
@@ -1388,7 +1487,12 @@
       }
 
       const msg = document.getElementById('messageInput').value;
-      if (msg.trim() === "") return;
+      
+      // Check if both message and image are empty
+      if (msg.trim() === "" && !selectedImageFile) {
+        alert("Schreibe eine Nachricht oder wähle ein Bild aus!");
+        return;
+      }
 
       try {
         if (!currentUserData) {
@@ -1413,6 +1517,25 @@
           timestamp: new Date().toISOString()
         };
 
+        // Upload image if selected
+        if (selectedImageFile) {
+          // Check if user has PartexPlus for larger uploads
+          const maxSize = currentUserData.hasPartexPlus ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+          
+          if (selectedImageFile.size > maxSize) {
+            alert(`Bild ist zu groß! ${currentUserData.hasPartexPlus ? 'Maximal 50MB mit PartexPlus' : 'Maximal 5MB'} erlaubt.`);
+            return;
+          }
+
+          // Upload image to Firebase Storage
+          const imageRef = storageRef(storage, `images/${Date.now()}_${selectedImageFile.name}`);
+          const snapshot = await uploadBytes(imageRef, selectedImageFile);
+          const imageUrl = await getDownloadURL(snapshot.ref);
+          
+          messageData.imageUrl = imageUrl;
+          messageData.imageName = selectedImageFile.name;
+        }
+
         console.log("Sending message to:", messageRef.toString());
         console.log("Message data:", messageData);
 
@@ -1422,14 +1545,19 @@
 
         await push(messageRef, messageData);
         
+        // Reset form
         document.getElementById('messageInput').value = "";
+        document.getElementById('imagePreview').style.display = 'none';
+        selectedImageFile = null;
+        document.getElementById('imageUpload').value = "";
+        
       } catch (error) {
         console.error("Error sending message:", error);
         alert("Fehler beim Senden der Nachricht: " + error.message);
       }
     }
 
-    // Load Messages
+    // Load Messages with Image Support
     function loadMessages() {
       const messagesContainer = document.getElementById('messagesContainer');
       messagesContainer.innerHTML = '';
@@ -1473,13 +1601,21 @@
             minute: '2-digit' 
           });
           
+          let imageHTML = '';
+          if (msg.imageUrl) {
+            imageHTML = `<img src="${msg.imageUrl}" class="message-image" onclick="showEnlargedImage('${msg.imageUrl}')" alt="Hochgeladenes Bild">`;
+          }
+          
           messageDiv.innerHTML = `
             <div class="message-header">
               <div class="message-avatar" onclick="showUserProfile('${msg.senderId}')">${msg.senderAvatar || '?'}</div>
               <div class="message-sender" onclick="showUserProfile('${msg.senderId}')">${msg.sender || 'Unbekannt'}</div>
               <div class="message-timestamp">${time}</div>
             </div>
-            <div class="message-content">${msg.text}</div>
+            <div class="message-content">
+              ${msg.text || ''}
+              ${imageHTML}
+            </div>
           `;
         }
         
@@ -1490,9 +1626,16 @@
       });
     }
 
+    // Show enlarged image
+    window.showEnlargedImage = function(imageUrl) {
+      document.getElementById('enlargedImage').src = imageUrl;
+      showImageModal();
+    }
+
     // Enter Key
     window.handleKeyPress = function(event) {
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
         sendMessage();
       }
     }
@@ -1812,6 +1955,14 @@
 
     window.hideUserProfileModal = function() {
       document.getElementById('userProfileModal').style.display = 'none';
+    }
+
+    window.showImageModal = function() {
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    window.hideImageModal = function() {
+      document.getElementById('imageModal').style.display = 'none';
     }
 
     // Generate Invite Link
