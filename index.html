@@ -828,8 +828,8 @@
         <div class="channels-container">
           <!-- Channels for servers -->
           <ul class="channels-list" id="channelsList">
-            <li class="channel-item welcome" onclick="selectChannel('willkommen')">🎉 Willkommen</li>
-            <li class="channel-item active" onclick="selectChannel('general')">💬 Allgemein</li>
+            <li class="channel-item welcome active" onclick="selectChannel('willkommen')">🎉 Willkommen</li>
+            <li class="channel-item" onclick="selectChannel('general')">💬 Allgemein</li>
             <li class="channel-item" onclick="selectChannel('games')">🎮 Gaming</li>
             <li class="channel-item" onclick="selectChannel('music')">🎵 Musik</li>
           </ul>
@@ -1187,7 +1187,7 @@
       });
     }
 
-    // Send Message
+    // Send Message - FIXED VERSION
     window.sendMessage = async function() {
       const user = auth.currentUser;
       if (!user) {
@@ -1212,19 +1212,27 @@
           const dmId = [user.uid, currentDM].sort().join('_');
           messageRef = ref(db, `dms/${dmId}/messages`);
         } else {
-          // Server Nachricht
+          // Server Nachricht - KORRIGIERTER PATH
           messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
         }
 
+        // VALIDIERTE Nachrichtendaten
         const messageData = {
           text: msg,
-          sender: currentUserData.username,
+          sender: currentUserData.username || 'Unbekannt',
           senderId: user.uid,
-          senderAvatar: currentUserData.avatar,
+          senderAvatar: currentUserData.avatar || '?',
           timestamp: new Date().toISOString()
         };
 
-        console.log("Sending message:", messageData);
+        console.log("Sending message to:", messageRef.toString());
+        console.log("Message data:", messageData);
+
+        // VALIDATION: Check if all required fields are present
+        if (!messageData.sender || !messageData.senderId) {
+          throw new Error("User data is incomplete");
+        }
+
         await push(messageRef, messageData);
         
         document.getElementById('messageInput').value = "";
@@ -1234,7 +1242,7 @@
       }
     }
 
-    // Load Messages
+    // Load Messages - FIXED VERSION
     function loadMessages() {
       const messagesContainer = document.getElementById('messagesContainer');
       messagesContainer.innerHTML = '';
@@ -1251,15 +1259,17 @@
         const dmId = [auth.currentUser.uid, currentDM].sort().join('_');
         messagesRef = ref(db, `dms/${dmId}/messages`);
       } else {
-        // Server Nachrichten
+        // Server Nachrichten - KORRIGIERTER PATH
         messagesRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
       }
+
+      console.log("Loading messages from:", messagesRef.toString());
 
       messageListener = onChildAdded(messagesRef, (snapshot) => {
         const msg = snapshot.val();
         
         // Check if message data is valid
-        if (!msg || !msg.sender) {
+        if (!msg) {
           console.warn("Invalid message data:", msg);
           return;
         }
@@ -1283,7 +1293,7 @@
           messageDiv.innerHTML = `
             <div class="message-header">
               <div class="message-avatar">${msg.senderAvatar || '?'}</div>
-              <div class="message-sender">${msg.sender}</div>
+              <div class="message-sender">${msg.sender || 'Unbekannt'}</div>
               <div class="message-timestamp">${time}</div>
             </div>
             <div class="message-content">${msg.text}</div>
@@ -1292,6 +1302,8 @@
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }, (error) => {
+        console.error("Error loading messages:", error);
       });
     }
 
@@ -1329,6 +1341,7 @@
         membersSidebar.style.display = 'none';
         document.getElementById('chatHeader').textContent = 'Wähle einen Freund für DM';
         document.getElementById('messageInput').placeholder = 'Wähle einen Freund zum Schreiben...';
+        document.getElementById('messageInput').disabled = true;
       } else {
         const serverName = serverId === 'global' ? 'Global Server' : servers[serverId]?.name || 'Unbekannt';
         document.getElementById('serverName').innerHTML = `
@@ -1343,6 +1356,7 @@
         createChannelBtn.style.display = 'block';
         serverActions.style.display = 'flex';
         membersSidebar.style.display = 'block';
+        document.getElementById('messageInput').disabled = false;
         selectChannel('willkommen');
       }
       
@@ -1385,6 +1399,7 @@
       if (friend) {
         document.getElementById('chatHeader').textContent = `💬 ${friend.username}`;
         document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht an ${friend.username}...`;
+        document.getElementById('messageInput').disabled = false;
         loadMessages();
       }
     }
@@ -1822,6 +1837,41 @@
         alert(`🎉 Du wurdest zu Server ${inviteServer} eingeladen!\n\nEinladungscode: ${inviteCode}\n\n(Server Beitritt Funktion kommt bald!)`);
       }
     });
+
+    // Initialize default channels for global server
+    function initializeGlobalServer() {
+      const globalServerRef = ref(db, 'servers/global');
+      get(globalServerRef).then((snapshot) => {
+        if (!snapshot.exists()) {
+          set(globalServerRef, {
+            name: 'Global Server',
+            owner: 'system',
+            createdAt: new Date().toISOString(),
+            channels: {
+              willkommen: {
+                name: "🎉 Willkommen",
+                createdBy: 'system'
+              },
+              general: {
+                name: "💬 Allgemein", 
+                createdBy: 'system'
+              },
+              games: {
+                name: "🎮 Gaming",
+                createdBy: 'system'
+              },
+              music: {
+                name: "🎵 Musik",
+                createdBy: 'system'
+              }
+            }
+          });
+        }
+      });
+    }
+
+    // Initialize on load
+    initializeGlobalServer();
   </script>
 </body>
 </html>
