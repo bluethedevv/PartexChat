@@ -237,6 +237,10 @@
       background: #3498db;
     }
 
+    .server-icon.boosted {
+      background: linear-gradient(45deg, #ff6b6b, #ffa726);
+    }
+
     .add-server {
       background: #333;
       color: #2ecc71;
@@ -315,6 +319,10 @@
       color: white;
     }
 
+    .channel-item.welcome {
+      color: #ffa726;
+    }
+
     .create-channel-btn {
       width: 100%;
       padding: 10px;
@@ -373,6 +381,57 @@
       font-weight: bold;
     }
 
+    /* Members Sidebar */
+    .members-sidebar {
+      width: 200px;
+      background: #151515;
+      border-left: 1px solid #333;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .members-header {
+      color: #2ecc71;
+      font-size: 16px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+    }
+
+    .member-item {
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .member-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #2ecc71;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .member-name {
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .online-indicator {
+      width: 8px;
+      height: 8px;
+      background: #2ecc71;
+      border-radius: 50%;
+      margin-left: auto;
+    }
+
     /* Chat Area */
     .chat-area {
       flex: 1;
@@ -397,6 +456,20 @@
       padding: 20px;
       overflow-y: auto;
       background: #151515;
+    }
+
+    .welcome-message {
+      background: linear-gradient(45deg, #2ecc71, #3498db);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px 0;
+      text-align: center;
+      border: 2px solid #2ecc71;
+    }
+
+    .welcome-message h3 {
+      margin-bottom: 10px;
+      color: white;
     }
 
     .message {
@@ -511,7 +584,7 @@
       padding: 30px;
       border-radius: 15px;
       width: 90%;
-      max-width: 400px;
+      max-width: 500px;
       border: 1px solid #333;
     }
 
@@ -554,6 +627,42 @@
     .modal-btn.secondary {
       background: #333;
       color: white;
+    }
+
+    /* Server Settings */
+    .settings-section {
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .settings-section h4 {
+      color: #2ecc71;
+      margin-bottom: 10px;
+    }
+
+    .boost-section {
+      background: linear-gradient(45deg, #ff6b6b, #ffa726);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .boost-btn {
+      background: white;
+      color: #ff6b6b;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .boost-btn:hover {
+      background: #f0f0f0;
     }
 
     /* Invite Modal */
@@ -719,9 +828,10 @@
         <div class="channels-container">
           <!-- Channels for servers -->
           <ul class="channels-list" id="channelsList">
-            <li class="channel-item active" onclick="selectChannel('general')"># 💬 Allgemein</li>
-            <li class="channel-item" onclick="selectChannel('games')"># 🎮 Gaming</li>
-            <li class="channel-item" onclick="selectChannel('music')"># 🎵 Musik</li>
+            <li class="channel-item welcome" onclick="selectChannel('willkommen')">🎉 Willkommen</li>
+            <li class="channel-item active" onclick="selectChannel('general')">💬 Allgemein</li>
+            <li class="channel-item" onclick="selectChannel('games')">🎮 Gaming</li>
+            <li class="channel-item" onclick="selectChannel('music')">🎵 Musik</li>
           </ul>
 
           <!-- Friends list for DMs -->
@@ -742,16 +852,24 @@
       <!-- Chat Area -->
       <div class="chat-area">
         <div class="chat-header" id="chatHeader">
-          # 💬 Allgemein
+          # 🎉 Willkommen
         </div>
         <div class="messages-container" id="messagesContainer">
           <!-- Messages will appear here -->
         </div>
         <div class="message-input-container">
           <div class="message-input-wrapper">
-            <input type="text" id="messageInput" placeholder="Schreibe eine Nachricht in #allgemein..." onkeypress="handleKeyPress(event)">
+            <input type="text" id="messageInput" placeholder="Schreibe eine Nachricht in #willkommen..." onkeypress="handleKeyPress(event)">
             <button class="send-button" onclick="sendMessage()">Senden</button>
           </div>
+        </div>
+      </div>
+
+      <!-- Members Sidebar -->
+      <div class="members-sidebar" id="membersSidebar">
+        <div class="members-header">MITGLIEDER - <span id="membersCount">0</span></div>
+        <div id="membersList">
+          <!-- Members will be added here -->
         </div>
       </div>
     </div>
@@ -803,6 +921,35 @@
     </div>
   </div>
 
+  <div class="modal" id="serverSettingsModal">
+    <div class="modal-content">
+      <h3>⚙️ Server Einstellungen</h3>
+      <div class="settings-section">
+        <h4>Allgemein</h4>
+        <p><strong>Server Name:</strong> <span id="settingsServerName">Loading...</span></p>
+        <p><strong>Besitzer:</strong> <span id="settingsServerOwner">Loading...</span></p>
+        <p><strong>Mitglieder:</strong> <span id="settingsMemberCount">0</span></p>
+      </div>
+
+      <div class="boost-section">
+        <h4>🚀 Server Boost</h4>
+        <p>Booste diesen Server für exklusive Features!</p>
+        <p><strong>Aktuelle Boosts:</strong> <span id="currentBoosts">0</span></p>
+        <button class="boost-btn" onclick="boostServer()" id="boostBtn">🔮 Server Boosten (2€/Monat)</button>
+        <p style="font-size: 12px; margin-top: 10px;">Benötigt PartexPlus</p>
+      </div>
+
+      <div class="settings-section">
+        <h4>Channel Verwalten</h4>
+        <button class="modal-btn secondary" onclick="showCreateChannelModal(); hideServerSettingsModal();" style="width: 100%; margin: 5px 0;">+ Channel erstellen</button>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="modal-btn secondary" onclick="hideServerSettingsModal()">Schließen</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" id="profileModal">
     <div class="modal-content profile-modal">
       <h3>👤 Dein Profil</h3>
@@ -837,7 +984,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded, set, onValue, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, set, onValue, get, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -858,12 +1005,13 @@
 
     // Global Variables
     let currentServer = 'global';
-    let currentChannel = 'general';
+    let currentChannel = 'willkommen';
     let currentDM = null;
     let servers = {};
     let friends = {};
     let messageListener = null;
     let currentUserData = null;
+    let onlineUsers = {};
 
     console.log("Firebase initialized");
 
@@ -906,12 +1054,25 @@
           email: email,
           avatar: username.charAt(0).toUpperCase(),
           createdAt: new Date().toISOString(),
-          hasPartexPlus: email === 'memberfarm3@gmail.com' // PartexPlus für deine Email
+          hasPartexPlus: email === 'memberfarm3@gmail.com', // PartexPlus für deine Email
+          isOnline: true,
+          lastSeen: new Date().toISOString()
         });
 
         // Username auch in usernames index speichern
         const usernameRef = ref(db, 'usernames/' + username.toLowerCase());
         await set(usernameRef, userCredential.user.uid);
+
+        // Welcome message in global server
+        const welcomeMessageRef = ref(db, 'servers/global/channels/willkommen/messages');
+        await push(welcomeMessageRef, {
+          text: `🎉 Willkommen ${username} im PartexChat! Viel Spaß beim Chatten!`,
+          sender: 'System',
+          senderId: 'system',
+          senderAvatar: '🤖',
+          timestamp: new Date().toISOString(),
+          isSystem: true
+        });
         
         alert("Geil! Account erstellt! 🎉");
       } catch (error) {
@@ -941,6 +1102,15 @@
 
     // Logout
     window.logout = function() {
+      // Set user offline
+      if (auth.currentUser) {
+        const userRef = ref(db, 'users/' + auth.currentUser.uid);
+        update(userRef, {
+          isOnline: false,
+          lastSeen: new Date().toISOString()
+        });
+      }
+
       signOut(auth).then(() => {
         alert("Bis bald! 👋");
       }).catch((error) => {
@@ -952,11 +1122,19 @@
     onAuthStateChanged(auth, (user) => {
       console.log("Auth state changed:", user);
       if (user) {
+        // Set user online
+        const userRef = ref(db, 'users/' + user.uid);
+        update(userRef, {
+          isOnline: true,
+          lastSeen: new Date().toISOString()
+        });
+
         document.getElementById('authSection').style.display = 'none';
         document.getElementById('mainApp').style.display = 'flex';
         loadUserProfile(user.uid);
         loadServers();
         loadFriends();
+        loadOnlineUsers();
       } else {
         document.getElementById('authSection').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
@@ -1087,21 +1265,30 @@
         }
 
         const messageDiv = document.createElement("div");
-        messageDiv.className = currentServer === 'dms' ? "message dm" : "message";
         
-        const time = new Date(msg.timestamp).toLocaleTimeString('de-DE', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        });
-        
-        messageDiv.innerHTML = `
-          <div class="message-header">
-            <div class="message-avatar">${msg.senderAvatar || '?'}</div>
-            <div class="message-sender">${msg.sender}</div>
-            <div class="message-timestamp">${time}</div>
-          </div>
-          <div class="message-content">${msg.text}</div>
-        `;
+        if (msg.isSystem) {
+          messageDiv.className = "welcome-message";
+          messageDiv.innerHTML = `
+            <h3>${msg.text}</h3>
+            <p>Willkommen in unserer Community! 🎉</p>
+          `;
+        } else {
+          messageDiv.className = currentServer === 'dms' ? "message dm" : "message";
+          
+          const time = new Date(msg.timestamp).toLocaleTimeString('de-DE', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          });
+          
+          messageDiv.innerHTML = `
+            <div class="message-header">
+              <div class="message-avatar">${msg.senderAvatar || '?'}</div>
+              <div class="message-sender">${msg.sender}</div>
+              <div class="message-timestamp">${time}</div>
+            </div>
+            <div class="message-content">${msg.text}</div>
+          `;
+        }
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1131,6 +1318,7 @@
       const friendsSection = document.getElementById('friendsSection');
       const createChannelBtn = document.getElementById('createChannelBtn');
       const serverActions = document.getElementById('serverActions');
+      const membersSidebar = document.getElementById('membersSidebar');
       
       if (serverId === 'dms') {
         document.getElementById('serverName').innerHTML = '<span>Direct Messages</span>';
@@ -1138,6 +1326,7 @@
         friendsSection.style.display = 'block';
         createChannelBtn.style.display = 'none';
         serverActions.style.display = 'none';
+        membersSidebar.style.display = 'none';
         document.getElementById('chatHeader').textContent = 'Wähle einen Freund für DM';
         document.getElementById('messageInput').placeholder = 'Wähle einen Freund zum Schreiben...';
       } else {
@@ -1153,10 +1342,12 @@
         friendsSection.style.display = 'none';
         createChannelBtn.style.display = 'block';
         serverActions.style.display = 'flex';
-        selectChannel('general');
+        membersSidebar.style.display = 'block';
+        selectChannel('willkommen');
       }
       
       loadMessages();
+      loadServerMembers();
     }
 
     window.selectChannel = function(channelId) {
@@ -1177,6 +1368,16 @@
       loadMessages();
     }
 
+    function getChannelName(channelId) {
+      const channelNames = {
+        'willkommen': '🎉 Willkommen',
+        'general': '💬 Allgemein',
+        'games': '🎮 Gaming',
+        'music': '🎵 Musik'
+      };
+      return channelNames[channelId] || channelId;
+    }
+
     // Start DM with friend
     function startDM(friendId) {
       currentDM = friendId;
@@ -1186,15 +1387,6 @@
         document.getElementById('messageInput').placeholder = `Schreibe eine Nachricht an ${friend.username}...`;
         loadMessages();
       }
-    }
-
-    function getChannelName(channelId) {
-      const channelNames = {
-        'general': '💬 Allgemein',
-        'games': '🎮 Gaming',
-        'music': '🎵 Musik'
-      };
-      return channelNames[channelId] || channelId;
     }
 
     // Modal Functions
@@ -1234,6 +1426,15 @@
       document.getElementById('inviteModal').style.display = 'none';
     }
 
+    window.showServerSettings = function() {
+      document.getElementById('serverSettingsModal').style.display = 'flex';
+      loadServerSettings();
+    }
+
+    window.hideServerSettingsModal = function() {
+      document.getElementById('serverSettingsModal').style.display = 'none';
+    }
+
     window.showProfileModal = function() {
       document.getElementById('profileModal').style.display = 'flex';
     }
@@ -1267,9 +1468,112 @@
       });
     }
 
-    // Server Settings
-    window.showServerSettings = function() {
-      alert(`Server Einstellungen für ${servers[currentServer]?.name || currentServer}\n\nHier kannst du später:\n• Server umbenennen\n• Mitglieder verwalten\n• Rollen erstellen\n• Channel verwalten`);
+    // Load Server Settings
+    function loadServerSettings() {
+      const server = servers[currentServer];
+      if (server) {
+        document.getElementById('settingsServerName').textContent = server.name;
+        document.getElementById('settingsMemberCount').textContent = Object.keys(onlineUsers).length;
+        
+        // Get owner username
+        const ownerRef = ref(db, 'users/' + server.owner);
+        get(ownerRef).then((snapshot) => {
+          const ownerData = snapshot.val();
+          if (ownerData) {
+            document.getElementById('settingsServerOwner').textContent = ownerData.username;
+          }
+        });
+
+        // Load boost info
+        const boosts = server.boosts || 0;
+        document.getElementById('currentBoosts').textContent = boosts;
+        
+        // Update boost button
+        const boostBtn = document.getElementById('boostBtn');
+        if (currentUserData && currentUserData.hasPartexPlus) {
+          boostBtn.disabled = false;
+          boostBtn.textContent = `🔮 Server Boosten (${boosts + 1}€/Monat)`;
+        } else {
+          boostBtn.disabled = true;
+          boostBtn.textContent = "🔮 PartexPlus benötigt";
+        }
+      }
+    }
+
+    // Boost Server
+    window.boostServer = function() {
+      if (!currentUserData || !currentUserData.hasPartexPlus) {
+        alert("Du benötigst PartexPlus um Server zu boosten! 🔮");
+        return;
+      }
+
+      const serverRef = ref(db, `servers/${currentServer}`);
+      get(serverRef).then((snapshot) => {
+        const server = snapshot.val();
+        const currentBoosts = server.boosts || 0;
+        
+        update(serverRef, {
+          boosts: currentBoosts + 1,
+          boostedBy: auth.currentUser.uid,
+          lastBoosted: new Date().toISOString()
+        });
+
+        // Update server icon
+        const serverIcons = document.querySelectorAll('.server-icon');
+        serverIcons.forEach(icon => {
+          if (icon.onclick && icon.onclick.toString().includes(currentServer)) {
+            icon.classList.add('boosted');
+          }
+        });
+
+        alert(`🎉 Server geboostet! Du hast ${currentBoosts + 1} Boost(s) aktiviert!`);
+        hideServerSettingsModal();
+      });
+    }
+
+    // Load Online Users
+    function loadOnlineUsers() {
+      const usersRef = ref(db, 'users');
+      onValue(usersRef, (snapshot) => {
+        const users = snapshot.val();
+        onlineUsers = {};
+        
+        if (users) {
+          Object.keys(users).forEach(userId => {
+            if (users[userId].isOnline) {
+              onlineUsers[userId] = users[userId];
+            }
+          });
+        }
+        
+        loadServerMembers();
+      });
+    }
+
+    // Load Server Members
+    function loadServerMembers() {
+      const membersList = document.getElementById('membersList');
+      const membersCount = document.getElementById('membersCount');
+      membersList.innerHTML = '';
+
+      let memberCount = 0;
+      
+      Object.keys(onlineUsers).forEach(userId => {
+        const user = onlineUsers[userId];
+        if (user) {
+          memberCount++;
+          const memberItem = document.createElement('div');
+          memberItem.className = 'member-item';
+          memberItem.innerHTML = `
+            <div class="member-avatar">${user.avatar}</div>
+            <div class="member-name">${user.username}</div>
+            <div class="online-indicator"></div>
+          `;
+          membersList.appendChild(memberItem);
+        }
+      });
+
+      membersCount.textContent = memberCount;
     }
 
     // Create Server
@@ -1293,11 +1597,26 @@
           owner: user.uid,
           createdAt: new Date().toISOString(),
           channels: {
+            willkommen: {
+              name: "🎉 Willkommen",
+              createdBy: user.uid
+            },
             general: {
               name: "💬 Allgemein",
               createdBy: user.uid
             }
           }
+        });
+
+        // Welcome message
+        const welcomeMessageRef = ref(db, `servers/${serverId}/channels/willkommen/messages`);
+        await push(welcomeMessageRef, {
+          text: `🎉 Willkommen im ${serverName} Server!`,
+          sender: 'System',
+          senderId: 'system',
+          senderAvatar: '🤖',
+          timestamp: new Date().toISOString(),
+          isSystem: true
         });
 
         addServerToUI(serverId, serverName);
@@ -1428,6 +1747,9 @@
       const serversSidebar = document.getElementById('serversSidebar');
       const serverIcon = document.createElement('div');
       serverIcon.className = 'server-icon';
+      if (servers[serverId]?.boosts > 0) {
+        serverIcon.classList.add('boosted');
+      }
       serverIcon.textContent = serverName.charAt(0).toUpperCase();
       serverIcon.onclick = () => selectServer(serverId);
       
