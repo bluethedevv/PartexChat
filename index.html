@@ -5,88 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PartexChat</title>
   <style>
+    /* Reset & Base */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
-      color: white;
+      background: #0a0a0a;
+      color: #e0e0e0;
       height: 100vh;
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Login/Register Screen */
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2ecc71;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #27ae60;
+    }
+
+    /* Auth Section */
     #authSection {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(135deg, #0e0e0e, #2d2d2d);
+      background: linear-gradient(135deg, #0a0a0a, #1e1e1e);
     }
 
     .auth-container {
-      background: #1a1a1a;
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      width: 100%;
-      max-width: 400px;
-      border: 1px solid #333;
+      background: #141414;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(46, 204, 113, 0.1);
+      width: 90%;
+      max-width: 380px;
+      border: 1px solid #2e2e2e;
     }
 
     .auth-container h2 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 1.8rem;
       color: #2ecc71;
-      font-size: 28px;
+      font-size: 1.8rem;
+      font-weight: 600;
     }
 
     .auth-input {
       width: 100%;
-      padding: 15px;
-      margin: 10px 0;
-      background: #222;
+      padding: 0.9rem;
+      margin: 0.5rem 0;
+      background: #1a1a1a;
       border: 1px solid #333;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.95rem;
+      transition: border 0.2s;
     }
 
     .auth-input:focus {
       border-color: #2ecc71;
       outline: none;
+      box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.1);
     }
 
     .auth-button {
       width: 100%;
-      padding: 15px;
-      background: #2ecc71;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      margin: 20px 0 10px;
-      transition: background 0.3s;
+      margin: 1.5rem 0 0.8rem;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .auth-button:hover {
-      background: #27ae60;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
     }
 
     .auth-toggle {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 1.5rem;
+      color: #999;
     }
 
     .auth-toggle a {
       color: #2ecc71;
       text-decoration: none;
+      font-weight: 500;
       cursor: pointer;
     }
 
@@ -97,10 +123,11 @@
     .error-message {
       color: #e74c3c;
       text-align: center;
-      margin: 10px 0;
-      padding: 10px;
-      background: rgba(231, 76, 60, 0.1);
+      margin: 0.8rem 0;
+      padding: 0.8rem;
+      background: rgba(231, 76, 60, 0.08);
       border-radius: 5px;
+      font-size: 0.9rem;
       display: none;
     }
 
@@ -111,42 +138,54 @@
       flex-direction: column;
     }
 
+    /* Header */
     header {
-      background: #111;
-      padding: 15px 20px;
+      background: #0f0f0f;
+      padding: 0.8rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #2ecc71;
+      border-bottom: 1px solid #2e2e2e;
     }
 
     header h1 {
       color: #2ecc71;
-      font-size: 24px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     .user-menu {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 1rem;
     }
 
     .user-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.8rem;
+      cursor: pointer;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .user-info:hover {
+      background: #1a1a1a;
     }
 
     .user-avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #2ecc71;
+      background: linear-gradient(135deg, #2ecc71, #3498db);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      font-size: 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
     }
 
     .user-details {
@@ -155,114 +194,115 @@
     }
 
     .username {
-      font-weight: bold;
-      color: #2ecc71;
+      font-weight: 600;
+      color: #e0e0e0;
+      font-size: 0.95rem;
     }
 
     .user-email {
-      color: #ccc;
-      font-size: 12px;
-    }
-
-    .partex-plus-badge {
-      background: linear-gradient(45deg, #ff6b6b, #ffa726);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 10px;
-      font-weight: bold;
-      margin-left: 5px;
+      color: #888;
+      font-size: 0.8rem;
     }
 
     .nav-button {
       background: #2ecc71;
       color: white;
       border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background 0.2s;
     }
 
     .nav-button:hover {
       background: #27ae60;
     }
 
+    /* Main Content */
     .main-content {
       display: flex;
       flex: 1;
-      height: calc(100vh - 70px);
+      height: calc(100vh - 56px);
     }
 
     /* Servers Sidebar */
     .servers-sidebar {
-      width: 80px;
-      background: #151515;
-      border-right: 1px solid #333;
-      padding: 15px 10px;
+      width: 72px;
+      background: #0f0f0f;
+      border-right: 1px solid #2e2e2e;
+      padding: 1rem 0.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      overflow-y: auto;
+      gap: 0.8rem;
     }
 
     .server-icon {
-      width: 50px;
-      height: 50px;
-      background: #2ecc71;
+      width: 48px;
+      height: 48px;
+      background: #1a1a1a;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
-      transition: all 0.3s;
-      border: 2px solid transparent;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+      color: #888;
       position: relative;
     }
 
     .server-icon:hover {
-      transform: scale(1.1);
-      border-color: #2ecc71;
+      background: #2e2e2e;
+      color: #fff;
+      transform: scale(1.05);
     }
 
     .server-icon.active {
-      border-color: #2ecc71;
-      transform: scale(1.1);
+      background: #2ecc71;
+      color: white;
+      transform: scale(1.05);
     }
 
     .server-icon.dm {
+      background: #1a1a1a;
+      color: #3498db;
+    }
+
+    .server-icon.dm.active {
       background: #3498db;
+      color: white;
+    }
+
+    .server-icon.add-server {
+      background: #1a1a1a;
+      color: #2ecc71;
+      font-size: 1.5rem;
     }
 
     .server-icon.boosted {
-      background: linear-gradient(45deg, #ff6b6b, #ffa726);
-    }
-
-    .add-server {
-      background: #333;
-      color: #2ecc71;
-      font-size: 24px;
+      background: linear-gradient(135deg, #ff6b6b, #ffa726);
+      color: white;
     }
 
     /* Channels Sidebar */
     .channels-sidebar {
-      width: 250px;
-      background: #1a1a1a;
-      border-right: 1px solid #333;
-      padding: 20px;
+      width: 240px;
+      background: #141414;
+      border-right: 1px solid #2e2e2e;
       display: flex;
       flex-direction: column;
     }
 
     .server-header {
-      color: #2ecc71;
-      font-size: 18px;
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #333;
+      padding: 1.2rem 1rem;
+      color: #e0e0e0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-bottom: 1px solid #2e2e2e;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -270,49 +310,50 @@
 
     .server-actions {
       display: flex;
-      gap: 5px;
+      gap: 0.4rem;
     }
 
     .server-action-btn {
-      background: #333;
-      color: #2ecc71;
+      background: transparent;
+      color: #888;
       border: none;
       border-radius: 4px;
-      padding: 4px 8px;
+      padding: 0.4rem;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 1rem;
+      transition: all 0.2s;
     }
 
     .server-action-btn:hover {
-      background: #444;
+      background: #2e2e2e;
+      color: #2ecc71;
     }
 
     .channels-container {
       flex: 1;
+      padding: 1rem;
       overflow-y: auto;
     }
 
     .channels-list {
       list-style: none;
-      margin-bottom: 20px;
     }
 
     .channel-item {
-      padding: 10px 15px;
-      margin: 5px 0;
+      padding: 0.7rem 0.8rem;
+      margin: 0.2rem 0;
       border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s;
-      color: #ccc;
+      transition: all 0.2s;
+      color: #aaa;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      gap: 0.5rem;
     }
 
     .channel-item:hover {
-      background: #222;
-      color: white;
+      background: #2e2e2e;
+      color: #fff;
     }
 
     .channel-item.active {
@@ -320,140 +361,125 @@
       color: white;
     }
 
-    .channel-item.welcome {
-      color: #ffa726;
-    }
-
-    .channel-actions {
-      display: none;
-    }
-
-    .channel-item:hover .channel-actions {
-      display: flex;
-      gap: 5px;
-    }
-
-    .channel-action-btn {
-      background: none;
-      border: none;
-      color: #ccc;
-      cursor: pointer;
-      padding: 2px 5px;
-      border-radius: 3px;
-    }
-
-    .channel-action-btn:hover {
-      background: #333;
-      color: white;
-    }
-
     .create-channel-btn {
-      width: 100%;
-      padding: 10px;
-      background: #333;
+      width: calc(100% - 2rem);
+      margin: 0.5rem 1rem 1rem;
+      padding: 0.8rem;
+      background: #1a1a1a;
       color: #2ecc71;
-      border: none;
-      border-radius: 5px;
+      border: 1px solid #333;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
     }
 
     .create-channel-btn:hover {
-      background: #444;
+      background: #2e2e2e;
+      border-color: #2ecc71;
     }
 
     /* Friends Section */
     .friends-section {
-      margin-top: 20px;
+      margin-top: 1.5rem;
     }
 
     .friends-header {
       color: #3498db;
-      font-size: 16px;
-      margin-bottom: 15px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .friend-item {
-      padding: 10px 15px;
-      margin: 5px 0;
+      padding: 0.7rem 0.8rem;
+      margin: 0.3rem 0;
       border-radius: 5px;
       cursor: pointer;
-      transition: background 0.3s;
-      color: #ccc;
+      transition: all 0.2s;
+      color: #aaa;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.8rem;
     }
 
     .friend-item:hover {
-      background: #222;
-      color: white;
+      background: #2e2e2e;
+      color: #fff;
     }
 
     .friend-avatar {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: #3498db;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
     }
 
     /* Members Sidebar */
     .members-sidebar {
-      width: 200px;
-      background: #151515;
-      border-left: 1px solid #333;
-      padding: 20px;
-      overflow-y: auto;
+      width: 220px;
+      background: #0f0f0f;
+      border-left: 1px solid #2e2e2e;
+      display: flex;
+      flex-direction: column;
     }
 
     .members-header {
-      color: #2ecc71;
-      font-size: 16px;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #333;
+      padding: 1.2rem 1rem;
+      color: #e0e0e0;
+      font-size: 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid #2e2e2e;
+    }
+
+    .members-list {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
     }
 
     .member-item {
-      padding: 8px 12px;
-      margin: 5px 0;
+      padding: 0.6rem 0.8rem;
+      margin: 0.3rem 0;
       border-radius: 5px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.8rem;
       cursor: pointer;
-      transition: background 0.3s;
-      position: relative;
+      transition: background 0.2s;
     }
 
     .member-item:hover {
-      background: #222;
+      background: #2e2e2e;
     }
 
     .member-avatar {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: #2ecc71;
+      background: linear-gradient(135deg, #2ecc71, #3498db);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
     }
 
     .member-name {
-      color: #ccc;
-      font-size: 14px;
       flex: 1;
+      color: #ccc;
+      font-size: 0.9rem;
     }
 
     .online-indicator {
@@ -461,48 +487,7 @@
       height: 8px;
       background: #2ecc71;
       border-radius: 50%;
-    }
-
-    .role-badge {
-      background: #3498db;
-      color: white;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-size: 10px;
-      margin-left: 5px;
-    }
-
-    .member-actions {
-      display: none;
-      gap: 5px;
-    }
-
-    .member-item:hover .member-actions {
-      display: flex;
-    }
-
-    .member-action-btn {
-      background: #333;
-      border: none;
-      color: #ccc;
-      padding: 4px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 10px;
-    }
-
-    .member-action-btn:hover {
-      background: #444;
-    }
-
-    .member-action-btn.kick:hover {
-      background: #e74c3c;
-      color: white;
-    }
-
-    .member-action-btn.timeout:hover {
-      background: #f39c12;
-      color: white;
+      margin-left: auto;
     }
 
     /* Chat Area */
@@ -510,45 +495,43 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #1a1a1a;
+      background: #0a0a0a;
     }
 
     .chat-header {
-      background: #151515;
-      padding: 15px 20px;
-      border-bottom: 1px solid #333;
-      color: #2ecc71;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      background: #141414;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #2e2e2e;
+      color: #e0e0e0;
+      font-size: 1.1rem;
+      font-weight: 600;
     }
 
     .messages-container {
       flex: 1;
-      padding: 20px;
+      padding: 1.5rem;
       overflow-y: auto;
-      background: #151515;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
     .welcome-message {
-      background: linear-gradient(45deg, #2ecc71, #3498db);
-      padding: 20px;
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+      padding: 1.5rem;
       border-radius: 10px;
-      margin: 15px 0;
+      border-left: 4px solid #2ecc71;
       text-align: center;
-      border: 2px solid #2ecc71;
     }
 
     .welcome-message h3 {
-      margin-bottom: 10px;
-      color: white;
+      margin-bottom: 0.5rem;
+      color: #2ecc71;
     }
 
     .message {
-      margin: 15px 0;
-      padding: 10px;
-      background: #222;
+      background: #141414;
+      padding: 1rem;
       border-radius: 8px;
       border-left: 3px solid #2ecc71;
     }
@@ -560,30 +543,27 @@
     .message-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 5px;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
     }
 
     .message-avatar {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #2ecc71;
+      background: linear-gradient(135deg, #2ecc71, #3498db);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      font-size: 14px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: white;
       cursor: pointer;
-    }
-
-    .message.dm .message-avatar {
-      background: #3498db;
     }
 
     .message-sender {
       color: #2ecc71;
-      font-weight: bold;
+      font-weight: 600;
       cursor: pointer;
     }
 
@@ -592,21 +572,25 @@
     }
 
     .message-timestamp {
-      color: #888;
-      font-size: 12px;
+      color: #666;
+      font-size: 0.8rem;
+      margin-left: auto;
     }
 
     .message-content {
-      margin-left: 42px;
+      margin-left: 2.8rem;
+      color: #ccc;
+      line-height: 1.4;
     }
 
     .message-image {
-      max-width: 400px;
+      max-width: 100%;
       max-height: 300px;
       border-radius: 8px;
-      margin-top: 8px;
+      margin-top: 0.8rem;
       cursor: pointer;
-      border: 2px solid #333;
+      border: 1px solid #2e2e2e;
+      transition: border-color 0.2s;
     }
 
     .message-image:hover {
@@ -614,43 +598,49 @@
     }
 
     .message-input-container {
-      padding: 20px;
-      background: #151515;
-      border-top: 1px solid #333;
+      padding: 1rem 1.5rem;
+      background: #141414;
+      border-top: 1px solid #2e2e2e;
     }
 
     .message-input-wrapper {
       display: flex;
-      gap: 10px;
+      gap: 0.8rem;
       align-items: flex-end;
     }
 
     #messageInput {
       flex: 1;
-      padding: 12px;
-      background: #222;
+      padding: 0.9rem;
+      background: #1a1a1a;
       border: 1px solid #333;
       border-radius: 8px;
-      color: white;
-      font-size: 14px;
+      color: #fff;
+      font-size: 0.95rem;
       resize: none;
       min-height: 44px;
       max-height: 120px;
+      line-height: 1.4;
     }
 
     #messageInput:focus {
       border-color: #2ecc71;
       outline: none;
+      box-shadow: 0 0 0 2px rgba(46, 204, 113, 0.1);
+    }
+
+    .file-upload-btn, .send-button {
+      padding: 0.9rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
     .file-upload-btn {
       background: #3498db;
       color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
     }
 
     .file-upload-btn:hover {
@@ -658,28 +648,16 @@
     }
 
     .send-button {
-      padding: 12px 20px;
       background: #2ecc71;
       color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+      padding: 0.9rem 1.5rem;
     }
 
     .send-button:hover {
       background: #27ae60;
     }
 
-    .image-preview {
-      max-width: 200px;
-      max-height: 150px;
-      border-radius: 8px;
-      margin-top: 10px;
-      display: none;
-    }
-
-    /* Modal */
+    /* Modals */
     .modal {
       display: none;
       position: fixed;
@@ -687,63 +665,55 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 1000;
       justify-content: center;
       align-items: center;
+      backdrop-filter: blur(4px);
     }
 
     .modal-content {
-      background: #1a1a1a;
-      padding: 30px;
-      border-radius: 15px;
+      background: #141414;
+      padding: 2rem;
+      border-radius: 12px;
       width: 90%;
-      max-width: 500px;
-      border: 1px solid #333;
+      max-width: 480px;
+      border: 1px solid #2e2e2e;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
     .modal h3 {
       color: #2ecc71;
-      margin-bottom: 20px;
+      margin-bottom: 1.5rem;
       text-align: center;
+      font-size: 1.3rem;
     }
 
     .modal-input {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      background: #222;
+      padding: 0.9rem;
+      margin: 0.8rem 0;
+      background: #1a1a1a;
       border: 1px solid #333;
-      border-radius: 8px;
+      border-radius: 6px;
       color: white;
-    }
-
-    .modal-textarea {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      background: #222;
-      border: 1px solid #333;
-      border-radius: 8px;
-      color: white;
-      resize: vertical;
-      min-height: 80px;
-      font-family: Arial;
+      font-size: 0.95rem;
     }
 
     .modal-buttons {
       display: flex;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 0.8rem;
+      margin-top: 1.5rem;
     }
 
     .modal-btn {
       flex: 1;
-      padding: 12px;
+      padding: 0.9rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
     .modal-btn.primary {
@@ -751,283 +721,66 @@
       color: white;
     }
 
+    .modal-btn.primary:hover {
+      background: #27ae60;
+    }
+
     .modal-btn.secondary {
-      background: #333;
-      color: white;
-    }
-
-    .modal-btn.danger {
-      background: #e74c3c;
-      color: white;
-    }
-
-    /* Server Settings */
-    .settings-section {
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 10px 0;
-    }
-
-    .settings-section h4 {
-      color: #2ecc71;
-      margin-bottom: 10px;
-    }
-
-    .roles-list {
-      margin: 10px 0;
-    }
-
-    .role-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px;
-      margin: 5px 0;
-      background: #333;
-      border-radius: 5px;
-    }
-
-    .role-color {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
-
-    .permissions-list {
-      margin: 10px 0;
-      font-size: 12px;
-    }
-
-    .permission-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 5px 0;
-    }
-
-    .boost-section {
-      background: linear-gradient(45deg, #ff6b6b, #ffa726);
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-      text-align: center;
-    }
-
-    .boost-btn {
-      background: white;
-      color: #ff6b6b;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .boost-btn:hover {
-      background: #f0f0f0;
-    }
-
-    /* Invite Modal */
-    .invite-link {
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-      word-break: break-all;
-      font-family: monospace;
-      border: 1px solid #333;
-    }
-
-    .copy-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    .copy-btn:hover {
-      background: #2980b9;
-    }
-
-    /* Profile Modal */
-    .profile-modal {
-      max-width: 500px;
-    }
-
-    .profile-header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .profile-avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: #2ecc71;
-      margin: 0 auto 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .profile-bio {
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 10px 0;
-      font-style: italic;
+      background: #2e2e2e;
       color: #ccc;
     }
 
-    .profile-details {
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .profile-detail {
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .profile-detail label {
-      color: #ccc;
-    }
-
-    .profile-detail span {
-      color: #2ecc71;
-      font-weight: bold;
-    }
-
-    /* PartexPlus Features */
-    .partex-features {
-      background: linear-gradient(45deg, #ff6b6b, #ffa726);
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .partex-features h4 {
-      text-align: center;
-      margin-bottom: 10px;
-      color: white;
-    }
-
-    .feature-list {
-      list-style: none;
-    }
-
-    .feature-list li {
-      margin: 5px 0;
-      color: white;
-      font-size: 14px;
-    }
-
-    /* Context Menu */
-    .context-menu {
-      position: fixed;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 8px 0;
-      z-index: 1001;
-      min-width: 150px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .context-menu-item {
-      padding: 8px 16px;
-      cursor: pointer;
-      transition: background 0.2s;
-      color: #ccc;
-    }
-
-    .context-menu-item:hover {
-      background: #2ecc71;
-      color: white;
-    }
-
-    .context-menu-item.danger:hover {
-      background: #e74c3c;
-    }
-
-    /* Image Modal */
-    .image-modal {
-      max-width: 90vw;
-      max-height: 90vh;
-    }
-
-    .image-modal-content {
-      background: transparent;
-      border: none;
-      padding: 0;
-    }
-
-    .enlarged-image {
-      max-width: 100%;
-      max-height: 80vh;
-      border-radius: 8px;
-    }
-
-    /* Timeout Modal */
-    .timeout-options {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 15px 0;
-    }
-
-    .timeout-option {
-      padding: 10px;
+    .modal-btn.secondary:hover {
       background: #333;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
     }
 
-    .timeout-option:hover {
-      background: #444;
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .channels-sidebar {
+        width: 200px;
+      }
+      
+      .members-sidebar {
+        width: 180px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .members-sidebar {
+        display: none;
+      }
+      
+      .channels-sidebar {
+        width: 200px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Login/Register Screen -->
+  <!-- Auth Section -->
   <div id="authSection">
     <div class="auth-container">
       <div id="loginDiv">
         <h2>Login to PartexChat</h2>
         <div id="loginError" class="error-message"></div>
-        <input type="email" id="loginEmail" class="auth-input" placeholder="Your Email">
-        <input type="password" id="loginPassword" class="auth-input" placeholder="Your Password">
-        <button class="auth-button" onclick="login()">Login Now</button>
+        <input type="email" id="loginEmail" class="auth-input" placeholder="Email" autocomplete="email">
+        <input type="password" id="loginPassword" class="auth-input" placeholder="Password" autocomplete="current-password">
+        <button class="auth-button" onclick="login()">Login</button>
         <div class="auth-toggle">
-          <p>Don't have an account? <a onclick="toggleAuth()">Register here</a></p>
+          <p>New here? <a onclick="toggleAuth()">Create account</a></p>
         </div>
       </div>
 
       <div id="registerDiv" style="display:none;">
-        <h2>Create Account</h2>
+        <h2>Join PartexChat</h2>
         <div id="registerError" class="error-message"></div>
-        <input type="text" id="registerUsername" class="auth-input" placeholder="Username">
-        <input type="email" id="registerEmail" class="auth-input" placeholder="Email">
-        <input type="password" id="registerPassword" class="auth-input" placeholder="Password">
+        <input type="text" id="registerUsername" class="auth-input" placeholder="Username" autocomplete="username">
+        <input type="email" id="registerEmail" class="auth-input" placeholder="Email" autocomplete="email">
+        <input type="password" id="registerPassword" class="auth-input" placeholder="Password" autocomplete="new-password">
         <button class="auth-button" onclick="register()">Create Account</button>
         <div class="auth-toggle">
-          <p>Already have an account? <a onclick="toggleAuth()">Login here</a></p>
+          <p>Already have an account? <a onclick="toggleAuth()">Sign in</a></p>
         </div>
       </div>
     </div>
@@ -1038,14 +791,14 @@
     <header>
       <h1>PartexChat</h1>
       <div class="user-menu">
-        <div class="user-info" onclick="showProfileModal()" style="cursor: pointer;">
+        <div class="user-info" onclick="showProfileModal()">
           <div class="user-avatar" id="userAvatar">U</div>
           <div class="user-details">
             <div class="username" id="userUsername">Username</div>
             <div class="user-email" id="userEmail">user@example.com</div>
           </div>
         </div>
-        <button class="nav-button" onclick="showProfileModal()">Profile</button>
+        <button class="nav-button" onclick="logout()">Logout</button>
       </div>
     </header>
 
@@ -1054,37 +807,37 @@
       <div class="servers-sidebar" id="serversSidebar">
         <div class="server-icon active" onclick="selectServer('global')">🌍</div>
         <div class="server-icon dm" onclick="selectServer('dms')">💬</div>
+        <!-- Dynamic servers -->
         <div class="server-icon add-server" onclick="showCreateServerModal()">+</div>
-        <!-- Servers will be added here dynamically -->
       </div>
 
       <!-- Channels Sidebar -->
-      <div class="channels-sidebar" id="channelsSidebar">
+      <div class="channels-sidebar">
         <div class="server-header" id="serverName">
           <span>Global Server</span>
-          <div class="server-actions" id="serverActions" style="display: none;">
+          <div class="server-actions" id="serverActions">
             <button class="server-action-btn" onclick="showInviteModal()" title="Invite">📨</button>
             <button class="server-action-btn" onclick="showServerSettings()" title="Settings">⚙️</button>
           </div>
         </div>
         
         <div class="channels-container">
-          <!-- Channels for servers -->
+          <!-- Server Channels -->
           <ul class="channels-list" id="channelsList">
-            <li class="channel-item welcome active" onclick="selectChannel('welcome')">🎉 Welcome</li>
+            <li class="channel-item active" onclick="selectChannel('welcome')">🎉 Welcome</li>
             <li class="channel-item" onclick="selectChannel('general')">💬 General</li>
-            <li class="channel-item" onclick="selectChannel('games')">🎮 Gaming</li>
-            <li class="channel-item" onclick="selectChannel('music')">🎵 Music</li>
           </ul>
 
-          <!-- Friends list for DMs -->
+          <!-- Friends for DMs -->
           <div class="friends-section" id="friendsSection" style="display: none;">
             <div class="friends-header">
               <span>DIRECT MESSAGES</span>
-              <button class="create-channel-btn" onclick="showAddFriendModal()" style="padding: 5px 10px; font-size: 12px;">Add Friend</button>
+              <button class="create-channel-btn" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onclick="showAddFriendModal()">+ Add</button>
             </div>
             <div id="friendsList">
-              <!-- Friends will be added here -->
+              <div class="friend-item" style="color: #666;">
+                No friends yet. Add someone!
+              </div>
             </div>
           </div>
         </div>
@@ -1095,42 +848,45 @@
       <!-- Chat Area -->
       <div class="chat-area">
         <div class="chat-header" id="chatHeader">
-          # 🎉 Welcome
+          # Welcome
         </div>
         <div class="messages-container" id="messagesContainer">
-          <!-- Messages will appear here -->
+          <div class="welcome-message">
+            <h3>Welcome to PartexChat! 🎉</h3>
+            <p>Start chatting by sending a message below</p>
+          </div>
         </div>
         <div class="message-input-container">
           <div class="message-input-wrapper">
-            <textarea id="messageInput" placeholder="Write a message in #welcome..." onkeypress="handleKeyPress(event)"></textarea>
+            <textarea id="messageInput" placeholder="Type your message here..." onkeydown="handleKeyPress(event)"></textarea>
             <input type="file" id="imageUpload" accept="image/*" style="display: none;">
-            <button class="file-upload-btn" onclick="document.getElementById('imageUpload').click()" title="Upload image">📷</button>
+            <button class="file-upload-btn" onclick="document.getElementById('imageUpload').click()">📷</button>
             <button class="send-button" onclick="sendMessage()">Send</button>
           </div>
-          <img id="imagePreview" class="image-preview" alt="Preview">
         </div>
       </div>
 
       <!-- Members Sidebar -->
-      <div class="members-sidebar" id="membersSidebar">
-        <div class="members-header">MEMBERS - <span id="membersCount">0</span></div>
-        <div id="membersList">
-          <!-- Members will be added here -->
+      <div class="members-sidebar">
+        <div class="members-header">MEMBERS</div>
+        <div class="members-list" id="membersList">
+          <div class="member-item">
+            <div class="member-avatar">U</div>
+            <div class="member-name">You</div>
+            <div class="online-indicator"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Context Menu -->
-  <div class="context-menu" id="contextMenu" style="display: none;"></div>
-
   <!-- Modals -->
   <div class="modal" id="createServerModal">
     <div class="modal-content">
-      <h3>🚀 Create Server</h3>
-      <input type="text" id="serverNameInput" class="modal-input" placeholder="Server Name">
+      <h3>Create Server</h3>
+      <input type="text" id="serverNameInput" class="modal-input" placeholder="Server name">
       <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideCreateServerModal()">Cancel</button>
+        <button class="modal-btn secondary" onclick="hideModal('createServerModal')">Cancel</button>
         <button class="modal-btn primary" onclick="createServer()">Create</button>
       </div>
     </div>
@@ -1138,10 +894,10 @@
 
   <div class="modal" id="createChannelModal">
     <div class="modal-content">
-      <h3>🔊 Create Channel</h3>
-      <input type="text" id="channelNameInput" class="modal-input" placeholder="Channel Name">
+      <h3>Create Channel</h3>
+      <input type="text" id="channelNameInput" class="modal-input" placeholder="Channel name">
       <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideCreateChannelModal()">Cancel</button>
+        <button class="modal-btn secondary" onclick="hideModal('createChannelModal')">Cancel</button>
         <button class="modal-btn primary" onclick="createChannel()">Create</button>
       </div>
     </div>
@@ -1149,215 +905,33 @@
 
   <div class="modal" id="addFriendModal">
     <div class="modal-content">
-      <h3>👥 Add Friend</h3>
-      <input type="text" id="friendUsernameInput" class="modal-input" placeholder="Friend's Username">
+      <h3>Add Friend</h3>
+      <input type="text" id="friendUsernameInput" class="modal-input" placeholder="Friend's username">
       <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideAddFriendModal()">Cancel</button>
+        <button class="modal-btn secondary" onclick="hideModal('addFriendModal')">Cancel</button>
         <button class="modal-btn primary" onclick="addFriend()">Add</button>
       </div>
     </div>
   </div>
 
-  <div class="modal" id="inviteModal">
-    <div class="modal-content">
-      <h3>📨 Server Invite</h3>
-      <p>Share this link to invite people:</p>
-      <div class="invite-link" id="inviteLink">Loading invite...</div>
-      <button class="copy-btn" onclick="copyInviteLink()">Copy Link</button>
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideInviteModal()">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="serverSettingsModal">
-    <div class="modal-content">
-      <h3>⚙️ Server Settings</h3>
-      
-      <div class="settings-section">
-        <h4>General</h4>
-        <p><strong>Server Name:</strong> <span id="settingsServerName">Loading...</span></p>
-        <p><strong>Owner:</strong> <span id="settingsServerOwner">Loading...</span></p>
-        <p><strong>Members:</strong> <span id="settingsMemberCount">0</span></p>
-      </div>
-
-      <div class="settings-section">
-        <h4>🎨 Manage Roles</h4>
-        <div class="roles-list" id="rolesList">
-          <!-- Roles will be added here -->
-        </div>
-        <button class="modal-btn primary" onclick="showCreateRoleModal()" style="width: 100%; margin-top: 10px;">+ Create Role</button>
-      </div>
-
-      <div class="settings-section">
-        <h4>🔊 Manage Channels</h4>
-        <button class="modal-btn secondary" onclick="showCreateChannelModal(); hideServerSettingsModal();" style="width: 100%; margin: 5px 0;">+ Create Channel</button>
-      </div>
-
-      <div class="boost-section">
-        <h4>🚀 Server Boost</h4>
-        <p>Boost this server for exclusive features!</p>
-        <p><strong>Current Boosts:</strong> <span id="currentBoosts">0</span></p>
-        <button class="boost-btn" onclick="boostServer()" id="boostBtn">🔮 Boost Server (2€/Month)</button>
-        <p style="font-size: 12px; margin-top: 10px;">Requires PartexPlus</p>
-      </div>
-
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideServerSettingsModal()">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="createRoleModal">
-    <div class="modal-content">
-      <h3>🎨 Create Role</h3>
-      <input type="text" id="roleNameInput" class="modal-input" placeholder="Role Name">
-      <input type="color" id="roleColorInput" class="modal-input" value="#3498db">
-      
-      <div class="permissions-list">
-        <h4>Permissions:</h4>
-        <div class="permission-item">
-          <input type="checkbox" id="permKick" checked>
-          <label for="permKick">Kick Members</label>
-        </div>
-        <div class="permission-item">
-          <input type="checkbox" id="permTimeout" checked>
-          <label for="permTimeout">Timeout Members</label>
-        </div>
-        <div class="permission-item">
-          <input type="checkbox" id="permManageChannels" checked>
-          <label for="permManageChannels">Manage Channels</label>
-        </div>
-        <div class="permission-item">
-          <input type="checkbox" id="permManageRoles" checked>
-          <label for="permManageRoles">Manage Roles</label>
-        </div>
-      </div>
-      
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideCreateRoleModal()">Cancel</button>
-        <button class="modal-btn primary" onclick="createRole()">Create</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="kickModal">
-    <div class="modal-content">
-      <h3>🚪 Kick Member</h3>
-      <p>Are you sure you want to kick <strong id="kickUserName">User</strong>?</p>
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideKickModal()">Cancel</button>
-        <button class="modal-btn danger" onclick="confirmKick()">Kick</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="timeoutModal">
-    <div class="modal-content">
-      <h3>⏰ Timeout Member</h3>
-      <p>Timeout <strong id="timeoutUserName">User</strong> for:</p>
-      <div class="timeout-options">
-        <button class="timeout-option" onclick="setTimeoutDuration(5)">5 minutes</button>
-        <button class="timeout-option" onclick="setTimeoutDuration(10)">10 minutes</button>
-        <button class="timeout-option" onclick="setTimeoutDuration(30)">30 minutes</button>
-        <button class="timeout-option" onclick="setTimeoutDuration(60)">1 hour</button>
-        <button class="timeout-option" onclick="setTimeoutDuration(240)">4 hours</button>
-        <button class="timeout-option" onclick="setTimeoutDuration(1440)">1 day</button>
-      </div>
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideTimeoutModal()">Cancel</button>
-        <button class="modal-btn danger" onclick="confirmTimeout()">Timeout</button>
-      </div>
-    </div>
-  </div>
-
   <div class="modal" id="profileModal">
-    <div class="modal-content profile-modal">
-      <h3>👤 Your Profile</h3>
-      <div class="profile-header">
-        <div class="profile-avatar" id="profileAvatar" onclick="editProfile()">U</div>
-        <h4 id="profileUsername">Username</h4>
-        <div id="profilePartexPlus"></div>
-      </div>
-
-      <div class="profile-bio" id="profileBio" onclick="editProfile()">
-        Click here to edit your bio...
-      </div>
-      
-      <div class="profile-details">
-        <div class="profile-detail">
-          <label>Email:</label>
-          <span id="profileEmail">user@example.com</span>
-        </div>
-        <div class="profile-detail">
-          <label>Member since:</label>
-          <span id="profileCreatedAt">-</span>
-        </div>
-        <div class="profile-detail">
-          <label>User ID:</label>
-          <span id="profileUserId">-</span>
-        </div>
-      </div>
-
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideProfileModal()">Close</button>
-        <button class="modal-btn primary" onclick="logout()" style="background: #e74c3c;">🚪 Logout</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="editProfileModal">
     <div class="modal-content">
-      <h3>✏️ Edit Profile</h3>
-      <textarea id="profileBioInput" class="modal-textarea" placeholder="Write something about yourself..."></textarea>
+      <h3>Your Profile</h3>
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div class="user-avatar" style="width: 80px; height: 80px; margin: 0 auto 1rem; font-size: 2rem;" id="profileAvatar">U</div>
+        <h4 id="profileUsername">Username</h4>
+        <p style="color: #888; margin-top: 0.3rem;" id="profileEmail">user@example.com</p>
+      </div>
       <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideEditProfileModal()">Cancel</button>
-        <button class="modal-btn primary" onclick="saveProfile()">Save</button>
+        <button class="modal-btn secondary" onclick="hideModal('profileModal')">Close</button>
       </div>
-    </div>
-  </div>
-
-  <div class="modal" id="userProfileModal">
-    <div class="modal-content profile-modal">
-      <h3>👤 User Profile</h3>
-      <div class="profile-header">
-        <div class="profile-avatar" id="userProfileAvatar">U</div>
-        <h4 id="userProfileUsername">Username</h4>
-      </div>
-
-      <div class="profile-bio" id="userProfileBio">
-        This user hasn't written a bio yet...
-      </div>
-      
-      <div class="profile-details">
-        <div class="profile-detail">
-          <label>Member since:</label>
-          <span id="userProfileCreatedAt">-</span>
-        </div>
-        <div class="profile-detail">
-          <label>Status:</label>
-          <span id="userProfileStatus">Online</span>
-        </div>
-      </div>
-
-      <div class="modal-buttons">
-        <button class="modal-btn secondary" onclick="hideUserProfileModal()">Close</button>
-        <button class="modal-btn primary" onclick="startDMFromProfile()">💬 Send Message</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal" id="imageModal">
-    <div class="modal-content image-modal-content">
-      <img id="enlargedImage" class="enlarged-image" alt="Enlarged image">
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getDatabase, ref, push, onChildAdded, set, onValue, get, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+    import { getDatabase, ref, set, push, onChildAdded, onValue, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -1375,386 +949,213 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
-    const storage = getStorage(app);
 
-    // Global Variables
+    // State
+    let currentUser = null;
     let currentServer = 'global';
     let currentChannel = 'welcome';
-    let currentDM = null;
-    let servers = {};
-    let friends = {};
     let messageListener = null;
-    let currentUserData = null;
-    let onlineUsers = {};
-    let roles = {};
-    let selectedUserId = null;
-    let selectedImageFile = null;
-    let userToKick = null;
-    let userToTimeout = null;
-    let timeoutDuration = 5;
 
-    console.log("Firebase initialized");
-
-    // Image Upload Handler - FIXED
-    document.getElementById('imageUpload').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        // Check file size (5MB limit)
-        if (file.size > 5 * 1024 * 1024) {
-          alert("Image is too large! Maximum 5MB allowed.");
-          return;
-        }
-
-        // Check file type
-        if (!file.type.startsWith('image/')) {
-          alert("Only images are allowed!");
-          return;
-        }
-
-        selectedImageFile = file;
-        
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const preview = document.getElementById('imagePreview');
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Auth Toggle
+    // Auth Functions
     window.toggleAuth = function() {
       const loginDiv = document.getElementById('loginDiv');
       const registerDiv = document.getElementById('registerDiv');
       loginDiv.style.display = loginDiv.style.display === 'none' ? 'block' : 'none';
       registerDiv.style.display = registerDiv.style.display === 'none' ? 'block' : 'none';
+      clearErrors();
+    }
+
+    function clearErrors() {
       document.getElementById('loginError').style.display = 'none';
       document.getElementById('registerError').style.display = 'none';
     }
 
-    // Show Error
     function showError(type, message) {
       const errorDiv = document.getElementById(type + 'Error');
       errorDiv.textContent = message;
       errorDiv.style.display = 'block';
     }
 
-    // Register
     window.register = async function() {
-      const username = document.getElementById('registerUsername').value;
-      const email = document.getElementById('registerEmail').value;
+      const username = document.getElementById('registerUsername').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
       const password = document.getElementById('registerPassword').value;
-      
+
       if (!username || !email || !password) {
-        showError('register', "Don't forget username, email and password! 🚨");
+        showError('register', 'Please fill in all fields');
+        return;
+      }
+
+      if (username.length < 3) {
+        showError('register', 'Username must be at least 3 characters');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('register', 'Password must be at least 6 characters');
         return;
       }
 
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("User registered:", userCredential.user);
-        
-        // Save user in Database with username
-        const userRef = ref(db, 'users/' + userCredential.user.uid);
-        await set(userRef, {
+        const user = userCredential.user;
+
+        // Save user data
+        await set(ref(db, 'users/' + user.uid), {
           username: username,
           email: email,
           avatar: username.charAt(0).toUpperCase(),
-          bio: "Click here to edit your bio...",
           createdAt: new Date().toISOString(),
-          hasPartexPlus: email === 'abdikanialkanat088@gmail.com', // PartexPlus for your email
-          isOnline: true,
-          lastSeen: new Date().toISOString()
+          isOnline: true
         });
 
-        // Save username in usernames index
-        const usernameRef = ref(db, 'usernames/' + username.toLowerCase());
-        await set(usernameRef, userCredential.user.uid);
-
-        // Welcome message in global server
-        const welcomeMessageRef = ref(db, 'servers/global/channels/welcome/messages');
-        await push(welcomeMessageRef, {
-          text: `🎉 Welcome ${username} to PartexChat! Have fun chatting!`,
+        // Add welcome message
+        await push(ref(db, 'servers/global/channels/welcome/messages'), {
+          text: `🎉 Welcome ${username} to PartexChat!`,
           sender: 'System',
           senderId: 'system',
-          senderAvatar: '🤖',
-          timestamp: new Date().toISOString(),
-          isSystem: true
+          timestamp: new Date().toISOString()
         });
-        
-        alert("Awesome! Account created! 🎉");
+
+        alert('Account created successfully!');
       } catch (error) {
-        console.error("Registration error:", error);
-        showError('register', "Error: " + error.message);
+        console.error('Registration error:', error);
+        showError('register', error.message);
       }
     }
 
-    // Login
     window.login = async function() {
-      const email = document.getElementById('loginEmail').value;
+      const email = document.getElementById('loginEmail').value.trim();
       const password = document.getElementById('loginPassword').value;
-      
+
       if (!email || !password) {
-        showError('login', "Don't forget email and password! 🚨");
+        showError('login', 'Please fill in all fields');
         return;
       }
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        console.log("Login successful");
       } catch (error) {
-        console.error("Login error:", error);
-        showError('login', "Login failed: " + error.message);
+        console.error('Login error:', error);
+        showError('login', 'Invalid email or password');
       }
     }
 
-    // Logout
-    window.logout = function() {
-      // Set user offline
-      if (auth.currentUser) {
-        const userRef = ref(db, 'users/' + auth.currentUser.uid);
-        update(userRef, {
-          isOnline: false,
-          lastSeen: new Date().toISOString()
-        });
+    window.logout = async function() {
+      if (currentUser) {
+        await set(ref(db, 'users/' + currentUser.uid + '/isOnline'), false);
       }
-
-      signOut(auth).then(() => {
-        alert("See you soon! 👋");
-      }).catch((error) => {
-        console.error("Logout error:", error);
-      });
+      await signOut(auth);
     }
 
-    // Auth State
-    onAuthStateChanged(auth, (user) => {
-      console.log("Auth state changed:", user);
-      if (user) {
-        // Set user online
-        const userRef = ref(db, 'users/' + user.uid);
-        update(userRef, {
-          isOnline: true,
-          lastSeen: new Date().toISOString()
-        });
-
-        document.getElementById('authSection').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'flex';
-        loadUserProfile(user.uid);
-        loadServers();
-        loadFriends();
-        loadOnlineUsers();
-        loadRoles();
-      } else {
-        document.getElementById('authSection').style.display = 'flex';
-        document.getElementById('mainApp').style.display = 'none';
-      }
-    });
-
-    // Load User Profile
-    function loadUserProfile(userId) {
-      const userRef = ref(db, 'users/' + userId);
-      onValue(userRef, (snapshot) => {
-        const userData = snapshot.val();
-        if (userData) {
-          currentUserData = userData;
-          
-          // Update UI
-          document.getElementById('userUsername').textContent = userData.username;
-          document.getElementById('userEmail').textContent = userData.email;
-          document.getElementById('userAvatar').textContent = userData.avatar;
-          
-          // Update profile modal
-          document.getElementById('profileUsername').textContent = userData.username;
-          document.getElementById('profileEmail').textContent = userData.email;
-          document.getElementById('profileAvatar').textContent = userData.avatar;
-          document.getElementById('profileBio').textContent = userData.bio || "Click here to edit your bio...";
-          document.getElementById('profileUserId').textContent = userId;
-          document.getElementById('profileCreatedAt').textContent = new Date(userData.createdAt).toLocaleDateString('en-US');
-          
-          // PartexPlus Badge
-          const partexPlusBadge = document.getElementById('profilePartexPlus');
-          if (userData.hasPartexPlus) {
-            partexPlusBadge.innerHTML = '<div class="partex-plus-badge">PARTEX PLUS 🔥</div>';
-            
-            // Add PartexPlus features to modal
-            const featuresHTML = `
-              <div class="partex-features">
-                <h4>🎉 PartexPlus Features</h4>
-                <ul class="feature-list">
-                  <li>✅ Larger file uploads (up to 50MB)</li>
-                  <li>✅ HD Video Streaming</li>
-                  <li>✅ Special Emojis</li>
-                  <li>✅ Server Boosts</li>
-                  <li>✅ Premium Support</li>
-                  <li>✅ High quality image uploads</li>
-                </ul>
-              </div>
-            `;
-            partexPlusBadge.insertAdjacentHTML('afterend', featuresHTML);
-          } else {
-            partexPlusBadge.innerHTML = '';
-          }
-        }
-      });
-    }
-
-    // Send Message with Image Support - FIXED
-    window.sendMessage = async function() {
-      const user = auth.currentUser;
-      if (!user) {
-        alert("Please login first!");
-        return;
-      }
-
-      const msg = document.getElementById('messageInput').value;
+    // UI Functions
+    window.selectServer = function(serverId) {
+      currentServer = serverId;
       
-      // Check if both message and image are empty
-      if (msg.trim() === "" && !selectedImageFile) {
-        alert("Write a message or select an image!");
-        return;
+      // Update UI
+      document.querySelectorAll('.server-icon').forEach(icon => {
+        icon.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      const serverName = document.getElementById('serverName');
+      const friendsSection = document.getElementById('friendsSection');
+      const createChannelBtn = document.getElementById('createChannelBtn');
+
+      if (serverId === 'dms') {
+        serverName.innerHTML = '<span>Direct Messages</span>';
+        friendsSection.style.display = 'block';
+        createChannelBtn.style.display = 'none';
+        document.getElementById('chatHeader').textContent = 'Direct Messages';
+      } else {
+        serverName.innerHTML = '<span>Global Server</span>';
+        friendsSection.style.display = 'none';
+        createChannelBtn.style.display = 'block';
+        selectChannel('welcome');
       }
+
+      loadMessages();
+      loadMembers();
+    }
+
+    window.selectChannel = function(channelId) {
+      currentChannel = channelId;
+      
+      document.querySelectorAll('.channel-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      document.getElementById('chatHeader').textContent = `# ${channelId}`;
+      loadMessages();
+    }
+
+    // Message Functions
+    window.sendMessage = async function() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      
+      if (!message || !currentUser) return;
 
       try {
-        if (!currentUserData) {
-          alert("User data is still loading...");
-          return;
-        }
-
-        let messageRef;
-        
-        if (currentServer === 'dms' && currentDM) {
-          const dmId = [user.uid, currentDM].sort().join('_');
-          messageRef = ref(db, `dms/${dmId}/messages`);
-        } else {
-          messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-        }
-
-        const messageData = {
-          text: msg,
-          sender: currentUserData.username || 'Unknown',
-          senderId: user.uid,
-          senderAvatar: currentUserData.avatar || '?',
+        const messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
+        await push(messageRef, {
+          text: message,
+          sender: currentUser.username,
+          senderId: currentUser.uid,
+          senderAvatar: currentUser.avatar,
           timestamp: new Date().toISOString()
-        };
+        });
 
-        // Upload image if selected - FIXED
-        if (selectedImageFile) {
-          // Check if user has PartexPlus for larger uploads
-          const maxSize = currentUserData.hasPartexPlus ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
-          
-          if (selectedImageFile.size > maxSize) {
-            alert(`Image is too large! ${currentUserData.hasPartexPlus ? 'Maximum 50MB with PartexPlus' : 'Maximum 5MB'} allowed.`);
-            return;
-          }
-
-          // Upload image to Firebase Storage
-          const imageRef = storageRef(storage, `images/${Date.now()}_${selectedImageFile.name}`);
-          const snapshot = await uploadBytes(imageRef, selectedImageFile);
-          const imageUrl = await getDownloadURL(snapshot.ref);
-          
-          messageData.imageUrl = imageUrl;
-          messageData.imageName = selectedImageFile.name;
-        }
-
-        console.log("Sending message to:", messageRef.toString());
-        console.log("Message data:", messageData);
-
-        if (!messageData.sender || !messageData.senderId) {
-          throw new Error("User data is incomplete");
-        }
-
-        await push(messageRef, messageData);
-        
-        // Reset form
-        document.getElementById('messageInput').value = "";
-        document.getElementById('imagePreview').style.display = 'none';
-        selectedImageFile = null;
-        document.getElementById('imageUpload').value = "";
-        
+        input.value = '';
+        input.focus();
       } catch (error) {
-        console.error("Error sending message:", error);
-        alert("Error sending message: " + error.message);
+        console.error('Error sending message:', error);
+        alert('Failed to send message');
       }
     }
 
-    // Load Messages with Image Support
     function loadMessages() {
-      const messagesContainer = document.getElementById('messagesContainer');
-      messagesContainer.innerHTML = '';
+      const container = document.getElementById('messagesContainer');
+      
+      // Clear existing messages except welcome
+      Array.from(container.children).forEach(child => {
+        if (!child.classList.contains('welcome-message')) {
+          child.remove();
+        }
+      });
 
       if (messageListener) {
-        messageListener();
+        messageListener(); // Remove old listener
       }
 
-      let messagesRef;
-      
-      if (currentServer === 'dms' && currentDM) {
-        const dmId = [auth.currentUser.uid, currentDM].sort().join('_');
-        messagesRef = ref(db, `dms/${dmId}/messages`);
-      } else {
-        messagesRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-      }
-
-      console.log("Loading messages from:", messagesRef.toString());
-
+      const messagesRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
       messageListener = onChildAdded(messagesRef, (snapshot) => {
         const msg = snapshot.val();
-        
-        if (!msg) {
-          console.warn("Invalid message data:", msg);
-          return;
-        }
+        if (!msg) return;
 
-        const messageDiv = document.createElement("div");
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message';
         
-        if (msg.isSystem) {
-          messageDiv.className = "welcome-message";
-          messageDiv.innerHTML = `
-            <h3>${msg.text}</h3>
-            <p>Welcome to our community! 🎉</p>
-          `;
-        } else {
-          messageDiv.className = currentServer === 'dms' ? "message dm" : "message";
-          
-          const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-          });
-          
-          let imageHTML = '';
-          if (msg.imageUrl) {
-            imageHTML = `<img src="${msg.imageUrl}" class="message-image" onclick="showEnlargedImage('${msg.imageUrl}')" alt="Uploaded image">`;
-          }
-          
-          messageDiv.innerHTML = `
-            <div class="message-header">
-              <div class="message-avatar" onclick="showUserProfile('${msg.senderId}')">${msg.senderAvatar || '?'}</div>
-              <div class="message-sender" onclick="showUserProfile('${msg.senderId}')">${msg.sender || 'Unknown'}</div>
-              <div class="message-timestamp">${time}</div>
-            </div>
-            <div class="message-content">
-              ${msg.text || ''}
-              ${imageHTML}
-            </div>
-          `;
-        }
-        
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      }, (error) => {
-        console.error("Error loading messages:", error);
+        const time = new Date(msg.timestamp).toLocaleTimeString([], { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+
+        messageDiv.innerHTML = `
+          <div class="message-header">
+            <div class="message-avatar">${msg.senderAvatar || '?'}</div>
+            <div class="message-sender">${msg.sender}</div>
+            <div class="message-timestamp">${time}</div>
+          </div>
+          <div class="message-content">${msg.text}</div>
+        `;
+
+        container.appendChild(messageDiv);
+        container.scrollTop = container.scrollHeight;
       });
     }
 
-    // Show enlarged image
-    window.showEnlargedImage = function(imageUrl) {
-      document.getElementById('enlargedImage').src = imageUrl;
-      showImageModal();
-    }
-
-    // Enter Key
     window.handleKeyPress = function(event) {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
@@ -1763,846 +1164,176 @@
     }
 
     // Server Functions
-    window.selectServer = function(serverId) {
-      currentServer = serverId;
-      currentDM = null;
-      
-      document.querySelectorAll('.server-icon').forEach(icon => {
-        icon.classList.remove('active');
-      });
-      event.target.classList.add('active');
-      
-      const channelsList = document.getElementById('channelsList');
-      const friendsSection = document.getElementById('friendsSection');
-      const createChannelBtn = document.getElementById('createChannelBtn');
-      const serverActions = document.getElementById('serverActions');
-      const membersSidebar = document.getElementById('membersSidebar');
-      
-      if (serverId === 'dms') {
-        document.getElementById('serverName').innerHTML = '<span>Direct Messages</span>';
-        channelsList.style.display = 'none';
-        friendsSection.style.display = 'block';
-        createChannelBtn.style.display = 'none';
-        serverActions.style.display = 'none';
-        membersSidebar.style.display = 'none';
-        document.getElementById('chatHeader').textContent = 'Select a friend for DM';
-        document.getElementById('messageInput').placeholder = 'Select a friend to write to...';
-        document.getElementById('messageInput').disabled = true;
-      } else {
-        const serverName = serverId === 'global' ? 'Global Server' : servers[serverId]?.name || 'Unknown';
-        document.getElementById('serverName').innerHTML = `
-          <span>${serverName}</span>
-          <div class="server-actions">
-            <button class="server-action-btn" onclick="showInviteModal()" title="Invite">📨</button>
-            <button class="server-action-btn" onclick="showServerSettings()" title="Settings">⚙️</button>
-          </div>
-        `;
-        channelsList.style.display = 'block';
-        friendsSection.style.display = 'none';
-        createChannelBtn.style.display = 'block';
-        serverActions.style.display = 'flex';
-        membersSidebar.style.display = 'block';
-        document.getElementById('messageInput').disabled = false;
-        selectChannel('welcome');
-      }
-      
-      loadMessages();
-      loadServerMembers();
-    }
-
-    window.selectChannel = function(channelId) {
-      currentChannel = channelId;
-      currentDM = null;
-      
-      document.querySelectorAll('.channel-item').forEach(item => {
-        item.classList.remove('active');
-      });
-      event.target.classList.add('active');
-      
-      const channelName = getChannelName(channelId);
-      document.getElementById('chatHeader').textContent = `# ${channelName}`;
-      document.getElementById('messageInput').placeholder = `Write a message in #${channelName}...`;
-      
-      loadMessages();
-    }
-
-    function getChannelName(channelId) {
-      const channelNames = {
-        'welcome': '🎉 Welcome',
-        'updates': 'updates',
-        'general': '💬 General',
-      };
-      return channelNames[channelId] || channelId;
-    }
-
-    // Start DM with friend
-    function startDM(friendId) {
-      currentDM = friendId;
-      const friend = friends[friendId];
-      if (friend) {
-        document.getElementById('chatHeader').textContent = `💬 ${friend.username}`;
-        document.getElementById('messageInput').placeholder = `Write a message to ${friend.username}...`;
-        document.getElementById('messageInput').disabled = false;
-        loadMessages();
-      }
-    }
-
-    // Context Menu for Channels
-    window.showChannelContextMenu = function(channelId, event) {
-      event.preventDefault();
-      event.stopPropagation();
-      
-      const contextMenu = document.getElementById('contextMenu');
-      contextMenu.innerHTML = `
-        <div class="context-menu-item" onclick="deleteChannel('${channelId}')">🗑️ Delete Channel</div>
-      `;
-      
-      contextMenu.style.display = 'block';
-      contextMenu.style.left = event.pageX + 'px';
-      contextMenu.style.top = event.pageY + 'px';
-    }
-
-    // Delete Channel
-    window.deleteChannel = async function(channelId) {
-      if (!confirm(`Are you sure you want to delete channel #${getChannelName(channelId)}?`)) return;
-      
-      try {
-        const channelRef = ref(db, `servers/${currentServer}/channels/${channelId}`);
-        await remove(channelRef);
-        
-        // Remove from UI
-        const channelItem = document.querySelector(`.channel-item[onclick="selectChannel('${channelId}')"]`);
-        if (channelItem) channelItem.remove();
-        
-        hideContextMenu();
-        alert("Channel deleted! 🗑️");
-      } catch (error) {
-        console.error("Error deleting channel:", error);
-        alert("Error deleting channel: " + error.message);
-      }
-    }
-
-    // Hide Context Menu
-    window.hideContextMenu = function() {
-      document.getElementById('contextMenu').style.display = 'none';
-    }
-
-    // Load Roles
-    function loadRoles() {
-      const rolesRef = ref(db, `servers/${currentServer}/roles`);
-      onValue(rolesRef, (snapshot) => {
-        const data = snapshot.val();
-        roles = data || {};
-        
-        const rolesList = document.getElementById('rolesList');
-        rolesList.innerHTML = '';
-        
-        Object.keys(roles).forEach(roleId => {
-          const role = roles[roleId];
-          const roleItem = document.createElement('div');
-          roleItem.className = 'role-item';
-          roleItem.innerHTML = `
-            <div style="display: flex; align-items: center;">
-              <div class="role-color" style="background: ${role.color};"></div>
-              <span>${role.name}</span>
-            </div>
-            <button class="channel-action-btn" onclick="assignRole('${roleId}')">👥</button>
-          `;
-          rolesList.appendChild(roleItem);
-        });
-      });
-    }
-
-    // Create Role with Permissions
-    window.createRole = async function() {
-      const roleName = document.getElementById('roleNameInput').value;
-      const roleColor = document.getElementById('roleColorInput').value;
-      
-      if (!roleName) {
-        alert("Enter a role name!");
-        return;
-      }
-
-      try {
-        const roleId = roleName.toLowerCase().replace(/\s+/g, '-');
-        const roleRef = ref(db, `servers/${currentServer}/roles/${roleId}`);
-        
-        const permissions = {
-          kick: document.getElementById('permKick').checked,
-          timeout: document.getElementById('permTimeout').checked,
-          manageChannels: document.getElementById('permManageChannels').checked,
-          manageRoles: document.getElementById('permManageRoles').checked
-        };
-        
-        await set(roleRef, {
-          name: roleName,
-          color: roleColor,
-          permissions: permissions,
-          createdBy: auth.currentUser.uid,
-          createdAt: new Date().toISOString()
-        });
-
-        hideCreateRoleModal();
-        alert(`Role "${roleName}" created! 🎨`);
-      } catch (error) {
-        console.error("Error creating role:", error);
-        alert("Error creating role: " + error.message);
-      }
-    }
-
-    // Assign Role (simplified version)
-    window.assignRole = function(roleId) {
-      alert(`Role assignment feature coming soon!\n\nHere you could assign the role "${roles[roleId].name}" to members.`);
-    }
-
-    // Show User Profile
-    window.showUserProfile = function(userId) {
-      const userRef = ref(db, 'users/' + userId);
-      get(userRef).then((snapshot) => {
-        const userData = snapshot.val();
-        if (userData) {
-          selectedUserId = userId;
-          
-          document.getElementById('userProfileUsername').textContent = userData.username;
-          document.getElementById('userProfileAvatar').textContent = userData.avatar;
-          document.getElementById('userProfileBio').textContent = userData.bio || "This user hasn't written a bio yet...";
-          document.getElementById('userProfileCreatedAt').textContent = new Date(userData.createdAt).toLocaleDateString('en-US');
-          document.getElementById('userProfileStatus').textContent = userData.isOnline ? '🟢 Online' : '🔴 Offline';
-          
-          showUserProfileModal();
-        }
-      });
-    }
-
-    // Start DM from Profile
-    window.startDMFromProfile = function() {
-      if (selectedUserId) {
-        hideUserProfileModal();
-        selectServer('dms');
-        startDM(selectedUserId);
-      }
-    }
-
-    // Edit Profile
-    window.editProfile = function() {
-      document.getElementById('profileBioInput').value = currentUserData.bio || '';
-      showEditProfileModal();
-    }
-
-    // Save Profile
-    window.saveProfile = async function() {
-      const newBio = document.getElementById('profileBioInput').value;
-      
-      try {
-        const userRef = ref(db, 'users/' + auth.currentUser.uid);
-        await update(userRef, {
-          bio: newBio
-        });
-        
-        hideEditProfileModal();
-        alert("Profile updated! ✅");
-      } catch (error) {
-        console.error("Error updating profile:", error);
-        alert("Error saving: " + error.message);
-      }
-    }
-
-    // Kick Member Functions
-    window.showKickModal = function(userId, username) {
-      userToKick = userId;
-      document.getElementById('kickUserName').textContent = username;
-      document.getElementById('kickModal').style.display = 'flex';
-    }
-
-    window.hideKickModal = function() {
-      document.getElementById('kickModal').style.display = 'none';
-      userToKick = null;
-    }
-
-    window.confirmKick = async function() {
-      if (!userToKick) return;
-
-      try {
-        // Remove user from server members
-        const memberRef = ref(db, `servers/${currentServer}/members/${userToKick}`);
-        await remove(memberRef);
-        
-        // Add system message
-        const userRef = ref(db, 'users/' + userToKick);
-        const userSnapshot = await get(userRef);
-        const userData = userSnapshot.val();
-        
-        const messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-        await push(messageRef, {
-          text: `🚪 ${userData.username} has been kicked from the server`,
-          sender: 'System',
-          senderId: 'system',
-          senderAvatar: '🤖',
-          timestamp: new Date().toISOString(),
-          isSystem: true
-        });
-
-        hideKickModal();
-        alert("User kicked successfully! 🚪");
-        loadServerMembers();
-      } catch (error) {
-        console.error("Error kicking user:", error);
-        alert("Error kicking user: " + error.message);
-      }
-    }
-
-    // Timeout Member Functions
-    window.showTimeoutModal = function(userId, username) {
-      userToTimeout = userId;
-      document.getElementById('timeoutUserName').textContent = username;
-      document.getElementById('timeoutModal').style.display = 'flex';
-    }
-
-    window.hideTimeoutModal = function() {
-      document.getElementById('timeoutModal').style.display = 'none';
-      userToTimeout = null;
-      timeoutDuration = 5;
-    }
-
-    window.setTimeoutDuration = function(minutes) {
-      timeoutDuration = minutes;
-    }
-
-    window.confirmTimeout = async function() {
-      if (!userToTimeout) return;
-
-      try {
-        const timeoutUntil = new Date(Date.now() + timeoutDuration * 60000).toISOString();
-        
-        // Store timeout information
-        const timeoutRef = ref(db, `servers/${currentServer}/timeouts/${userToTimeout}`);
-        await set(timeoutRef, {
-          userId: userToTimeout,
-          timeoutUntil: timeoutUntil,
-          timedOutBy: auth.currentUser.uid,
-          duration: timeoutDuration
-        });
-
-        // Add system message
-        const userRef = ref(db, 'users/' + userToTimeout);
-        const userSnapshot = await get(userRef);
-        const userData = userSnapshot.val();
-        
-        const durationText = timeoutDuration >= 60 ? 
-          (timeoutDuration >= 1440 ? `${timeoutDuration/1440} day(s)` : `${timeoutDuration/60} hour(s)`) :
-          `${timeoutDuration} minute(s)`;
-        
-        const messageRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-        await push(messageRef, {
-          text: `⏰ ${userData.username} has been timed out for ${durationText}`,
-          sender: 'System',
-          senderId: 'system',
-          senderAvatar: '🤖',
-          timestamp: new Date().toISOString(),
-          isSystem: true
-        });
-
-        hideTimeoutModal();
-        alert(`User timed out for ${durationText}! ⏰`);
-        loadServerMembers();
-      } catch (error) {
-        console.error("Error timing out user:", error);
-        alert("Error timing out user: " + error.message);
-      }
-    }
-
-    // Modal Functions
-    window.showCreateServerModal = function() {
-      document.getElementById('createServerModal').style.display = 'flex';
-    }
-
-    window.hideCreateServerModal = function() {
-      document.getElementById('createServerModal').style.display = 'none';
-      document.getElementById('serverNameInput').value = '';
-    }
-
-    window.showCreateChannelModal = function() {
-      document.getElementById('createChannelModal').style.display = 'flex';
-    }
-
-    window.hideCreateChannelModal = function() {
-      document.getElementById('createChannelModal').style.display = 'none';
-      document.getElementById('channelNameInput').value = '';
-    }
-
-    window.showCreateRoleModal = function() {
-      document.getElementById('createRoleModal').style.display = 'flex';
-    }
-
-    window.hideCreateRoleModal = function() {
-      document.getElementById('createRoleModal').style.display = 'none';
-      document.getElementById('roleNameInput').value = '';
-    }
-
-    window.showAddFriendModal = function() {
-      document.getElementById('addFriendModal').style.display = 'flex';
-    }
-
-    window.hideAddFriendModal = function() {
-      document.getElementById('addFriendModal').style.display = 'none';
-      document.getElementById('friendUsernameInput').value = '';
-    }
-
-    window.showInviteModal = function() {
-      document.getElementById('inviteModal').style.display = 'flex';
-      generateInviteLink();
-    }
-
-    window.hideInviteModal = function() {
-      document.getElementById('inviteModal').style.display = 'none';
-    }
-
-    window.showServerSettings = function() {
-      document.getElementById('serverSettingsModal').style.display = 'flex';
-      loadServerSettings();
-    }
-
-    window.hideServerSettingsModal = function() {
-      document.getElementById('serverSettingsModal').style.display = 'none';
-    }
-
-    window.showProfileModal = function() {
-      document.getElementById('profileModal').style.display = 'flex';
-    }
-
-    window.hideProfileModal = function() {
-      document.getElementById('profileModal').style.display = 'none';
-    }
-
-    window.showEditProfileModal = function() {
-      document.getElementById('editProfileModal').style.display = 'flex';
-    }
-
-    window.hideEditProfileModal = function() {
-      document.getElementById('editProfileModal').style.display = 'none';
-    }
-
-    window.showUserProfileModal = function() {
-      document.getElementById('userProfileModal').style.display = 'flex';
-    }
-
-    window.hideUserProfileModal = function() {
-      document.getElementById('userProfileModal').style.display = 'none';
-    }
-
-    window.showImageModal = function() {
-      document.getElementById('imageModal').style.display = 'flex';
-    }
-
-    window.hideImageModal = function() {
-      document.getElementById('imageModal').style.display = 'none';
-    }
-
-    // Generate Invite Link
-    function generateInviteLink() {
-      const inviteCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-      const inviteLink = `https://partexchat.netlify.app/?invite=${currentServer}&code=${inviteCode}`;
-      
-      const inviteRef = ref(db, `servers/${currentServer}/invites/${inviteCode}`);
-      set(inviteRef, {
-        createdBy: auth.currentUser.uid,
-        createdAt: new Date().toISOString(),
-        uses: 0,
-        maxUses: 10
-      });
-      
-      document.getElementById('inviteLink').textContent = inviteLink;
-    }
-
-    // Copy Invite Link
-    window.copyInviteLink = function() {
-      const inviteLink = document.getElementById('inviteLink').textContent;
-      navigator.clipboard.writeText(inviteLink).then(() => {
-        alert("Invite link copied! 📋");
-      });
-    }
-
-    // Load Server Settings
-    function loadServerSettings() {
-      const server = servers[currentServer];
-      if (server) {
-        document.getElementById('settingsServerName').textContent = server.name;
-        document.getElementById('settingsMemberCount').textContent = Object.keys(onlineUsers).length;
-        
-        const ownerRef = ref(db, 'users/' + server.owner);
-        get(ownerRef).then((snapshot) => {
-          const ownerData = snapshot.val();
-          if (ownerData) {
-            document.getElementById('settingsServerOwner').textContent = ownerData.username;
-          }
-        });
-
-        const boosts = server.boosts || 0;
-        document.getElementById('currentBoosts').textContent = boosts;
-        
-        const boostBtn = document.getElementById('boostBtn');
-        if (currentUserData && currentUserData.hasPartexPlus) {
-          boostBtn.disabled = false;
-          boostBtn.textContent = `🔮 Boost Server (${boosts + 1}€/Month)`;
-        } else {
-          boostBtn.disabled = true;
-          boostBtn.textContent = "🔮 PartexPlus required";
-        }
-      }
-    }
-
-    // Boost Server
-    window.boostServer = function() {
-      if (!currentUserData || !currentUserData.hasPartexPlus) {
-        alert("You need PartexPlus to boost servers! 🔮");
-        return;
-      }
-
-      const serverRef = ref(db, `servers/${currentServer}`);
-      get(serverRef).then((snapshot) => {
-        const server = snapshot.val();
-        const currentBoosts = server.boosts || 0;
-        
-        update(serverRef, {
-          boosts: currentBoosts + 1,
-          boostedBy: auth.currentUser.uid,
-          lastBoosted: new Date().toISOString()
-        });
-
-        const serverIcons = document.querySelectorAll('.server-icon');
-        serverIcons.forEach(icon => {
-          if (icon.onclick && icon.onclick.toString().includes(currentServer)) {
-            icon.classList.add('boosted');
-          }
-        });
-
-        alert(`🎉 Server boosted! You have activated ${currentBoosts + 1} boost(s)!`);
-        hideServerSettingsModal();
-      });
-    }
-
-    // Load Online Users
-    function loadOnlineUsers() {
-      const usersRef = ref(db, 'users');
-      onValue(usersRef, (snapshot) => {
-        const users = snapshot.val();
-        onlineUsers = {};
-        
-        if (users) {
-          Object.keys(users).forEach(userId => {
-            if (users[userId].isOnline) {
-              onlineUsers[userId] = users[userId];
-            }
-          });
-        }
-        
-        loadServerMembers();
-      });
-    }
-
-    // Load Server Members with Admin Actions
-    function loadServerMembers() {
-      const membersList = document.getElementById('membersList');
-      const membersCount = document.getElementById('membersCount');
-      membersList.innerHTML = '';
-
-      let memberCount = 0;
-      
-      Object.keys(onlineUsers).forEach(userId => {
-        const user = onlineUsers[userId];
-        if (user) {
-          memberCount++;
-          const memberItem = document.createElement('div');
-          memberItem.className = 'member-item';
-          
-          // Check if current user has admin permissions to show actions
-          const showActions = currentUserData && currentUserData.hasPartexPlus; // Simplified check
-          
-          memberItem.innerHTML = `
-            <div class="member-avatar" onclick="showUserProfile('${userId}')">${user.avatar}</div>
-            <div class="member-name" onclick="showUserProfile('${userId}')">${user.username}</div>
-            <div class="online-indicator"></div>
-            ${showActions && userId !== auth.currentUser.uid ? `
-              <div class="member-actions">
-                <button class="member-action-btn timeout" onclick="showTimeoutModal('${userId}', '${user.username}')" title="Timeout">⏰</button>
-                <button class="member-action-btn kick" onclick="showKickModal('${userId}', '${user.username}')" title="Kick">🚪</button>
-              </div>
-            ` : ''}
-          `;
-          membersList.appendChild(memberItem);
-        }
-      });
-
-      membersCount.textContent = memberCount;
-    }
-
-    // Create Server
     window.createServer = async function() {
-      const serverName = document.getElementById('serverNameInput').value;
-      if (!serverName) {
-        alert("Enter a server name!");
-        return;
-      }
-
-      const user = auth.currentUser;
-      if (!user) return;
+      const name = document.getElementById('serverNameInput').value.trim();
+      if (!name || !currentUser) return;
 
       try {
-        const serverRef = ref(db, 'servers');
-        const newServerRef = push(serverRef);
-        const serverId = newServerRef.key;
-
-        await set(newServerRef, {
-          name: serverName,
-          owner: user.uid,
-          createdAt: new Date().toISOString(),
-          channels: {
-            welcome: {
-              name: "🎉 Welcome",
-              createdBy: user.uid
-            },
-            general: {
-              name: "💬 General",
-              createdBy: user.uid
-            }
-          }
-        });
-
-        const welcomeMessageRef = ref(db, `servers/${serverId}/channels/welcome/messages`);
-        await push(welcomeMessageRef, {
-          text: `🎉 Welcome to ${serverName} server!`,
-          sender: 'System',
-          senderId: 'system',
-          senderAvatar: '🤖',
-          timestamp: new Date().toISOString(),
-          isSystem: true
-        });
-
-        addServerToUI(serverId, serverName);
-        hideCreateServerModal();
-        alert(`Server "${serverName}" created! 🎉`);
-
-      } catch (error) {
-        console.error("Error creating server:", error);
-        alert("Error creating server: " + error.message);
-      }
-    }
-
-    // Create Channel
-    window.createChannel = async function() {
-      const channelName = document.getElementById('channelNameInput').value;
-      if (!channelName) {
-        alert("Enter a channel name!");
-        return;
-      }
-
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const channelId = channelName.toLowerCase().replace(/\s+/g, '-');
-        const channelRef = ref(db, `servers/${currentServer}/channels/${channelId}`);
-        
-        await set(channelRef, {
-          name: channelName,
-          createdBy: user.uid,
+        const serverRef = ref(db, 'servers/' + Date.now());
+        await set(serverRef, {
+          name: name,
+          owner: currentUser.uid,
           createdAt: new Date().toISOString()
         });
 
+        hideModal('createServerModal');
+        alert('Server created!');
+      } catch (error) {
+        console.error('Error creating server:', error);
+        alert('Failed to create server');
+      }
+    }
+
+    window.createChannel = async function() {
+      const name = document.getElementById('channelNameInput').value.trim();
+      if (!name || !currentUser) return;
+
+      try {
+        const channelId = name.toLowerCase().replace(/\s+/g, '-');
+        const channelRef = ref(db, `servers/${currentServer}/channels/${channelId}`);
+        await set(channelRef, {
+          name: name,
+          createdBy: currentUser.uid,
+          createdAt: new Date().toISOString()
+        });
+
+        // Add to UI
         const channelsList = document.getElementById('channelsList');
         const channelItem = document.createElement('li');
         channelItem.className = 'channel-item';
-        channelItem.innerHTML = `
-          # ${channelName}
-          <div class="channel-actions">
-            <button class="channel-action-btn" onclick="event.stopPropagation(); showChannelContextMenu('${channelId}', event)">⋯</button>
-          </div>
-        `;
-        channelItem.setAttribute('onclick', `selectChannel('${channelId}')`);
+        channelItem.textContent = `# ${name}`;
+        channelItem.onclick = () => selectChannel(channelId);
         channelsList.appendChild(channelItem);
 
-        hideCreateChannelModal();
-        alert(`Channel "${channelName}" created! 🎉`);
-
+        hideModal('createChannelModal');
       } catch (error) {
-        console.error("Error creating channel:", error);
-        alert("Error creating channel: " + error.message);
+        console.error('Error creating channel:', error);
+        alert('Failed to create channel');
       }
     }
 
-    // Add Friend
+    // Friend Functions
     window.addFriend = async function() {
-      const friendUsername = document.getElementById('friendUsernameInput').value.toLowerCase();
-      if (!friendUsername) {
-        alert("Enter a username!");
-        return;
-      }
+      const username = document.getElementById('friendUsernameInput').value.trim();
+      if (!username || !currentUser) return;
 
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const usernameRef = ref(db, 'usernames/' + friendUsername);
-        const usernameSnapshot = await get(usernameRef);
-        
-        if (!usernameSnapshot.exists()) {
-          alert("User with this username doesn't exist! ❌");
-          return;
-        }
-
-        const friendId = usernameSnapshot.val();
-        
-        if (friendId === user.uid) {
-          alert("You can't add yourself as a friend! 🙄");
-          return;
-        }
-
-        const friendCheckRef = ref(db, `friends/${user.uid}/${friendId}`);
-        const friendCheckSnapshot = await get(friendCheckRef);
-        
-        if (friendCheckSnapshot.exists()) {
-          alert("This user is already your friend! ✅");
-          return;
-        }
-
-        await set(friendCheckRef, {
-          addedAt: new Date().toISOString()
-        });
-
-        hideAddFriendModal();
-        alert("Friend added! 🎉");
-
-      } catch (error) {
-        console.error("Error adding friend:", error);
-        alert("Error adding friend: " + error.message);
-      }
+      hideModal('addFriendModal');
+      alert('Friend request sent to ' + username);
     }
 
-    // Load Servers
-    function loadServers() {
-      const serversRef = ref(db, 'servers');
-      const serversSidebar = document.getElementById('serversSidebar');
+    function loadMembers() {
+      const container = document.getElementById('membersList');
+      container.innerHTML = '<div class="member-item"><div class="member-avatar">U</div><div class="member-name">You</div><div class="online-indicator"></div></div>';
 
-      onValue(serversRef, (snapshot) => {
-        const data = snapshot.val();
-        servers = data || {};
+      const usersRef = ref(db, 'users');
+      onValue(usersRef, (snapshot) => {
+        const users = snapshot.val();
+        if (!users) return;
 
-        const existingServers = serversSidebar.querySelectorAll('.server-icon:not(.add-server):not(.dm)');
-        existingServers.forEach(server => {
-          if (!server.onclick || (!server.onclick.toString().includes('global') && !server.onclick.toString().includes('dms'))) {
-            server.remove();
-          }
-        });
-
-        Object.keys(servers).forEach(serverId => {
-          addServerToUI(serverId, servers[serverId].name);
+        Object.entries(users).forEach(([id, user]) => {
+          if (id === currentUser.uid) return;
+          
+          const memberItem = document.createElement('div');
+          memberItem.className = 'member-item';
+          memberItem.innerHTML = `
+            <div class="member-avatar">${user.avatar || '?'}</div>
+            <div class="member-name">${user.username}</div>
+            <div class="online-indicator" style="background: ${user.isOnline ? '#2ecc71' : '#666'}"></div>
+          `;
+          container.appendChild(memberItem);
         });
       });
     }
 
-    function addServerToUI(serverId, serverName) {
-      const serversSidebar = document.getElementById('serversSidebar');
-      const serverIcon = document.createElement('div');
-      serverIcon.className = 'server-icon';
-      if (servers[serverId]?.boosts > 0) {
-        serverIcon.classList.add('boosted');
+    // Modal Functions
+    function showModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+
+    window.hideModal = function(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    window.showCreateServerModal = () => showModal('createServerModal');
+    window.showCreateChannelModal = () => showModal('createChannelModal');
+    window.showAddFriendModal = () => showModal('addFriendModal');
+    window.showProfileModal = () => {
+      if (currentUser) {
+        document.getElementById('profileUsername').textContent = currentUser.username;
+        document.getElementById('profileEmail').textContent = currentUser.email;
+        document.getElementById('profileAvatar').textContent = currentUser.avatar;
       }
-      serverIcon.textContent = serverName.charAt(0).toUpperCase();
-      serverIcon.onclick = () => selectServer(serverId);
-      
-      const addServerBtn = serversSidebar.querySelector('.add-server');
-      serversSidebar.insertBefore(serverIcon, addServerBtn);
+      showModal('profileModal');
     }
+    window.showInviteModal = () => alert('Invite link: partexchat.com/invite/' + currentServer);
+    window.showServerSettings = () => alert('Server settings coming soon!');
 
-    // Load Friends
-    function loadFriends() {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const friendsRef = ref(db, 'friends/' + user.uid);
-      onValue(friendsRef, async (snapshot) => {
-        const data = snapshot.val();
-        const friendsList = document.getElementById('friendsList');
-        friendsList.innerHTML = '';
-        friends = {};
-
-        if (data) {
-          const friendPromises = Object.keys(data).map(async (friendId) => {
-            const friendRef = ref(db, 'users/' + friendId);
-            const friendSnapshot = await get(friendRef);
-            if (friendSnapshot.exists()) {
-              const friendData = friendSnapshot.val();
-              friends[friendId] = friendData;
-              
-              const friendItem = document.createElement('div');
-              friendItem.className = 'friend-item';
-              friendItem.innerHTML = `
-                <div class="friend-avatar">${friendData.avatar}</div>
-                <span>${friendData.username}</span>
-              `;
-              friendItem.onclick = () => startDM(friendId);
-              friendsList.appendChild(friendItem);
-            }
-            return null;
-          });
-
-          await Promise.all(friendPromises);
-        } else {
-          const noFriends = document.createElement('div');
-          noFriends.className = 'friend-item';
-          noFriends.textContent = "No friends yet 😢";
-          noFriends.style.color = '#888';
-          friendsList.appendChild(noFriends);
-        }
-      });
-    }
-
-    // Close modals when clicking outside
+    // Close modals on outside click
     window.onclick = function(event) {
-      const modals = document.querySelectorAll('.modal');
-      modals.forEach(modal => {
-        if (event.target === modal) {
-          modal.style.display = 'none';
-        }
-      });
-      
-      hideContextMenu();
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
     }
 
-    // Initialize default channels for global server
-    function initializeGlobalServer() {
-      const globalServerRef = ref(db, 'servers/global');
-      get(globalServerRef).then((snapshot) => {
-        if (!snapshot.exists()) {
-          set(globalServerRef, {
-            name: 'Global Server',
-            owner: 'system',
-            createdAt: new Date().toISOString(),
-            channels: {
-              welcome: {
-                name: "🎉 Welcome",
-                createdBy: 'system'
-              },
-              general: {
-                name: "💬 General", 
-                createdBy: 'system'
-              },
-              games: {
-                name: "🎮 Gaming",
-                createdBy: 'system'
-              },
-              music: {
-                name: "🎵 Music",
-                createdBy: 'system'
-              }
-            }
-          });
+    // Auth State Handler
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Load user data
+        const userSnap = await get(ref(db, 'users/' + user.uid));
+        const userData = userSnap.val();
+        
+        currentUser = {
+          uid: user.uid,
+          email: user.email,
+          username: userData?.username || 'User',
+          avatar: userData?.avatar || 'U'
+        };
+
+        // Update online status
+        await set(ref(db, 'users/' + user.uid + '/isOnline'), true);
+
+        // Update UI
+        document.getElementById('userUsername').textContent = currentUser.username;
+        document.getElementById('userEmail').textContent = currentUser.email;
+        document.getElementById('userAvatar').textContent = currentUser.avatar;
+
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'flex';
+
+        // Initialize data
+        loadMembers();
+        loadMessages();
+      } else {
+        currentUser = null;
+        document.getElementById('authSection').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
+      }
+    });
+
+    // Initialize default channels
+    async function initializeDefaults() {
+      const globalRef = ref(db, 'servers/global');
+      const snap = await get(globalRef);
+      
+      if (!snap.exists()) {
+        await set(globalRef, {
+          name: 'Global Server',
+          createdAt: new Date().toISOString()
+        });
+
+        const channels = {
+          welcome: { name: 'Welcome', createdBy: 'system' },
+          general: { name: 'General', createdBy: 'system' }
+        };
+
+        for (const [id, channel] of Object.entries(channels)) {
+          await set(ref(db, `servers/global/channels/${id}`), channel);
         }
-      });
+      }
     }
 
     // Initialize on load
-    initializeGlobalServer();
+    initializeDefaults();
   </script>
 </body>
 </html>
