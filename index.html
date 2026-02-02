@@ -333,6 +333,8 @@
       flex: 1;
       padding: 1rem;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .channels-list {
@@ -383,7 +385,7 @@
 
     /* Friends Section */
     .friends-section {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
     }
 
     .friends-header {
@@ -432,22 +434,128 @@
       color: white;
     }
 
+    .friend-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .friend-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
     .friend-status {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: #888;
     }
 
-    .friend-status.online {
+    .friend-actions {
+      display: flex;
+      gap: 0.3rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .friend-item:hover .friend-actions {
+      opacity: 1;
+    }
+
+    .friend-action-btn {
+      background: #2e2e2e;
+      border: none;
+      color: #888;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .friend-action-btn:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    .friend-action-btn.message:hover {
+      background: #3498db;
+      color: white;
+    }
+
+    .friend-action-btn.remove:hover {
+      background: #e74c3c;
+      color: white;
+    }
+
+    /* Friend Requests */
+    .friend-requests-section {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #2e2e2e;
+    }
+
+    .friend-requests-header {
+      color: #ffa726;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .friend-request-item {
+      padding: 0.7rem;
+      margin: 0.3rem 0;
+      border-radius: 5px;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+    }
+
+    .friend-request-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .friend-request-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .request-action-btn {
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .request-action-btn.accept {
       background: #2ecc71;
+      color: white;
     }
 
-    .friend-status.offline {
-      background: #666;
+    .request-action-btn.accept:hover {
+      background: #27ae60;
+    }
+
+    .request-action-btn.reject {
+      background: #2e2e2e;
+      color: #ccc;
+    }
+
+    .request-action-btn.reject:hover {
+      background: #333;
     }
 
     /* Call Button */
@@ -1089,10 +1197,21 @@
           <div class="friends-section" id="friendsSection" style="display: none;">
             <div class="friends-header">
               <span>DIRECT MESSAGES</span>
-              <button class="create-channel-btn" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onclick="showAddFriendModal()">+ Add</button>
+              <button class="create-channel-btn" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onclick="showAddFriendModal()">+ Add Friend</button>
             </div>
             <div id="friendsList">
               <!-- Friends loaded dynamically -->
+            </div>
+            
+            <!-- Friend Requests Section -->
+            <div class="friend-requests-section" id="friendRequestsSection">
+              <div class="friend-requests-header">
+                <span>FRIEND REQUESTS</span>
+                <span class="friend-request-count" id="friendRequestCount">0</span>
+              </div>
+              <div id="friendRequestsList">
+                <!-- Friend requests loaded dynamically -->
+              </div>
             </div>
           </div>
         </div>
@@ -1186,7 +1305,7 @@
       <input type="text" id="friendUsernameInput" class="modal-input" placeholder="Friend's username">
       <div class="modal-buttons">
         <button class="modal-btn secondary" onclick="hideModal('addFriendModal')">Cancel</button>
-        <button class="modal-btn primary" onclick="addFriend()">Add</button>
+        <button class="modal-btn primary" onclick="sendFriendRequest()">Send Request</button>
       </div>
     </div>
   </div>
@@ -1211,6 +1330,12 @@
           <label>Status:</label>
           <div style="background: #1a1a1a; padding: 1rem; border-radius: 6px; color: #ccc;">
             <span id="profileStatus">🟢 Online</span>
+          </div>
+        </div>
+        <div class="profile-field">
+          <label>Friends:</label>
+          <div style="background: #1a1a1a; padding: 1rem; border-radius: 6px; color: #ccc;">
+            <span id="profileFriendCount">0 friends</span>
           </div>
         </div>
         <div class="profile-field">
@@ -1292,6 +1417,7 @@
     let currentDM = null;
     let messageListener = null;
     let friendsListener = null;
+    let friendRequestsListener = null;
     let selectedImageFile = null;
     
     // WebRTC Variables
@@ -1354,7 +1480,8 @@
           status: 'online',
           createdAt: new Date().toISOString(),
           isOnline: true,
-          lastSeen: new Date().toISOString()
+          lastSeen: new Date().toISOString(),
+          friendCount: 0
         });
 
         // Add username to usernames index
@@ -1465,7 +1592,8 @@
         document.getElementById('messageInput').disabled = true;
         
         // Clear messages container
-        document.getElementById('messagesContainer').innerHTML = `
+        const container = document.getElementById('messagesContainer');
+        container.innerHTML = `
           <div class="welcome-message">
             <h3>Direct Messages 💬</h3>
             <p>Select a friend from the list to start chatting</p>
@@ -1473,6 +1601,7 @@
         `;
         
         loadFriends();
+        loadFriendRequests();
       } else {
         serverName.innerHTML = '<span>Global Server</span>';
         friendsSection.style.display = 'none';
@@ -1679,7 +1808,7 @@
     }
 
     // Profile Functions
-    window.showProfileModal = function() {
+    window.showProfileModal = async function() {
       if (!currentUser) return;
       
       document.getElementById('profileUsername').textContent = currentUser.username;
@@ -1688,6 +1817,12 @@
       document.getElementById('profileBio').textContent = currentUser.bio || 'No bio yet. Click to edit.';
       document.getElementById('profileStatus').textContent = getStatusEmoji(currentUser.status) + ' ' + currentUser.status;
       document.getElementById('profileCreatedAt').textContent = new Date(currentUser.createdAt).toLocaleDateString();
+      
+      // Load friend count
+      const friendsRef = ref(db, `friends/${currentUser.uid}`);
+      const friendsSnap = await get(friendsRef);
+      const friendCount = friendsSnap.exists() ? Object.keys(friendsSnap.val()).length : 0;
+      document.getElementById('profileFriendCount').textContent = `${friendCount} friends`;
       
       showModal('profileModal');
     }
@@ -1753,52 +1888,331 @@
       return emojis[status] || '⚫';
     }
 
-    // Friends Functions
-    function loadFriends() {
+    // Friends System - COMPLETE IMPLEMENTATION
+    async function loadFriends() {
       const container = document.getElementById('friendsList');
       
       if (friendsListener) {
         friendsListener();
       }
       
-      // Load all users as potential friends (simplified)
-      const usersRef = ref(db, 'users');
-      friendsListener = onValue(usersRef, (snapshot) => {
-        const users = snapshot.val();
+      if (!currentUser) return;
+      
+      // Load friends from database
+      const friendsRef = ref(db, `friends/${currentUser.uid}`);
+      friendsListener = onValue(friendsRef, async (snapshot) => {
+        const friendsData = snapshot.val();
         container.innerHTML = '';
         
-        if (!users) {
-          container.innerHTML = '<div class="friend-item" style="color: #666;">No users found</div>';
+        if (!friendsData || Object.keys(friendsData).length === 0) {
+          container.innerHTML = `
+            <div class="friend-item" style="color: #666; text-align: center; flex-direction: column; gap: 0.5rem;">
+              <div>No friends yet 😢</div>
+              <div style="font-size: 0.8rem;">Add friends to start chatting!</div>
+            </div>
+          `;
           return;
         }
         
-        Object.entries(users).forEach(([userId, user]) => {
-          if (userId === currentUser.uid) return;
+        // Load each friend's data
+        const friendPromises = Object.keys(friendsData).map(async (friendId) => {
+          const userRef = ref(db, 'users/' + friendId);
+          const userSnap = await get(userRef);
+          const userData = userSnap.val();
           
-          const friendItem = document.createElement('div');
-          friendItem.className = 'friend-item';
-          if (currentDM === userId) {
-            friendItem.classList.add('active');
+          if (userData) {
+            const friendItem = document.createElement('div');
+            friendItem.className = 'friend-item';
+            if (currentDM === friendId) {
+              friendItem.classList.add('active');
+            }
+            
+            const status = userData.isOnline ? 'online' : 'offline';
+            const statusText = userData.isOnline ? 'Online' : 'Offline';
+            const statusColor = userData.isOnline ? '#2ecc71' : '#666';
+            
+            friendItem.innerHTML = `
+              <div class="friend-avatar">${userData.avatar || '?'}</div>
+              <div class="friend-info">
+                <div class="friend-name">${userData.username}</div>
+                <div class="friend-status">${statusText}</div>
+              </div>
+              <div class="friend-actions">
+                <button class="friend-action-btn message" onclick="startDM('${friendId}', '${userData.username}')" title="Message">💬</button>
+                <button class="friend-action-btn remove" onclick="removeFriend('${friendId}', '${userData.username}')" title="Remove">✖</button>
+              </div>
+            `;
+            
+            // Add status indicator
+            const statusIndicator = document.createElement('div');
+            statusIndicator.className = 'online-indicator';
+            statusIndicator.style.background = statusColor;
+            statusIndicator.style.position = 'absolute';
+            statusIndicator.style.right = '45px';
+            statusIndicator.style.top = '50%';
+            statusIndicator.style.transform = 'translateY(-50%)';
+            friendItem.appendChild(statusIndicator);
+            
+            container.appendChild(friendItem);
           }
-          friendItem.innerHTML = `
-            <div class="friend-avatar">${user.avatar || '?'}</div>
-            <span>${user.username}</span>
-            <div class="friend-status ${user.isOnline ? 'online' : 'offline'}"></div>
-          `;
-          friendItem.onclick = () => startDM(userId, user.username);
-          container.appendChild(friendItem);
         });
+        
+        await Promise.all(friendPromises);
       });
     }
 
-    window.addFriend = async function() {
-      const username = document.getElementById('friendUsernameInput').value.trim();
-      if (!username || !currentUser) return;
-
-      hideModal('addFriendModal');
-      alert(`Friend request sent to ${username}! (This is a demo feature)`);
+    // Load Friend Requests
+    async function loadFriendRequests() {
+      const container = document.getElementById('friendRequestsList');
+      const countElement = document.getElementById('friendRequestCount');
+      
+      if (friendRequestsListener) {
+        friendRequestsListener();
+      }
+      
+      if (!currentUser) return;
+      
+      const requestsRef = ref(db, `friendRequests/${currentUser.uid}`);
+      friendRequestsListener = onValue(requestsRef, async (snapshot) => {
+        const requestsData = snapshot.val();
+        container.innerHTML = '';
+        
+        if (!requestsData || Object.keys(requestsData).length === 0) {
+          container.innerHTML = `
+            <div style="color: #666; text-align: center; padding: 1rem; font-size: 0.9rem;">
+              No friend requests
+            </div>
+          `;
+          countElement.textContent = '0';
+          return;
+        }
+        
+        let requestCount = 0;
+        
+        // Load each request
+        const requestPromises = Object.keys(requestsData).map(async (requesterId) => {
+          const request = requestsData[requesterId];
+          if (request.status === 'pending') {
+            requestCount++;
+            
+            const userRef = ref(db, 'users/' + requesterId);
+            const userSnap = await get(userRef);
+            const userData = userSnap.val();
+            
+            if (userData) {
+              const requestItem = document.createElement('div');
+              requestItem.className = 'friend-request-item';
+              
+              requestItem.innerHTML = `
+                <div class="friend-request-info">
+                  <div class="friend-avatar">${userData.avatar || '?'}</div>
+                  <div>
+                    <div style="font-weight: 500;">${userData.username}</div>
+                    <div style="font-size: 0.8rem; color: #888;">Wants to be your friend</div>
+                  </div>
+                </div>
+                <div class="friend-request-actions">
+                  <button class="request-action-btn accept" onclick="acceptFriendRequest('${requesterId}')">Accept</button>
+                  <button class="request-action-btn reject" onclick="rejectFriendRequest('${requesterId}')">Reject</button>
+                </div>
+              `;
+              
+              container.appendChild(requestItem);
+            }
+          }
+        });
+        
+        await Promise.all(requestPromises);
+        countElement.textContent = requestCount.toString();
+      });
     }
 
+    // Send Friend Request
+    window.sendFriendRequest = async function() {
+      if (!currentUser) return;
+      
+      const username = document.getElementById('friendUsernameInput').value.trim();
+      if (!username) {
+        alert('Please enter a username!');
+        return;
+      }
+
+      // Check if trying to add yourself
+      if (username.toLowerCase() === currentUser.username.toLowerCase()) {
+        alert('You cannot add yourself as a friend!');
+        return;
+      }
+
+      try {
+        // Check if username exists
+        const usernameRef = ref(db, 'usernames/' + username.toLowerCase());
+        const usernameSnap = await get(usernameRef);
+        
+        if (!usernameSnap.exists()) {
+          alert('User not found!');
+          return;
+        }
+
+        const friendId = usernameSnap.val();
+        
+        // Check if already friends
+        const friendCheckRef = ref(db, `friends/${currentUser.uid}/${friendId}`);
+        const friendCheckSnap = await get(friendCheckRef);
+        
+        if (friendCheckSnap.exists()) {
+          alert('You are already friends with this user!');
+          return;
+        }
+
+        // Check if request already sent
+        const requestCheckRef = ref(db, `friendRequests/${friendId}/${currentUser.uid}`);
+        const requestCheckSnap = await get(requestCheckRef);
+        
+        if (requestCheckSnap.exists()) {
+          const request = requestCheckSnap.val();
+          if (request.status === 'pending') {
+            alert('Friend request already sent!');
+            return;
+          }
+        }
+
+        // Send friend request
+        const requestData = {
+          from: currentUser.uid,
+          fromUsername: currentUser.username,
+          timestamp: new Date().toISOString(),
+          status: 'pending'
+        };
+
+        await set(ref(db, `friendRequests/${friendId}/${currentUser.uid}`), requestData);
+
+        hideModal('addFriendModal');
+        document.getElementById('friendUsernameInput').value = '';
+        alert(`Friend request sent to ${username}!`);
+        
+      } catch (error) {
+        console.error('Error sending friend request:', error);
+        alert('Failed to send friend request: ' + error.message);
+      }
+    }
+
+    // Accept Friend Request
+    window.acceptFriendRequest = async function(requesterId) {
+      if (!currentUser) return;
+
+      try {
+        // Get requester info
+        const requesterRef = ref(db, 'users/' + requesterId);
+        const requesterSnap = await get(requesterRef);
+        const requesterData = requesterSnap.val();
+
+        if (!requesterData) {
+          alert('User not found!');
+          return;
+        }
+
+        // Add to friends list (both directions)
+        const timestamp = new Date().toISOString();
+        
+        await set(ref(db, `friends/${currentUser.uid}/${requesterId}`), {
+          since: timestamp,
+          username: requesterData.username
+        });
+
+        await set(ref(db, `friends/${requesterId}/${currentUser.uid}`), {
+          since: timestamp,
+          username: currentUser.username
+        });
+
+        // Update friend request status
+        await update(ref(db, `friendRequests/${currentUser.uid}/${requesterId}`), {
+          status: 'accepted',
+          acceptedAt: timestamp
+        });
+
+        // Create DM conversation
+        const dmId = [currentUser.uid, requesterId].sort().join('_');
+        const dmRef = ref(db, `dms/${dmId}`);
+        await set(dmRef, {
+          participants: [currentUser.uid, requesterId],
+          createdAt: timestamp
+        });
+
+        // Send welcome message in DM
+        const messageRef = ref(db, `dms/${dmId}/messages`);
+        await push(messageRef, {
+          text: `👋 You are now friends! Start chatting!`,
+          sender: 'System',
+          senderId: 'system',
+          senderAvatar: '🤖',
+          timestamp: timestamp,
+          isSystem: true
+        });
+
+        alert(`You are now friends with ${requesterData.username}!`);
+        loadFriends();
+        loadFriendRequests();
+        
+      } catch (error) {
+        console.error('Error accepting friend request:', error);
+        alert('Failed to accept friend request: ' + error.message);
+      }
+    }
+
+    // Reject Friend Request
+    window.rejectFriendRequest = async function(requesterId) {
+      if (!currentUser) return;
+
+      try {
+        await remove(ref(db, `friendRequests/${currentUser.uid}/${requesterId}`));
+        alert('Friend request rejected.');
+        loadFriendRequests();
+        
+      } catch (error) {
+        console.error('Error rejecting friend request:', error);
+        alert('Failed to reject friend request: ' + error.message);
+      }
+    }
+
+    // Remove Friend
+    window.removeFriend = async function(friendId, friendName) {
+      if (!currentUser) return;
+      
+      if (!confirm(`Are you sure you want to remove ${friendName} from your friends?`)) {
+        return;
+      }
+
+      try {
+        // Remove from friends list (both directions)
+        await remove(ref(db, `friends/${currentUser.uid}/${friendId}`));
+        await remove(ref(db, `friends/${friendId}/${currentUser.uid}`));
+        
+        alert(`${friendName} removed from friends.`);
+        loadFriends();
+        
+        // If currently in DM with this friend, clear chat
+        if (currentDM === friendId) {
+          currentDM = null;
+          document.getElementById('chatHeader').innerHTML = '<span>Direct Messages</span>';
+          document.getElementById('messageInput').placeholder = 'Select a friend to message...';
+          document.getElementById('messageInput').disabled = true;
+          
+          const container = document.getElementById('messagesContainer');
+          container.innerHTML = `
+            <div class="welcome-message">
+              <h3>Direct Messages 💬</h3>
+              <p>Select a friend from the list to start chatting</p>
+            </div>
+          `;
+        }
+        
+      } catch (error) {
+        console.error('Error removing friend:', error);
+        alert('Failed to remove friend: ' + error.message);
+      }
+    }
+
+    // Start DM with friend
     function startDM(friendId, friendName) {
       currentDM = friendId;
       
@@ -1926,11 +2340,22 @@
         const userData = userSnap.val();
         
         if (userData) {
-          alert(`👤 ${userData.username}\n📧 ${userData.email}\n📝 ${userData.bio || 'No bio'}\n🟢 ${userData.isOnline ? 'Online' : 'Offline'}`);
+          const isFriend = await checkIfFriend(userId);
+          const friendStatus = isFriend ? '👥 Friends' : 'Not friends';
+          
+          alert(`👤 ${userData.username}\n📧 ${userData.email}\n📝 ${userData.bio || 'No bio'}\n🟢 ${userData.isOnline ? 'Online' : 'Offline'}\n${friendStatus}`);
         }
       } catch (error) {
         console.error('Error loading user profile:', error);
       }
+    }
+
+    async function checkIfFriend(userId) {
+      if (!currentUser) return false;
+      
+      const friendRef = ref(db, `friends/${currentUser.uid}/${userId}`);
+      const friendSnap = await get(friendRef);
+      return friendSnap.exists();
     }
 
     // Call Functions (WebRTC Implementation)
@@ -2002,7 +2427,7 @@
     window.startCall = function() {
       if (currentServer === 'dms' && currentDM) {
         // Get friend name from UI
-        const activeFriend = document.querySelector('.friend-item.active span');
+        const activeFriend = document.querySelector('.friend-item.active .friend-name');
         const friendName = activeFriend ? activeFriend.textContent : 'Friend';
         startCallWith(currentDM, friendName);
       } else {
@@ -2085,7 +2510,8 @@
             status: 'online',
             createdAt: new Date().toISOString(),
             isOnline: true,
-            lastSeen: new Date().toISOString()
+            lastSeen: new Date().toISOString(),
+            friendCount: 0
           });
           
           const newUserSnap = await get(ref(db, 'users/' + user.uid));
