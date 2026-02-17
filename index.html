@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PartexChat</title>
+<title>PartexChat - Next Gen Messaging</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -26,6 +26,8 @@
   --amber: #fbbf24;
   --amber-soft: rgba(251,191,36,0.12);
   --gold: #f59e0b;
+  --purple: #c084fc;
+  --purple-soft: rgba(192,132,252,0.12);
   --text-primary: #f0f0f5;
   --text-secondary: #9090a0;
   --text-muted: #5a5a6a;
@@ -222,7 +224,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .img-modal-box{background:transparent;border:none;max-width:90vw;text-align:center;padding:0}
 .img-modal-box img{max-width:100%;max-height:85vh;border-radius:var(--r)}
 
-/* ═══════════ PROFILE POPUP (Discord style) ═══════════ */
+/* ═══════════ PROFILE POPUP ═══════════ */
 .profile-popup{display:none;position:fixed;z-index:600;width:320px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7)}
 .profile-popup::before{content:'';position:absolute;inset:-1px;border-radius:var(--rlg);padding:1px;background:linear-gradient(135deg,rgba(122,95,255,.35),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .pp-banner{height:80px;background:linear-gradient(135deg,var(--accent),var(--blue));position:relative;flex-shrink:0}
@@ -272,15 +274,29 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .role-badge{padding:.15rem .45rem;border-radius:12px;font-size:.65rem;font-weight:700}
 .role-owner{background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.25);color:var(--amber)}
 .role-admin{background:var(--accent-soft);border:1px solid rgba(122,95,255,.25);color:var(--accent)}
+.role-mod{background:var(--green-soft);border:1px solid rgba(74,222,128,.25);color:var(--green)}
 .role-member{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted)}
 .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
 .color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
 .color-opt:hover,.color-opt.selected{border-color:#fff;transform:scale(1.15)}
+/* Role management */
+.role-row{display:flex;align-items:center;gap:.5rem;padding:.5rem;border-radius:8px;margin-bottom:.25rem;transition:background .15s}
+.role-row:hover{background:var(--bg-elevated)}
+.role-color{width:20px;height:20px;border-radius:4px}
+.role-name{font-size:.85rem;font-weight:500;flex:1}
+.role-perms{font-size:.7rem;color:var(--text-muted)}
 /* Invite friend checkboxes */
 .invite-friend-item{display:flex;align-items:center;gap:.7rem;padding:.55rem .7rem;border-radius:8px;cursor:pointer;transition:background .15s}
 .invite-friend-item:hover{background:var(--bg-elevated)}
 .invite-friend-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
-
+/* Audit log */
+.audit-item{padding:.75rem;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text-secondary)}
+.audit-time{color:var(--text-muted);font-size:.7rem;margin-right:.5rem}
+.audit-action{color:var(--accent);font-weight:500}
+/* Reaction */
+.reaction{display:inline-flex;align-items:center;gap:.3rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;padding:.2rem .5rem;font-size:.75rem;margin-right:.3rem;cursor:pointer}
+.reaction:hover{background:var(--bg-hover)}
+.reaction.active{background:var(--accent-soft);border-color:var(--accent)}
 /* Toast */
 .toast{position:fixed;top:20px;right:20px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1.1rem;color:var(--text-primary);font-size:.875rem;z-index:9999;transform:translateX(400px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-width:280px}
 .toast.show{transform:translateX(0)}
@@ -432,7 +448,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
   </div>
 </div>
 
-<!-- ══════════ CALL ══════════ -->
+<!-- ══════════ CALL OVERLAY ══════════ -->
 <div class="call-overlay" id="callOverlay">
   <div class="call-hdr">
     <span class="call-title" id="callTitle">📞 In Call</span>
@@ -480,6 +496,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
     <div class="mtitle">Create a Server</div>
     <div class="msub">Give your server a name and customize it</div>
     <div class="field-grp"><label class="flabel">Server Name</label><input type="text" id="srvNameIn" class="mi" placeholder="My Awesome Server"></div>
+    <div class="field-grp"><label class="flabel">Server Template</label>
+      <select id="srvTemplate" class="msel">
+        <option value="gaming">🎮 Gaming Server</option>
+        <option value="friends">👥 Friends & Chat</option>
+        <option value="study">📚 Study Group</option>
+        <option value="community">🌍 Community</option>
+        <option value="custom">⚙️ Custom (Empty)</option>
+      </select>
+    </div>
     <div class="field-grp"><label class="flabel">Banner Color</label>
       <div class="color-row" id="srvColorRow">
         <div class="color-opt selected" style="background:#7a5fff" data-color="#7a5fff" onclick="selectColor(this)"></div>
@@ -491,6 +516,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
         <div class="color-opt" style="background:#fb923c" data-color="#fb923c" onclick="selectColor(this)"></div>
       </div>
     </div>
+    <div class="field-grp"><label class="flabel">Description</label><textarea id="srvDescIn" class="mta" placeholder="What's your server about?"></textarea></div>
     <div class="mbtns">
       <button class="mbtn-s" onclick="closeModal('createServerModal')">Cancel</button>
       <button class="mbtn-p" onclick="createServer()">Create Server</button>
@@ -503,7 +529,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
   <div class="mbox">
     <div class="mtitle">New Channel</div>
     <div class="msub">Add a text channel to this server</div>
-    <input type="text" id="chNameIn" class="mi" placeholder="channel-name">
+    <div class="field-grp"><label class="flabel">Channel Name</label><input type="text" id="chNameIn" class="mi" placeholder="channel-name"></div>
+    <div class="field-grp"><label class="flabel">Channel Type</label>
+      <select id="chTypeIn" class="msel">
+        <option value="text">💬 Text Channel</option>
+        <option value="voice">🔊 Voice Channel</option>
+        <option value="announcement">📢 Announcement</option>
+      </select>
+    </div>
     <div class="mbtns">
       <button class="mbtn-s" onclick="closeModal('createChannelModal')">Cancel</button>
       <button class="mbtn-p" onclick="createChannel()">Create</button>
@@ -554,20 +587,25 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
   </div>
 </div>
 
-<!-- Server Settings -->
+<!-- Server Settings (Enhanced) -->
 <div class="modal-bg" id="serverSettingsModal">
   <div class="mbox settings-modal">
     <div class="mtitle" id="settingsTitle">Server Settings</div>
     <div class="settings-tabs">
       <button class="stab active" onclick="switchSettingsTab('overview',this)">Overview</button>
+      <button class="stab" onclick="switchSettingsTab('roles',this)">Roles</button>
       <button class="stab" onclick="switchSettingsTab('members',this)">Members</button>
+      <button class="stab" onclick="switchSettingsTab('channels',this)">Channels</button>
       <button class="stab" onclick="switchSettingsTab('invites',this)">Invites</button>
+      <button class="stab" onclick="switchSettingsTab('moderation',this)">Moderation</button>
+      <button class="stab" onclick="switchSettingsTab('audit',this)">Audit Log</button>
       <button class="stab" onclick="switchSettingsTab('danger',this)">Danger</button>
     </div>
 
     <!-- Overview -->
     <div class="stab-content active" id="stab-overview">
       <div class="field-grp"><label class="flabel">Server Name</label><input type="text" class="mi" id="editSrvName" placeholder="Server name"></div>
+      <div class="field-grp"><label class="flabel">Vanity URL</label><input type="text" class="mi" id="editVanityUrl" placeholder="custom-url"></div>
       <div class="field-grp"><label class="flabel">Banner Color</label>
         <div class="color-row" id="editColorRow">
           <div class="color-opt selected" style="background:#7a5fff" data-color="#7a5fff" onclick="selectEditColor(this)"></div>
@@ -583,9 +621,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
       <div class="mbtns"><button class="mbtn-s" onclick="closeModal('serverSettingsModal')">Cancel</button><button class="mbtn-p" onclick="saveServerSettings()">Save Changes</button></div>
     </div>
 
+    <!-- Roles -->
+    <div class="stab-content" id="stab-roles">
+      <div style="margin-bottom:1rem">
+        <button class="mbtn-p" style="width:100%" onclick="createRole()">+ Create New Role</button>
+      </div>
+      <div id="rolesList"></div>
+    </div>
+
     <!-- Members -->
     <div class="stab-content" id="stab-members">
       <div id="serverMembersList"></div>
+    </div>
+
+    <!-- Channels -->
+    <div class="stab-content" id="stab-channels">
+      <div id="channelsManageList"></div>
     </div>
 
     <!-- Invites -->
@@ -596,6 +647,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
         <button class="copy-btn" onclick="copySettingsInviteLink()">Copy</button>
       </div>
       <button class="mbtn-p" style="margin-bottom:.5rem;display:block;width:100%" onclick="regenerateInviteLink()">🔄 Regenerate Link</button>
+      <div class="field-grp">
+        <label class="flabel">Max Uses</label>
+        <input type="number" id="inviteMaxUses" class="mi" value="0" min="0" placeholder="0 = unlimited">
+      </div>
+      <div class="field-grp">
+        <label class="flabel">Expires After (days)</label>
+        <input type="number" id="inviteExpires" class="mi" value="7" min="0" placeholder="0 = never">
+      </div>
+    </div>
+
+    <!-- Moderation -->
+    <div class="stab-content" id="stab-moderation">
+      <div class="field-grp">
+        <label class="flabel">Slow Mode (seconds)</label>
+        <input type="number" id="slowMode" class="mi" value="0" min="0">
+      </div>
+      <div class="field-grp">
+        <label class="flabel">Default Role for New Members</label>
+        <select id="defaultRole" class="msel"></select>
+      </div>
+      <div class="danger-zone" style="margin-top:1rem">
+        <div class="danger-title">🔨 Banned Members</div>
+        <div id="bannedList"></div>
+      </div>
+    </div>
+
+    <!-- Audit Log -->
+    <div class="stab-content" id="stab-audit">
+      <div id="auditLogList"></div>
     </div>
 
     <!-- Danger -->
@@ -607,6 +687,41 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
           <button class="mbtn-d" onclick="deleteServer()">🗑 Delete Server</button>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Role Editor Modal -->
+<div class="modal-bg" id="roleEditorModal">
+  <div class="mbox">
+    <div class="mtitle" id="roleEditorTitle">Edit Role</div>
+    <div class="field-grp"><label class="flabel">Role Name</label><input type="text" id="roleNameIn" class="mi"></div>
+    <div class="field-grp"><label class="flabel">Color</label>
+      <div class="color-row" id="roleColorRow">
+        <div class="color-opt" style="background:#7a5fff" data-color="#7a5fff" onclick="selectRoleColor(this)"></div>
+        <div class="color-opt" style="background:#38bdf8" data-color="#38bdf8" onclick="selectRoleColor(this)"></div>
+        <div class="color-opt" style="background:#4ade80" data-color="#4ade80" onclick="selectRoleColor(this)"></div>
+        <div class="color-opt" style="background:#f87171" data-color="#f87171" onclick="selectRoleColor(this)"></div>
+        <div class="color-opt" style="background:#fbbf24" data-color="#fbbf24" onclick="selectRoleColor(this)"></div>
+        <div class="color-opt" style="background:#c084fc" data-color="#c084fc" onclick="selectRoleColor(this)"></div>
+      </div>
+    </div>
+    <div class="field-grp"><label class="flabel">Permissions</label>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem">
+        <label><input type="checkbox" id="permManageMessages"> Delete Messages</label>
+        <label><input type="checkbox" id="permManageChannels"> Manage Channels</label>
+        <label><input type="checkbox" id="permKickMembers"> Kick Members</label>
+        <label><input type="checkbox" id="permBanMembers"> Ban Members</label>
+        <label><input type="checkbox" id="permManageRoles"> Manage Roles</label>
+        <label><input type="checkbox" id="permMuteMembers"> Mute Members</label>
+        <label><input type="checkbox" id="permPinMessages"> Pin Messages</label>
+        <label><input type="checkbox" id="permAttachFiles"> Attach Files</label>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-s" onclick="closeModal('roleEditorModal')">Cancel</button>
+      <button class="mbtn-p" onclick="saveRole()">Save Role</button>
+      <button class="mbtn-d" id="deleteRoleBtn" onclick="deleteRole()" style="display:none">Delete</button>
     </div>
   </div>
 </div>
@@ -642,7 +757,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, set, push, onChildAdded, onValue, off, get, remove, update }
+import { getDatabase, ref, set, push, onChildAdded, onValue, off, get, remove, update, query, limitToLast }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
@@ -672,8 +787,11 @@ let selectedFile   = null;
 let localStream    = null;
 let isMuted        = false;
 let serverData     = {};  // cache: serverData[sid] = {name,color,...}
+let rolesData      = {};  // cache: rolesData[sid] = {roleId:{name,color,perms}}
 let selectedSrvColor = '#7a5fff';
 let editingSrvColor  = '#7a5fff';
+let selectedRoleColor = '#7a5fff';
+let editingRoleId = null;
 
 // ── HELPERS ────────────────────────────────────────────
 window.toast = function(msg, type='info'){
@@ -714,7 +832,6 @@ window.doRegister = async function(){
   if(un.length<3) return showErr('regErr','Username min 3 chars');
   if(pw.length<6) return showErr('regErr','Password min 6 chars');
   try{
-    // Check username taken
     const uCheck=await get(ref(db,`usernames/${un.toLowerCase()}`));
     if(uCheck.exists()) return showErr('regErr','Username already taken');
     const cred=await createUserWithEmailAndPassword(auth,em,pw);
@@ -724,7 +841,7 @@ window.doRegister = async function(){
       bio:'',status:'online',
       createdAt:new Date().toISOString(),
       isOnline:true,lastSeen:new Date().toISOString(),
-      badges:['og']  // everyone who joins gets OG badge
+      badges:['og']
     });
     await set(ref(db,`usernames/${un.toLowerCase()}`),uid);
   }catch(e){showErr('regErr',e.message);}
@@ -769,7 +886,6 @@ onAuthStateChanged(auth, async user=>{
     document.getElementById('ubName').textContent=CU.username;
     document.getElementById('authSection').style.display='none';
     document.getElementById('mainApp').style.display='flex';
-    // Start on DMs
     selectServer('dms',document.getElementById('railDMs'));
     loadMyServers();
     checkServerInvites();
@@ -791,12 +907,15 @@ window.selectEditColor = function(el){
   el.classList.add('selected');
   editingSrvColor=el.dataset.color;
 };
+window.selectRoleColor = function(el){
+  document.querySelectorAll('#roleColorRow .color-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRoleColor=el.dataset.color;
+};
 
 // ── LOAD MY SERVERS ────────────────────────────────────
 function loadMyServers(){
-  // Listen to user's server memberships
   onValue(ref(db,`userServers/${CU.uid}`),async snap=>{
-    // Remove existing server rail buttons (keep DMs, divider, add)
     document.querySelectorAll('.rail-btn.srv-btn').forEach(b=>b.remove());
     if(!snap.exists()) return;
     const sids=Object.keys(snap.val());
@@ -817,7 +936,6 @@ function addServerToRail(sid,sd){
   btn.style.fontSize='.85rem';
   btn.innerHTML=`${esc(sd.name[0].toUpperCase())}<span class="rail-tip">${esc(sd.name)}</span>`;
   btn.onclick=()=>selectServer(sid,btn);
-  // Check for pending invites badge
   document.getElementById('addSrvBtn').before(btn);
 }
 
@@ -853,10 +971,36 @@ window.selectServer = function(sid, el){
   }else{
     const sd=serverData[sid]||{};
     document.getElementById('panelName').textContent=sd.name||'Server';
+    loadRoles(sid);
     loadChannels(sid);
     checkServerInvites();
   }
 };
+
+// ── ROLES ──────────────────────────────────────────────
+function loadRoles(sid){
+  onValue(ref(db,`servers/${sid}/roles`),snap=>{
+    rolesData[sid]={};
+    if(snap.exists()){
+      rolesData[sid]=snap.val();
+    }
+  });
+}
+
+function getUserRole(uid){
+  if(!curServer || curServer==='dms') return 'member';
+  const member = serverData[curServer]?.members?.[uid];
+  return member?.role || 'member';
+}
+
+function hasPermission(perm){
+  if(!curServer || curServer==='dms') return false;
+  const role = getUserRole(CU.uid);
+  if(role==='owner') return true;
+  if(role==='admin') return true;
+  const roleData = rolesData[curServer]?.[role];
+  return roleData?.perms?.[perm] || false;
+}
 
 // ── CHANNELS ──────────────────────────────────────────
 function loadChannels(sid){
@@ -872,13 +1016,12 @@ function loadChannels(sid){
       const li=document.createElement('li');
       li.className='ch-row';
       li.id=`ch-${cid}`;
-      const isOwner=serverData[sid]?.owner===CU.uid;
-      li.innerHTML=`<span class="ch-icon">#</span>${esc(cid)}
-        ${isOwner?`<div class="ch-row-actions"><button class="ch-row-act" onclick="deleteCh('${cid}')" title="Delete">🗑</button></div>`:''}`;
+      const canManage = hasPermission('manageChannels') || serverData[sid]?.owner===CU.uid;
+      li.innerHTML=`<span class="ch-icon">${ch.type==='voice'?'🔊':ch.type==='announcement'?'📢':'#'}</span>${esc(cid)}
+        ${canManage?`<div class="ch-row-actions"><button class="ch-row-act" onclick="deleteCh('${cid}')" title="Delete">🗑</button></div>`:''}`;
       li.onclick=()=>selectChannel(cid,li);
       list.appendChild(li);
     });
-    // Auto-select first channel
     if(first && curChannel!==first) selectChannel(first,document.getElementById(`ch-${first}`));
   });
 }
@@ -887,7 +1030,8 @@ window.selectChannel = function(cid, el){
   curChannel=cid; curDmUid=null;
   document.querySelectorAll('.ch-row').forEach(r=>r.classList.remove('active'));
   if(el) el.classList.add('active');
-  document.getElementById('topIcon').textContent='#';
+  const chData = serverData[curServer]?.channels?.[cid] || {};
+  document.getElementById('topIcon').textContent=chData.type==='voice'?'🔊':chData.type==='announcement'?'📢':'#';
   document.getElementById('topName').textContent=cid;
   document.getElementById('callBtn').style.display='none';
   document.getElementById('msgInput').disabled=false;
@@ -898,13 +1042,23 @@ window.selectChannel = function(cid, el){
 
 window.createChannel = async function(){
   const name=document.getElementById('chNameIn').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const type=document.getElementById('chTypeIn').value;
   if(!name) return toast('Enter channel name','error');
   if(!curServer||curServer==='dms') return toast('Select a server first','error');
   try{
-    await set(ref(db,`servers/${curServer}/channels/${name}`),{name,createdBy:CU.uid,createdAt:new Date().toISOString()});
+    await set(ref(db,`servers/${curServer}/channels/${name}`),{name,type,createdBy:CU.uid,createdAt:new Date().toISOString()});
     closeModal('createChannelModal');
     document.getElementById('chNameIn').value='';
     toast(`#${name} created!`,'success');
+    
+    // Audit log
+    await push(ref(db,`servers/${curServer}/audit`),{
+      action:'channel_create',
+      target:name,
+      by:CU.uid,
+      byUsername:CU.username,
+      timestamp:new Date().toISOString()
+    });
   }catch(e){toast(e.message,'error');}
 };
 
@@ -917,11 +1071,22 @@ window.deleteCh = async function(cid){
     document.getElementById('msgInput').disabled=true;
   }
   toast('Channel deleted','success');
+  
+  // Audit log
+  await push(ref(db,`servers/${curServer}/audit`),{
+    action:'channel_delete',
+    target:cid,
+    by:CU.uid,
+    byUsername:CU.username,
+    timestamp:new Date().toISOString()
+  });
 };
 
 // ── CREATE SERVER ─────────────────────────────────────
 window.createServer = async function(){
   const name=document.getElementById('srvNameIn').value.trim();
+  const desc=document.getElementById('srvDescIn').value.trim();
+  const template=document.getElementById('srvTemplate').value;
   if(!name) return toast('Enter server name','error');
   try{
     const sid=push(ref(db,'servers')).key;
@@ -929,24 +1094,63 @@ window.createServer = async function(){
     await set(ref(db,`servers/${sid}`),{
       name,color:selectedSrvColor,owner:CU.uid,
       createdAt:new Date().toISOString(),
-      inviteCode,description:''
+      inviteCode,description:desc,
+      vanityUrl:name.toLowerCase().replace(/\s+/g,'-'),
+      slowMode:0,
+      defaultRole:'member'
     });
-    // Create default channels
-    await set(ref(db,`servers/${sid}/channels/general`),{name:'general',createdBy:CU.uid,createdAt:new Date().toISOString()});
-    await set(ref(db,`servers/${sid}/channels/welcome`),{name:'welcome',createdBy:CU.uid,createdAt:new Date().toISOString()});
+    
+    // Create roles
+    await set(ref(db,`servers/${sid}/roles/admin`),{
+      name:'Admin',color:'#7a5fff',
+      perms:{manageMessages:true,manageChannels:true,kickMembers:true,banMembers:true,manageRoles:true,muteMembers:true,pinMessages:true,attachFiles:true}
+    });
+    await set(ref(db,`servers/${sid}/roles/mod`),{
+      name:'Moderator',color:'#4ade80',
+      perms:{manageMessages:true,kickMembers:true,muteMembers:true,pinMessages:true,attachFiles:true}
+    });
+    await set(ref(db,`servers/${sid}/roles/member`),{
+      name:'Member',color:'#9090a0',
+      perms:{attachFiles:true}
+    });
+    
+    // Create channels based on template
+    if(template==='gaming'){
+      await set(ref(db,`servers/${sid}/channels/general`),{name:'general',type:'text',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/lfg`),{name:'lfg',type:'text',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/voice-chat`),{name:'voice-chat',type:'voice',createdBy:CU.uid});
+    }else if(template==='friends'){
+      await set(ref(db,`servers/${sid}/channels/general`),{name:'general',type:'text',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/memes`),{name:'memes',type:'text',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/vc`),{name:'vc',type:'voice',createdBy:CU.uid});
+    }else if(template==='study'){
+      await set(ref(db,`servers/${sid}/channels/announcements`),{name:'announcements',type:'announcement',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/general`),{name:'general',type:'text',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/resources`),{name:'resources',type:'text',createdBy:CU.uid});
+    }else if(template==='community'){
+      await set(ref(db,`servers/${sid}/channels/welcome`),{name:'welcome',type:'announcement',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/general`),{name:'general',type:'text',createdBy:CU.uid});
+      await set(ref(db,`servers/${sid}/channels/support`),{name:'support',type:'text',createdBy:CU.uid});
+    }else{
+      await set(ref(db,`servers/${sid}/channels/general`),{name:'general',type:'text',createdBy:CU.uid});
+    }
+    
     // Add welcome message
     await push(ref(db,`servers/${sid}/channels/general/messages`),{
       text:`🎉 Welcome to ${name}! This server was created by ${CU.username}.`,
       sender:'System',senderId:'system',senderAvatar:'🤖',
       timestamp:new Date().toISOString(),isSystem:true
     });
+    
     // Join server
     await set(ref(db,`servers/${sid}/members/${CU.uid}`),{role:'owner',joinedAt:new Date().toISOString(),username:CU.username});
     await set(ref(db,`userServers/${CU.uid}/${sid}`),true);
-    serverData[sid]={name,color:selectedSrvColor,owner:CU.uid,inviteCode,description:''};
+    serverData[sid]={name,color:selectedSrvColor,owner:CU.uid,inviteCode,description:desc};
+    
     closeModal('createServerModal');
     document.getElementById('srvNameIn').value='';
-    // Select new server
+    document.getElementById('srvDescIn').value='';
+    
     const btn=document.getElementById(`rail-${sid}`);
     if(btn) selectServer(sid,btn);
     toast(`Server "${name}" created!`,'success');
@@ -959,21 +1163,206 @@ window.openServerSettings = async function(){
   const sd=serverData[curServer]||{};
   document.getElementById('settingsTitle').textContent=`Settings — ${sd.name||'Server'}`;
   document.getElementById('editSrvName').value=sd.name||'';
+  document.getElementById('editVanityUrl').value=sd.vanityUrl||'';
   document.getElementById('editSrvDesc').value=sd.description||'';
   editingSrvColor=sd.color||'#7a5fff';
-  // Highlight current color
+  
   document.querySelectorAll('#editColorRow .color-opt').forEach(o=>{
     o.classList.toggle('selected',o.dataset.color===editingSrvColor);
   });
-  // Load members list
-  loadSettingsMembers();
-  // Load invite link
-  const code=sd.inviteCode||'';
-  const link=`${location.origin}${location.pathname}?invite=${code}`;
-  document.getElementById('settingsInviteLink').value=link;
-  // Switch to overview tab
+  
+  document.getElementById('slowMode').value=sd.slowMode||0;
+  
+  await loadSettingsMembers();
+  await loadRolesList();
+  await loadChannelsManageList();
+  await loadBannedList();
+  await loadAuditLog();
+  await loadInviteSettings();
+  
   switchSettingsTab('overview',document.querySelector('.stab'));
   openModal('serverSettingsModal');
+};
+
+window.loadRolesList = async function(){
+  const container=document.getElementById('rolesList');
+  container.innerHTML='';
+  const snap=await get(ref(db,`servers/${curServer}/roles`));
+  if(!snap.exists()){container.innerHTML='<div class="empty-state">No roles yet</div>';return;}
+  const roles=snap.val();
+  for(const [rid,role] of Object.entries(roles)){
+    const div=document.createElement('div');
+    div.className='role-row';
+    div.innerHTML=`
+      <div class="role-color" style="background:${role.color}"></div>
+      <div class="role-name">${esc(role.name)}</div>
+      <div class="role-perms">${Object.keys(role.perms||{}).filter(p=>role.perms[p]).length} permissions</div>
+      <div class="mmr-actions">
+        <button class="mmr-btn" onclick="editRole('${rid}')">✏️</button>
+        ${rid!=='owner'&&rid!=='admin'&&rid!=='mod'&&rid!=='member'?`<button class="mmr-btn kick" onclick="deleteRole('${rid}')">🗑</button>`:''}
+      </div>`;
+    container.appendChild(div);
+  }
+};
+
+window.editRole = function(rid){
+  editingRoleId=rid;
+  const role=rolesData[curServer]?.[rid];
+  if(!role) return;
+  document.getElementById('roleEditorTitle').textContent=`Edit ${role.name} Role`;
+  document.getElementById('roleNameIn').value=role.name;
+  selectedRoleColor=role.color||'#7a5fff';
+  document.querySelectorAll('#roleColorRow .color-opt').forEach(o=>{
+    o.classList.toggle('selected',o.dataset.color===selectedRoleColor);
+  });
+  document.getElementById('permManageMessages').checked=role.perms?.manageMessages||false;
+  document.getElementById('permManageChannels').checked=role.perms?.manageChannels||false;
+  document.getElementById('permKickMembers').checked=role.perms?.kickMembers||false;
+  document.getElementById('permBanMembers').checked=role.perms?.banMembers||false;
+  document.getElementById('permManageRoles').checked=role.perms?.manageRoles||false;
+  document.getElementById('permMuteMembers').checked=role.perms?.muteMembers||false;
+  document.getElementById('permPinMessages').checked=role.perms?.pinMessages||false;
+  document.getElementById('permAttachFiles').checked=role.perms?.attachFiles||false;
+  document.getElementById('deleteRoleBtn').style.display=rid!=='owner'&&rid!=='admin'&&rid!=='mod'&&rid!=='member'?'block':'none';
+  openModal('roleEditorModal');
+};
+
+window.createRole = function(){
+  editingRoleId=null;
+  document.getElementById('roleEditorTitle').textContent='Create New Role';
+  document.getElementById('roleNameIn').value='';
+  selectedRoleColor='#7a5fff';
+  document.querySelectorAll('#roleColorRow .color-opt').forEach(o=>o.classList.remove('selected'));
+  document.querySelector('#roleColorRow .color-opt').classList.add('selected');
+  document.getElementById('permManageMessages').checked=false;
+  document.getElementById('permManageChannels').checked=false;
+  document.getElementById('permKickMembers').checked=false;
+  document.getElementById('permBanMembers').checked=false;
+  document.getElementById('permManageRoles').checked=false;
+  document.getElementById('permMuteMembers').checked=false;
+  document.getElementById('permPinMessages').checked=false;
+  document.getElementById('permAttachFiles').checked=true;
+  document.getElementById('deleteRoleBtn').style.display='none';
+  openModal('roleEditorModal');
+};
+
+window.saveRole = async function(){
+  const name=document.getElementById('roleNameIn').value.trim();
+  if(!name) return toast('Role name required','error');
+  const perms={
+    manageMessages:document.getElementById('permManageMessages').checked,
+    manageChannels:document.getElementById('permManageChannels').checked,
+    kickMembers:document.getElementById('permKickMembers').checked,
+    banMembers:document.getElementById('permBanMembers').checked,
+    manageRoles:document.getElementById('permManageRoles').checked,
+    muteMembers:document.getElementById('permMuteMembers').checked,
+    pinMessages:document.getElementById('permPinMessages').checked,
+    attachFiles:document.getElementById('permAttachFiles').checked
+  };
+  try{
+    if(editingRoleId){
+      await update(ref(db,`servers/${curServer}/roles/${editingRoleId}`),{name,color:selectedRoleColor,perms});
+      toast('Role updated!','success');
+    }else{
+      const rid=push(ref(db,`servers/${curServer}/roles`)).key;
+      await set(ref(db,`servers/${curServer}/roles/${rid}`),{name,color:selectedRoleColor,perms});
+      toast('Role created!','success');
+    }
+    closeModal('roleEditorModal');
+    loadRolesList();
+  }catch(e){toast(e.message,'error');}
+};
+
+window.deleteRole = async function(rid){
+  if(!confirm('Delete this role? This cannot be undone!')) return;
+  await remove(ref(db,`servers/${curServer}/roles/${rid}`));
+  toast('Role deleted','success');
+  closeModal('roleEditorModal');
+  loadRolesList();
+};
+
+window.loadChannelsManageList = async function(){
+  const container=document.getElementById('channelsManageList');
+  container.innerHTML='';
+  const snap=await get(ref(db,`servers/${curServer}/channels`));
+  if(!snap.exists()){container.innerHTML='<div class="empty-state">No channels</div>';return;}
+  const chs=snap.val();
+  for(const [cid,ch] of Object.entries(chs)){
+    const div=document.createElement('div');
+    div.className='member-manage-row';
+    div.innerHTML=`
+      <div style="flex:1">
+        <div class="mmr-name">${ch.type==='voice'?'🔊':ch.type==='announcement'?'📢':'#'} ${esc(cid)}</div>
+        <div class="mmr-role">${ch.type||'text'} channel</div>
+      </div>
+      <div class="mmr-actions">
+        <button class="mmr-btn" onclick="renameChannel('${cid}')">✏️</button>
+        <button class="mmr-btn kick" onclick="deleteCh('${cid}')">🗑</button>
+      </div>`;
+    container.appendChild(div);
+  }
+};
+
+window.renameChannel = async function(cid){
+  const newName=prompt('New channel name:',cid);
+  if(!newName) return;
+  const data=serverData[curServer]?.channels?.[cid] || {type:'text'};
+  await set(ref(db,`servers/${curServer}/channels/${newName}`),{...data,name:newName});
+  await remove(ref(db,`servers/${curServer}/channels/${cid}`));
+  toast('Channel renamed','success');
+  loadChannelsManageList();
+};
+
+window.loadBannedList = async function(){
+  const container=document.getElementById('bannedList');
+  container.innerHTML='';
+  const snap=await get(ref(db,`servers/${curServer}/bans`));
+  if(!snap.exists()){container.innerHTML='<div class="empty-state">No banned members</div>';return;}
+  const bans=snap.val();
+  for(const [uid,ban] of Object.entries(bans)){
+    const div=document.createElement('div');
+    div.className='member-manage-row';
+    div.innerHTML=`
+      <div style="flex:1">
+        <div class="mmr-name">${esc(ban.username)}</div>
+        <div class="mmr-role">Banned: ${new Date(ban.timestamp).toLocaleDateString()}</div>
+        <div class="mmr-role">Reason: ${ban.reason||'No reason'}</div>
+      </div>
+      <div class="mmr-actions">
+        <button class="mmr-btn" onclick="unbanMember('${uid}')">🔓 Unban</button>
+      </div>`;
+    container.appendChild(div);
+  }
+};
+
+window.unbanMember = async function(uid){
+  await remove(ref(db,`servers/${curServer}/bans/${uid}`));
+  toast('Member unbanned','success');
+  loadBannedList();
+};
+
+window.loadAuditLog = async function(){
+  const container=document.getElementById('auditLogList');
+  container.innerHTML='';
+  const snap=await get(query(ref(db,`servers/${curServer}/audit`),limitToLast(50)));
+  if(!snap.exists()){container.innerHTML='<div class="empty-state">No audit logs</div>';return;}
+  const logs=snap.val();
+  const entries=Object.entries(logs).reverse();
+  for(const [id,log] of entries){
+    const div=document.createElement('div');
+    div.className='audit-item';
+    div.innerHTML=`
+      <span class="audit-time">${new Date(log.timestamp).toLocaleTimeString()}</span>
+      <span class="audit-action">${log.action}</span> by ${log.byUsername} 
+      ${log.target?`on ${log.target}`:''}`;
+    container.appendChild(div);
+  }
+};
+
+window.loadInviteSettings = async function(){
+  const sd=serverData[curServer]||{};
+  const link=`${location.origin}${location.pathname}?invite=${sd.inviteCode||''}`;
+  document.getElementById('settingsInviteLink').value=link;
 };
 
 window.switchSettingsTab = function(tab, el){
@@ -986,16 +1375,31 @@ window.switchSettingsTab = function(tab, el){
 window.saveServerSettings = async function(){
   const newName=document.getElementById('editSrvName').value.trim();
   const newDesc=document.getElementById('editSrvDesc').value.trim();
+  const vanity=document.getElementById('editVanityUrl').value.trim();
+  const slowMode=parseInt(document.getElementById('slowMode').value)||0;
   if(!newName) return toast('Name cannot be empty','error');
   try{
-    await update(ref(db,`servers/${curServer}`),{name:newName,description:newDesc,color:editingSrvColor});
-    serverData[curServer]={...serverData[curServer],name:newName,description:newDesc,color:editingSrvColor};
+    await update(ref(db,`servers/${curServer}`),{
+      name:newName,
+      description:newDesc,
+      color:editingSrvColor,
+      vanityUrl:vanity,
+      slowMode
+    });
+    serverData[curServer]={...serverData[curServer],name:newName,description:newDesc,color:editingSrvColor,vanityUrl:vanity,slowMode};
     document.getElementById('panelName').textContent=newName;
-    // Update rail button
     const railBtn=document.getElementById(`rail-${curServer}`);
     if(railBtn) railBtn.querySelector('.rail-tip').textContent=newName;
     closeModal('serverSettingsModal');
     toast('Server updated!','success');
+    
+    // Audit log
+    await push(ref(db,`servers/${curServer}/audit`),{
+      action:'settings_update',
+      by:CU.uid,
+      byUsername:CU.username,
+      timestamp:new Date().toISOString()
+    });
   }catch(e){toast(e.message,'error');}
 };
 
@@ -1006,51 +1410,105 @@ async function loadSettingsMembers(){
   if(!snap.exists()){container.innerHTML='<div class="empty-state">No members</div>';return;}
   const members=snap.val();
   const isOwner=serverData[curServer]?.owner===CU.uid;
+  const canKick=hasPermission('kickMembers') || isOwner;
+  const canBan=hasPermission('banMembers') || isOwner;
+  
   for(const [uid,m] of Object.entries(members)){
     const usnap=await get(ref(db,`users/${uid}`));
     const ud=usnap.val();
     if(!ud) continue;
     const div=document.createElement('div');
     div.className='member-manage-row';
-    const roleCls=m.role==='owner'?'role-owner':m.role==='admin'?'role-admin':'role-member';
-    const roleLabel=m.role==='owner'?'Owner':m.role==='admin'?'Admin':'Member';
+    let roleCls='role-member';
+    if(m.role==='owner') roleCls='role-owner';
+    else if(m.role==='admin') roleCls='role-admin';
+    else if(m.role==='mod') roleCls='role-mod';
+    
     div.innerHTML=`
       <div class="member-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-raised)"></div></div>
-      <div class="mmr-info"><div class="mmr-name">${esc(ud.username)}</div><div class="mmr-role"><span class="role-badge ${roleCls}">${roleLabel}</span></div></div>
+      <div class="mmr-info"><div class="mmr-name">${esc(ud.username)}</div><div class="mmr-role"><span class="role-badge ${roleCls}">${m.role}</span></div></div>
       <div class="mmr-actions">
         ${isOwner && uid!==CU.uid?`
-          ${m.role!=='admin'?`<button class="mmr-btn" onclick="promoteAdmin('${uid}','${esc(ud.username)}')">Promote</button>`:''}
-          ${m.role==='admin'?`<button class="mmr-btn" onclick="demoteAdmin('${uid}','${esc(ud.username)}')">Demote</button>`:''}
+          <select class="mmr-btn" onchange="changeMemberRole('${uid}',this.value)">
+            <option value="member" ${m.role==='member'?'selected':''}>Member</option>
+            <option value="mod" ${m.role==='mod'?'selected':''}>Mod</option>
+            <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
+          </select>
+        `:''}
+        ${canKick && uid!==CU.uid && m.role!=='owner'?`
           <button class="mmr-btn kick" onclick="kickMember('${uid}','${esc(ud.username)}')">Kick</button>
+        `:''}
+        ${canBan && uid!==CU.uid && m.role!=='owner'?`
+          <button class="mmr-btn kick" onclick="banMember('${uid}','${esc(ud.username)}')">Ban</button>
         `:''}
       </div>`;
     container.appendChild(div);
   }
 }
 
-window.promoteAdmin = async function(uid,uname){
-  await update(ref(db,`servers/${curServer}/members/${uid}`),{role:'admin'});
-  toast(`${uname} promoted to Admin`,'success');
+window.changeMemberRole = async function(uid,role){
+  await update(ref(db,`servers/${curServer}/members/${uid}`),{role});
+  toast('Role updated','success');
   loadSettingsMembers();
+  
+  // Audit log
+  await push(ref(db,`servers/${curServer}/audit`),{
+    action:'role_change',
+    target:uid,
+    details:role,
+    by:CU.uid,
+    byUsername:CU.username,
+    timestamp:new Date().toISOString()
+  });
 };
-window.demoteAdmin = async function(uid,uname){
-  await update(ref(db,`servers/${curServer}/members/${uid}`),{role:'member'});
-  toast(`${uname} demoted to Member`,'success');
-  loadSettingsMembers();
-};
+
 window.kickMember = async function(uid,uname){
   if(!confirm(`Kick ${uname} from server?`)) return;
   await remove(ref(db,`servers/${curServer}/members/${uid}`));
   await remove(ref(db,`userServers/${uid}/${curServer}`));
   toast(`${uname} kicked`,'success');
   loadSettingsMembers();
+  
+  // Audit log
+  await push(ref(db,`servers/${curServer}/audit`),{
+    action:'member_kick',
+    target:uname,
+    by:CU.uid,
+    byUsername:CU.username,
+    timestamp:new Date().toISOString()
+  });
+};
+
+window.banMember = async function(uid,uname){
+  const reason=prompt('Ban reason (optional):');
+  if(reason===null) return;
+  await set(ref(db,`servers/${curServer}/bans/${uid}`),{
+    username:uname,
+    reason:reason||'No reason',
+    timestamp:new Date().toISOString(),
+    bannedBy:CU.uid
+  });
+  await remove(ref(db,`servers/${curServer}/members/${uid}`));
+  await remove(ref(db,`userServers/${uid}/${curServer}`));
+  toast(`${uname} banned`,'success');
+  loadSettingsMembers();
+  loadBannedList();
+  
+  // Audit log
+  await push(ref(db,`servers/${curServer}/audit`),{
+    action:'member_ban',
+    target:uname,
+    details:reason,
+    by:CU.uid,
+    byUsername:CU.username,
+    timestamp:new Date().toISOString()
+  });
 };
 
 window.deleteServer = async function(){
   if(!confirm('Delete this server? This cannot be undone!')) return;
   const sd=serverData[curServer];
   if(sd?.owner!==CU.uid) return toast('Only the owner can delete','error');
-  // Remove all members from userServers
   const msnap=await get(ref(db,`servers/${curServer}/members`));
   if(msnap.exists()){
     for(const uid of Object.keys(msnap.val())){
@@ -1077,6 +1535,14 @@ window.regenerateInviteLink = async function(){
   const link=`${location.origin}${location.pathname}?invite=${newCode}`;
   document.getElementById('settingsInviteLink').value=link;
   toast('Invite link regenerated!','success');
+  
+  // Audit log
+  await push(ref(db,`servers/${curServer}/audit`),{
+    action:'invite_regenerate',
+    by:CU.uid,
+    byUsername:CU.username,
+    timestamp:new Date().toISOString()
+  });
 };
 
 // ── INVITE FRIENDS TO SERVER ──────────────────────────
@@ -1086,7 +1552,7 @@ window.openInviteFriendsModal = async function(){
   document.getElementById('inviteSubtitle').textContent=`Invite friends to "${sd.name}"`;
   const code=sd.inviteCode||'';
   document.getElementById('inviteLinkInput').value=`${location.origin}${location.pathname}?invite=${code}`;
-  // Load friends not already in server
+  
   const container=document.getElementById('inviteFriendsList');
   container.innerHTML='<div class="empty-state">Loading...</div>';
   const fsnap=await get(ref(db,`friends/${CU.uid}`));
@@ -1097,7 +1563,7 @@ window.openInviteFriendsModal = async function(){
   const friends=fsnap.val();
   let count=0;
   for(const fid of Object.keys(friends)){
-    if(members[fid]){continue;} // already member
+    if(members[fid]) continue;
     const usnap=await get(ref(db,`users/${fid}`));
     const ud=usnap.val();if(!ud) continue;
     count++;
@@ -1144,7 +1610,6 @@ async function checkServerInvites(){
     const invites=snap.val();
     const pending=Object.entries(invites).filter(([,v])=>v.status==='pending');
     if(pending.length>0){
-      // Show notification button on rail
       let notifBtn=document.getElementById('inviteNotifBtn');
       if(!notifBtn){
         notifBtn=document.createElement('div');
@@ -1193,11 +1658,9 @@ window.openServerInvitesModal = async function(){
 
 window.acceptServerInvite = async function(sid,sName){
   try{
-    // Join server
     await set(ref(db,`servers/${sid}/members/${CU.uid}`),{role:'member',joinedAt:new Date().toISOString(),username:CU.username});
     await set(ref(db,`userServers/${CU.uid}/${sid}`),true);
     await update(ref(db,`serverInvites/${CU.uid}/${sid}`),{status:'accepted'});
-    // Load server data
     const ssnap=await get(ref(db,`servers/${sid}`));
     if(ssnap.exists()){
       const sd=ssnap.val();
@@ -1215,18 +1678,16 @@ window.declineServerInvite = async function(sid){
   openServerInvitesModal();
 };
 
-// ── JOIN BY INVITE CODE (URL) ─────────────────────────
+// ── JOIN BY INVITE CODE ─────────────────────────
 async function checkURLInvite(){
   const params=new URLSearchParams(location.search);
   const code=params.get('invite');
   if(!code||!CU) return;
-  // Find server with this code
   const snap=await get(ref(db,'servers'));
   if(!snap.exists()) return;
   const servers=snap.val();
   for(const [sid,sd] of Object.entries(servers)){
     if(sd.inviteCode===code){
-      // Check not already member
       const msnap=await get(ref(db,`servers/${sid}/members/${CU.uid}`));
       if(msnap.exists()){toast('Already in this server!','info');history.replaceState({},'',location.pathname);return;}
       if(confirm(`Join server "${sd.name}"?`)){
@@ -1288,7 +1749,19 @@ function appendMsg(key,msg){
   }else{
     content=`<div class="msg-txt${msg.isSystem?' sys':''}">${esc(msg.text||'')}</div>`;
   }
-  const canDel=msg.senderId===CU?.uid;
+  
+  // Add reactions if any
+  let reactionsHtml='';
+  if(msg.reactions){
+    reactionsHtml='<div style="margin-top:.5rem">';
+    for(const [emoji,users] of Object.entries(msg.reactions)){
+      const active=users[CU.uid]?'active':'';
+      reactionsHtml+=`<span class="reaction ${active}" onclick="addReaction('${key}','${emoji}')">${emoji} ${Object.keys(users).length}</span>`;
+    }
+    reactionsHtml+='</div>';
+  }
+  
+  const canDel=msg.senderId===CU?.uid || hasPermission('manageMessages');
   div.innerHTML=`
     <div class="msg-av-wrap"><div class="msg-av${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.senderAvatar||'?')}</div></div>
     <div class="msg-body">
@@ -1296,11 +1769,30 @@ function appendMsg(key,msg){
         <span class="msg-sender${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.sender)}</span>
         <span class="msg-time">${time}</span>
         ${canDel?`<div class="msg-acts"><button class="msg-act" onclick="delMsg('${key}')" title="Delete">🗑</button></div>`:''}
-      </div>${content}
+      </div>${content}${reactionsHtml}
     </div>`;
   feed.appendChild(div);
   feed.scrollTop=feed.scrollHeight;
 }
+
+window.addReaction = async function(msgId,emoji){
+  if(!CU) return;
+  let mRef;
+  if(curServer==='dms'&&curDmUid){
+    const dmId=[CU.uid,curDmUid].sort().join('_');
+    mRef=ref(db,`dms/${dmId}/messages/${msgId}/reactions/${emoji}`);
+  }else{
+    mRef=ref(db,`servers/${curServer}/channels/${curChannel}/messages/${msgId}/reactions/${emoji}`);
+  }
+  const snap=await get(mRef);
+  const users=snap.val()||{};
+  if(users[CU.uid]){
+    delete users[CU.uid];
+  }else{
+    users[CU.uid]=true;
+  }
+  await set(mRef,users);
+};
 
 window.sendMsg = async function(){
   if(!CU) return;
@@ -1506,7 +1998,7 @@ async function loadServerMembers(sid){
     div.innerHTML=`
       <div class="member-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-deep)"></div></div>
       <div class="member-name">${esc(ud.username)}</div>
-      <div class="member-role">${m.role==='owner'?'👑':m.role==='admin'?'⭐':''}</div>`;
+      <div class="member-role">${m.role==='owner'?'👑':m.role==='admin'?'⭐':m.role==='mod'?'🛡️':''}</div>`;
     list.appendChild(div);
   }
 }
@@ -1515,22 +2007,20 @@ function loadMembersPanel(members){
   document.getElementById('membersList').innerHTML='';
 }
 
-// ── PROFILE POPUP (Discord style) ────────────────────
+// ── PROFILE POPUP ────────────────────────────────────
 window.showProfilePopup = async function(uid, event){
   if(!uid||uid==='system') return;
   closeProfilePopup();
   const snap=await get(ref(db,`users/${uid}`));
   const ud=snap.val();if(!ud) return;
-  // Position
   const popup=document.getElementById('profilePopup');
-  // Set banner color based on avatar
   const colors=['#7a5fff','#38bdf8','#4ade80','#f87171','#fbbf24','#e879f9','#fb923c'];
   const ci=ud.username.charCodeAt(0)%colors.length;
   document.getElementById('ppBanner').style.background=`linear-gradient(135deg,${colors[ci]},${colors[(ci+2)%colors.length]})`;
   document.getElementById('ppAv').textContent=ud.avatar||'?';
   document.getElementById('ppUsername').textContent=ud.username;
   document.getElementById('ppTag').textContent=ud.isOnline?'🟢 Online':'⚫ Offline';
-  // Badges
+  
   const badgesEl=document.getElementById('ppBadges');
   badgesEl.innerHTML='';
   const badges=ud.badges||[];
@@ -1540,20 +2030,19 @@ window.showProfilePopup = async function(uid, event){
   const badgesSec=document.getElementById('ppBadgesSection');
   badgesSec.style.display=badges.length>0?'block':'none';
   document.getElementById('ppBadgeDiv').style.display=badges.length>0?'block':'none';
-  // Bio
+  
   const bioEl=document.getElementById('ppBio');
   const bioLabel=document.getElementById('ppBioLabel');
   if(ud.bio){bioEl.textContent=ud.bio;bioLabel.style.display='block';}
   else{bioEl.textContent='';bioLabel.style.display='none';}
-  // Since
+  
   document.getElementById('ppSince').textContent=new Date(ud.createdAt||Date.now()).toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  // Actions
+  
   const actionsEl=document.getElementById('ppActions');
   actionsEl.innerHTML='';
   if(uid===CU.uid){
     actionsEl.innerHTML=`<button class="pp-action-btn primary" onclick="closeProfilePopup();openModal('editProfileModal');initEditProfile()">✏️ Edit Profile</button>`;
   }else{
-    // Check if friend
     const fsnap=await get(ref(db,`friends/${CU.uid}/${uid}`));
     if(fsnap.exists()){
       actionsEl.innerHTML=`<button class="pp-action-btn primary" onclick="closeProfilePopup();startDM('${uid}','${esc(ud.username)}');selectServer('dms',document.getElementById('railDMs'))">💬 Message</button>
@@ -1562,7 +2051,7 @@ window.showProfilePopup = async function(uid, event){
       actionsEl.innerHTML=`<button class="pp-action-btn primary" onclick="sendFriendReqDirect('${uid}','${esc(ud.username)}')">+ Add Friend</button>`;
     }
   }
-  // Position popup
+  
   popup.style.display='block';
   if(event){
     const x=Math.min(event.clientX+15,window.innerWidth-330);
@@ -1576,7 +2065,6 @@ window.showProfilePopup = async function(uid, event){
     popup.style.left='';
     popup.style.transform='translateY(-50%)';
   }
-  // Close on outside click
   setTimeout(()=>{
     document.addEventListener('click',closePopupOutside,{once:true});
   },10);
