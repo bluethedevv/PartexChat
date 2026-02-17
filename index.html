@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PartexChat - Next Gen Messaging</title>
+<title>PartexChat - GalaxyPLUS</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -28,6 +28,7 @@
   --gold: #f59e0b;
   --purple: #c084fc;
   --purple-soft: rgba(192,132,252,0.12);
+  --galaxy: linear-gradient(135deg, #7a5fff, #c084fc, #38bdf8);
   --text-primary: #f0f0f5;
   --text-secondary: #9090a0;
   --text-muted: #5a5a6a;
@@ -40,6 +41,44 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bg-elevated);border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ═══════════ THEMES ═══════════ */
+body.theme-dark {
+  --bg-void: #050507;
+  --bg-deep: #0c0c10;
+  --bg-base: #111116;
+  --bg-raised: #18181f;
+  --bg-elevated: #1f1f28;
+  --bg-hover: #26262f;
+  --text-primary: #f0f0f5;
+  --text-secondary: #9090a0;
+  --text-muted: #5a5a6a;
+}
+body.theme-light {
+  --bg-void: #f5f5f7;
+  --bg-deep: #e8e8ed;
+  --bg-base: #ffffff;
+  --bg-raised: #f2f2f7;
+  --bg-elevated: #e5e5ea;
+  --bg-hover: #d8d8dd;
+  --border: rgba(0,0,0,0.06);
+  --border-active: rgba(122,95,255,0.35);
+  --text-primary: #1c1c1e;
+  --text-secondary: #3a3a3c;
+  --text-muted: #8e8e93;
+}
+body.theme-midnight {
+  --bg-void: #0a0a14;
+  --bg-deep: #12121e;
+  --bg-base: #1a1a28;
+  --bg-raised: #222232;
+  --bg-elevated: #2a2a3c;
+  --bg-hover: #323246;
+  --accent: #5f5fff;
+  --text-primary: #e0e0ff;
+  --text-secondary: #a0a0c0;
+  --text-muted: #606080;
+}
 
 /* ═══════════ AUTH ═══════════ */
 #authSection{display:flex;height:100vh;background:var(--bg-void);position:relative;overflow:hidden}
@@ -77,8 +116,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .rail-btn.dm-active{background:var(--blue);border-color:var(--blue);border-radius:14px}
 .rail-btn.add-btn{color:var(--green);font-size:1.5rem}
 .rail-btn.add-btn:hover{background:var(--green-soft);border-color:rgba(74,222,128,0.25);color:var(--green)}
+.rail-btn.galaxy-plus{background:var(--galaxy);border:none;color:#fff}
 .rail-tip{position:absolute;left:calc(100% + 10px);background:var(--bg-elevated);border:1px solid var(--border);padding:.35rem .65rem;border-radius:6px;font-size:.78rem;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;color:var(--text-primary)}
 .rail-btn:hover .rail-tip{opacity:1}
+.boost-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--galaxy);border-radius:50%;color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg-void);animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
 
 /* ═══════════ CHANNELS PANEL ═══════════ */
 .ch-panel{width:255px;background:var(--bg-deep);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
@@ -121,7 +163,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 /* User bar */
 .user-bar{margin-top:auto;padding:.7rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.6rem;cursor:pointer;transition:background .15s;flex-shrink:0}
 .user-bar:hover{background:var(--bg-elevated)}
-.user-bar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}
+.user-bar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0;position:relative}
+.user-bar-av.galaxy-plus{background:var(--galaxy)}
+.boost-icon{position:absolute;top:-5px;right:-5px;font-size:.7rem;background:var(--galaxy);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg-void)}
 .user-bar-info{flex:1;min-width:0}
 .user-bar-name{font-size:.85rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-bar-status{font-size:.7rem;color:var(--green)}
@@ -145,6 +189,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .msg-av-wrap{width:36px;flex-shrink:0}
 .msg-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s}
 .msg-av:hover{opacity:.8}
+.msg-av.galaxy-plus{background:var(--galaxy)}
 .msg-body{flex:1;min-width:0}
 .msg-meta{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.15rem}
 .msg-sender{font-size:.875rem;font-weight:600;color:var(--text-primary);cursor:pointer}
@@ -160,6 +205,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .msg-group:hover .msg-acts{display:flex}
 .msg-act{width:26px;height:26px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .msg-act:hover{background:var(--red-soft);border-color:rgba(248,113,113,0.25);color:var(--red)}
+.msg-act.galaxy-plus:hover{background:var(--purple-soft);color:var(--purple)}
 .input-zone{padding:0 1.25rem 1.25rem;flex-shrink:0}
 .input-box{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);padding:.7rem .7rem .5rem;transition:border-color .2s}
 .input-box:focus-within{border-color:rgba(122,95,255,0.3)}
@@ -183,6 +229,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .member-row{display:flex;align-items:center;gap:.6rem;padding:.45rem .6rem;border-radius:8px;cursor:pointer;transition:background .15s}
 .member-row:hover{background:var(--bg-elevated)}
 .member-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;position:relative;flex-shrink:0}
+.member-av.galaxy-plus{background:var(--galaxy)}
 .member-name{flex:1;font-size:.875rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .member-role{font-size:.65rem;color:var(--accent);font-weight:600}
 
@@ -206,6 +253,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center}
 .mbox{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);padding:2rem;width:90%;max-width:480px;position:relative;max-height:90vh;overflow-y:auto}
 .mbox::before{content:'';position:absolute;inset:-1px;border-radius:var(--rlg);padding:1px;background:linear-gradient(135deg,rgba(122,95,255,.3),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.mbox.large{max-width:640px}
 .mtitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:.3rem}
 .msub{color:var(--text-muted);font-size:.82rem;margin-bottom:1.4rem}
 .mi,.mta,.msel{width:100%;padding:.72rem 1rem;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--r);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:.875rem;margin-bottom:.75rem;outline:none;transition:border-color .2s,box-shadow .2s}
@@ -219,6 +267,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .mbtn-s:hover{background:var(--bg-hover);color:var(--text-primary)}
 .mbtn-d{flex:1;padding:.75rem;background:var(--red-soft);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;transition:all .15s;font-size:.88rem}
 .mbtn-d:hover{background:var(--red);color:#fff}
+.mbtn-g{flex:1;padding:.75rem;background:var(--galaxy);border:none;border-radius:var(--r);color:#fff;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;transition:opacity .15s;font-size:.88rem}
+.mbtn-g:hover{opacity:.85}
 .field-grp{margin-bottom:.85rem}
 .flabel{display:block;color:var(--text-secondary);font-size:.75rem;font-weight:600;margin-bottom:.35rem;letter-spacing:.04em;text-transform:uppercase}
 .img-modal-box{background:transparent;border:none;max-width:90vw;text-align:center;padding:0}
@@ -228,8 +278,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .profile-popup{display:none;position:fixed;z-index:600;width:320px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7)}
 .profile-popup::before{content:'';position:absolute;inset:-1px;border-radius:var(--rlg);padding:1px;background:linear-gradient(135deg,rgba(122,95,255,.35),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .pp-banner{height:80px;background:linear-gradient(135deg,var(--accent),var(--blue));position:relative;flex-shrink:0}
+.pp-banner.galaxy-plus{background:var(--galaxy)}
 .pp-av-wrap{position:absolute;bottom:-22px;left:16px}
 .pp-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff;border:4px solid var(--bg-raised)}
+.pp-av.galaxy-plus{background:var(--galaxy)}
 .pp-body{padding:28px 16px 16px}
 .pp-username{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800}
 .pp-tag{font-size:.8rem;color:var(--text-muted);margin-top:1px}
@@ -238,6 +290,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .pp-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:4px}
 .badge{display:flex;align-items:center;gap:.35rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;padding:.3rem .65rem;font-size:.75rem;font-weight:600;color:var(--text-secondary)}
 .badge.og{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--amber)}
+.badge.galaxy-plus{background:var(--galaxy);border:none;color:#fff}
 .badge-icon{font-size:.95rem}
 .pp-bio{color:var(--text-secondary);font-size:.83rem;line-height:1.5}
 .pp-mutual{color:var(--text-secondary);font-size:.83rem}
@@ -246,12 +299,31 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .pp-action-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
 .pp-action-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .pp-action-btn.primary:hover{background:#6a4fee}
+.pp-action-btn.galaxy-plus{background:var(--galaxy);border:none;color:#fff}
 .pp-close{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,.4);border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
 
+/* ═══════════ USER SETTINGS ═══════════ */
+.user-settings-modal{max-width:720px}
+.settings-sidebar{display:flex;gap:1rem}
+.settings-menu{width:160px;background:var(--bg-deep);border-radius:var(--r);padding:.5rem}
+.settings-menu-item{padding:.6rem .8rem;border-radius:6px;cursor:pointer;color:var(--text-secondary);font-size:.85rem;transition:all .15s;margin-bottom:2px}
+.settings-menu-item:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.settings-menu-item.active{background:var(--accent-soft);color:var(--text-primary)}
+.settings-content{flex:1;min-height:400px;max-height:60vh;overflow-y:auto;padding:0 .5rem}
+.theme-option{display:flex;align-items:center;gap:.5rem;padding:.75rem;border:1px solid var(--border);border-radius:8px;cursor:pointer;margin-bottom:.5rem;transition:all .15s}
+.theme-option:hover{background:var(--bg-hover);border-color:var(--accent)}
+.theme-option.active{background:var(--accent-soft);border-color:var(--accent)}
+.theme-color{width:30px;height:30px;border-radius:50%}
+.boost-card{background:var(--galaxy);border-radius:var(--r);padding:1rem;color:#fff;margin-bottom:1rem}
+.boost-stats{display:flex;gap:1rem;margin:.5rem 0}
+.boost-stat{flex:1;background:rgba(255,255,255,0.1);border-radius:8px;padding:.5rem;text-align:center}
+.boost-progress{height:6px;background:rgba(255,255,255,0.2);border-radius:3px;margin:.5rem 0}
+.boost-progress-fill{height:100%;background:#fff;border-radius:3px;width:0%}
+
 /* ═══════════ SERVER SETTINGS ═══════════ */
-.settings-modal{max-width:640px}
-.settings-tabs{display:flex;gap:2px;margin-bottom:1.5rem;background:var(--bg-deep);padding:4px;border-radius:8px}
-.stab{flex:1;padding:.55rem;background:transparent;border:none;color:var(--text-muted);border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:500;transition:all .2s;font-family:'DM Sans',sans-serif}
+.settings-modal{max-width:720px}
+.settings-tabs{display:flex;flex-wrap:wrap;gap:2px;margin-bottom:1.5rem;background:var(--bg-deep);padding:4px;border-radius:8px}
+.stab{flex:1;min-width:80px;padding:.55rem;background:transparent;border:none;color:var(--text-muted);border-radius:6px;cursor:pointer;font-size:.8rem;font-weight:500;transition:all .2s;font-family:'DM Sans',sans-serif}
 .stab.active{background:var(--bg-elevated);color:var(--text-primary)}
 .stab-content{display:none}
 .stab-content.active{display:block}
@@ -276,6 +348,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .role-admin{background:var(--accent-soft);border:1px solid rgba(122,95,255,.25);color:var(--accent)}
 .role-mod{background:var(--green-soft);border:1px solid rgba(74,222,128,.25);color:var(--green)}
 .role-member{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted)}
+.role-booster{background:var(--galaxy);border:none;color:#fff}
 .color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
 .color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
 .color-opt:hover,.color-opt.selected{border-color:#fff;transform:scale(1.15)}
@@ -302,6 +375,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 .toast.show{transform:translateX(0)}
 .toast.success{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)}
 .toast.error{border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.05)}
+.toast.galaxy-plus{background:var(--galaxy);color:#fff;border:none}
 
 /* Empty state */
 .empty-state{color:var(--text-muted);font-size:.82rem;padding:.75rem;text-align:center}
@@ -310,7 +384,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
 @media(max-width:600px){.ch-panel{display:none}.auth-left{display:none}.auth-right{width:100%}}
 </style>
 </head>
-<body>
+<body class="theme-dark">
 
 <!-- ══════════ AUTH ══════════ -->
 <div id="authSection">
@@ -321,6 +395,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
       <div class="auth-feature"><div class="auth-feat-icon">👥</div>Friends &amp; Direct Messages</div>
       <div class="auth-feature"><div class="auth-feat-icon">📡</div>Custom servers &amp; channels</div>
       <div class="auth-feature"><div class="auth-feat-icon">📷</div>Image sharing</div>
+      <div class="auth-feature"><div class="auth-feat-icon" style="background:var(--galaxy);color:#fff">⭐</div>GalaxyPLUS - Server Boosts & more</div>
     </div>
   </div>
   <div class="auth-right">
@@ -377,6 +452,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
         <div class="ch-panel-actions" id="panelActions" style="display:none">
           <button class="ch-act-btn" id="inviteBtn" onclick="openInviteFriendsModal()" title="Invite Friends">📨</button>
           <button class="ch-act-btn" id="settingsBtn" onclick="openServerSettings()" title="Server Settings">⚙️</button>
+          <button class="ch-act-btn" id="boostBtn" onclick="openServerBoostModal()" title="Boost Server" style="background:var(--galaxy);color:#fff">🚀</button>
         </div>
       </div>
     </div>
@@ -401,11 +477,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
         <div id="friendReqList"></div>
       </div>
     </div>
-    <div class="user-bar" onclick="openOwnProfile()">
+    <div class="user-bar" onclick="openUserSettings()">
       <div class="user-bar-av" id="ubAv">U</div>
       <div class="user-bar-info">
         <div class="user-bar-name" id="ubName">Username</div>
-        <div class="user-bar-status">● Online</div>
+        <div class="user-bar-status" id="ubStatus">● Online</div>
       </div>
       <button class="ub-logout" onclick="event.stopPropagation();doLogout()" title="Logout">⎋</button>
     </div>
@@ -488,7 +564,188 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
   </div>
 </div>
 
-<!-- ══════════ MODALS ══════════ -->
+<!-- ══════════ USER SETTINGS ══════════ -->
+<div class="modal-bg" id="userSettingsModal">
+  <div class="mbox large user-settings-modal">
+    <div class="mtitle">User Settings</div>
+    <div class="msub">Customize your experience</div>
+    <div class="settings-sidebar">
+      <div class="settings-menu">
+        <div class="settings-menu-item active" onclick="switchUserSettingsTab('profile',this)">👤 Profile</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('appearance',this)">🎨 Appearance</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('notifications',this)">🔔 Notifications</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('privacy',this)">🔒 Privacy</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('language',this)">🌍 Language</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('galaxy',this)">⭐ GalaxyPLUS</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('boosts',this)">🚀 Server Boosts</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('devices',this)">📱 Devices</div>
+        <div class="settings-menu-item" onclick="switchUserSettingsTab('billing',this)">💳 Billing</div>
+      </div>
+      <div class="settings-content">
+        <!-- Profile -->
+        <div class="stab-content active" id="settings-profile">
+          <div class="field-grp"><label class="flabel">Username</label><input type="text" class="mi" id="settingsUsername" placeholder="Username"></div>
+          <div class="field-grp"><label class="flabel">Email</label><input type="email" class="mi" id="settingsEmail" placeholder="Email" disabled></div>
+          <div class="field-grp"><label class="flabel">Bio</label><textarea class="mta" id="settingsBio" placeholder="Tell everyone about yourself..."></textarea></div>
+          <div class="field-grp"><label class="flabel">Status</label>
+            <select class="msel" id="settingsStatus">
+              <option value="online">🟢 Online</option>
+              <option value="idle">🌙 Idle</option>
+              <option value="dnd">⛔ Do Not Disturb</option>
+              <option value="offline">⚫ Invisible</option>
+            </select>
+          </div>
+          <div class="mbtns"><button class="mbtn-p" onclick="saveUserSettings()">Save Changes</button></div>
+        </div>
+        
+        <!-- Appearance -->
+        <div class="stab-content" id="settings-appearance">
+          <div class="field-grp"><label class="flabel">Theme</label>
+            <div class="theme-option" onclick="setTheme('dark')">
+              <div class="theme-color" style="background:#050507"></div>
+              <span>Dark Mode</span>
+            </div>
+            <div class="theme-option" onclick="setTheme('light')">
+              <div class="theme-color" style="background:#ffffff;border:1px solid #ccc"></div>
+              <span>Light Mode</span>
+            </div>
+            <div class="theme-option" onclick="setTheme('midnight')">
+              <div class="theme-color" style="background:#1a1a28"></div>
+              <span>Midnight Blue</span>
+            </div>
+          </div>
+          <div class="field-grp"><label class="flabel">Message Display</label>
+            <select class="msel" id="messageDisplay">
+              <option value="cozy">Cozy</option>
+              <option value="compact">Compact</option>
+            </select>
+          </div>
+          <div class="field-grp"><label class="flabel">Font Size</label>
+            <input type="range" id="fontSize" min="12" max="18" value="14" class="mi">
+          </div>
+          <div class="mbtns"><button class="mbtn-p" onclick="saveAppearanceSettings()">Apply</button></div>
+        </div>
+        
+        <!-- GalaxyPLUS -->
+        <div class="stab-content" id="settings-galaxy">
+          <div class="boost-card">
+            <h3 style="font-family:'Syne';margin-bottom:.5rem">✨ GalaxyPLUS</h3>
+            <p>Unlock exclusive features and support PartexChat</p>
+          </div>
+          <div class="boost-stats">
+            <div class="boost-stat">
+              <div style="font-size:1.5rem;font-weight:700">3</div>
+              <div style="font-size:.7rem">Server Boosts</div>
+            </div>
+            <div class="boost-stat">
+              <div style="font-size:1.5rem;font-weight:700">⬆️ 50MB</div>
+              <div style="font-size:.7rem">File Upload</div>
+            </div>
+            <div class="boost-stat">
+              <div style="font-size:1.5rem;font-weight:700">🎨</div>
+              <div style="font-size:.7rem">Animated Avatar</div>
+            </div>
+          </div>
+          <div class="field-grp"><label class="flabel">GalaxyPLUS Perks</label>
+            <ul style="color:var(--text-secondary);margin-left:1.5rem">
+              <li>✨ 3 Server Boosts (instead of 1)</li>
+              <li>🚀 Upload files up to 50MB</li>
+              <li>🎨 Animated profile picture</li>
+              <li>⭐ Custom profile badge</li>
+              <li>🌈 Custom themes</li>
+              <li>🔊 Higher voice quality</li>
+              <li>📁 Extended message history</li>
+              <li>💬 Priority support</li>
+            </ul>
+          </div>
+          <div class="mbtns">
+            <button class="mbtn-g" onclick="activateGalaxyPlus()" style="width:100%">Upgrade to GalaxyPLUS</button>
+          </div>
+        </div>
+        
+        <!-- Server Boosts -->
+        <div class="stab-content" id="settings-boosts">
+          <div id="boostsList"></div>
+          <div class="field-grp" style="margin-top:1rem">
+            <label class="flabel">Available Boosts: <span id="availableBoosts">0</span></label>
+            <div class="boost-progress">
+              <div class="boost-progress-fill" id="boostProgress" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Other settings (placeholders) -->
+        <div class="stab-content" id="settings-notifications">
+          <div class="field-grp"><label class="flabel">Push Notifications</label>
+            <select class="msel">
+              <option>All Messages</option>
+              <option>Only Mentions</option>
+              <option>Nothing</option>
+            </select>
+          </div>
+        </div>
+        <div class="stab-content" id="settings-privacy">
+          <div class="field-grp"><label class="flabel">Who can add you as friend?</label>
+            <select class="msel">
+              <option>Everyone</option>
+              <option>Friends of friends</option>
+              <option>No one</option>
+            </select>
+          </div>
+        </div>
+        <div class="stab-content" id="settings-language">
+          <div class="field-grp"><label class="flabel">Language</label>
+            <select class="msel">
+              <option>English</option>
+              <option>German</option>
+              <option>Turkish</option>
+            </select>
+          </div>
+        </div>
+        <div class="stab-content" id="settings-devices">
+          <div class="empty-state">No devices connected</div>
+        </div>
+        <div class="stab-content" id="settings-billing">
+          <div class="empty-state">No billing information</div>
+        </div>
+      </div>
+    </div>
+    <div class="mbtns" style="margin-top:1rem">
+      <button class="mbtn-s" onclick="closeModal('userSettingsModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SERVER BOOST MODAL ══════════ -->
+<div class="modal-bg" id="serverBoostModal">
+  <div class="mbox">
+    <div class="mtitle">🚀 Boost this Server</div>
+    <div class="msub">Support the server and unlock perks</div>
+    <div id="boostInfo"></div>
+    <div class="boost-stats" style="margin:1rem 0">
+      <div class="boost-stat">
+        <div style="font-size:1.5rem;font-weight:700" id="currentBoosts">0</div>
+        <div>Current Boosts</div>
+      </div>
+      <div class="boost-stat">
+        <div style="font-size:1.5rem;font-weight:700" id="boostLevel">0</div>
+        <div>Boost Level</div>
+      </div>
+    </div>
+    <div class="boost-progress">
+      <div class="boost-progress-fill" id="boostLevelProgress" style="width:0%"></div>
+    </div>
+    <div style="margin:1rem 0;color:var(--text-secondary)" id="boostPerks">
+      • Level 1: 50 emoji slots<br>
+      • Level 2: 100 emoji slots, HD video<br>
+      • Level 3: 250 emoji slots, vanity URL
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-g" onclick="boostServer()" id="boostServerBtn">Boost Server (1 available)</button>
+      <button class="mbtn-s" onclick="closeModal('serverBoostModal')">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- Create Server -->
 <div class="modal-bg" id="createServerModal">
@@ -577,7 +834,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
   </div>
 </div>
 
-<!-- Server Invites Inbox (pending invites you received) -->
+<!-- Server Invites Inbox -->
 <div class="modal-bg" id="serverInvitesModal">
   <div class="mbox">
     <div class="mtitle">Server Invites</div>
@@ -598,6 +855,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
       <button class="stab" onclick="switchSettingsTab('channels',this)">Channels</button>
       <button class="stab" onclick="switchSettingsTab('invites',this)">Invites</button>
       <button class="stab" onclick="switchSettingsTab('moderation',this)">Moderation</button>
+      <button class="stab" onclick="switchSettingsTab('boosts',this)">🚀 Boosts</button>
       <button class="stab" onclick="switchSettingsTab('audit',this)">Audit Log</button>
       <button class="stab" onclick="switchSettingsTab('danger',this)">Danger</button>
     </div>
@@ -618,6 +876,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
         </div>
       </div>
       <div class="field-grp"><label class="flabel">Description</label><textarea class="mta" id="editSrvDesc" placeholder="What's this server about?"></textarea></div>
+      <div class="field-grp"><label class="flabel">Boost Level</label>
+        <div id="serverBoostLevel" style="font-size:1.2rem;margin-bottom:.5rem">Level 0</div>
+        <div class="boost-progress"><div class="boost-progress-fill" id="serverBoostProgress" style="width:0%"></div></div>
+      </div>
       <div class="mbtns"><button class="mbtn-s" onclick="closeModal('serverSettingsModal')">Cancel</button><button class="mbtn-p" onclick="saveServerSettings()">Save Changes</button></div>
     </div>
 
@@ -670,6 +932,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text
       <div class="danger-zone" style="margin-top:1rem">
         <div class="danger-title">🔨 Banned Members</div>
         <div id="bannedList"></div>
+      </div>
+    </div>
+
+    <!-- Boosts -->
+    <div class="stab-content" id="stab-boosts">
+      <div class="boost-card">
+        <h3>🚀 Server Boosts</h3>
+        <p>This server has been boosted <span id="boostCount">0</span> times</p>
+      </div>
+      <div class="boost-stats" style="margin:1rem 0">
+        <div class="boost-stat">
+          <div style="font-size:1.5rem;font-weight:700" id="boostLevelDisplay">0</div>
+          <div>Boost Level</div>
+        </div>
+        <div class="boost-stat">
+          <div style="font-size:1.5rem;font-weight:700" id="boostNextLevel">1</div>
+          <div>Next Level</div>
+        </div>
+      </div>
+      <div class="boost-progress">
+        <div class="boost-progress-fill" id="boostLevelProgressBar" style="width:0%"></div>
+      </div>
+      <div style="margin-top:1rem" id="boostPerksList">
+        <h4>Current Perks:</h4>
+        <ul style="color:var(--text-secondary)">
+          <li>Level 1: 50 emoji slots, 10MB upload</li>
+          <li>Level 2: 100 emoji slots, 25MB upload, HD video</li>
+          <li>Level 3: 250 emoji slots, 50MB upload, Vanity URL</li>
+        </ul>
       </div>
     </div>
 
@@ -792,6 +1083,12 @@ let selectedSrvColor = '#7a5fff';
 let editingSrvColor  = '#7a5fff';
 let selectedRoleColor = '#7a5fff';
 let editingRoleId = null;
+let galaxyPlusUsers = ['abdikanialkanat088@gmail.com', 'kenebagimlisi@gmail.com']; // Premium users
+let userSettings = {
+  theme: 'dark',
+  messageDisplay: 'cozy',
+  fontSize: 14
+};
 
 // ── HELPERS ────────────────────────────────────────────
 window.toast = function(msg, type='info'){
@@ -836,14 +1133,29 @@ window.doRegister = async function(){
     if(uCheck.exists()) return showErr('regErr','Username already taken');
     const cred=await createUserWithEmailAndPassword(auth,em,pw);
     const uid=cred.user.uid;
+    
+    // Check if user should get GalaxyPLUS
+    const badges = ['og'];
+    if(galaxyPlusUsers.includes(em.toLowerCase())){
+      badges.push('galaxy-plus');
+    }
+    
     await set(ref(db,`users/${uid}`),{
       username:un,email:em,avatar:un[0].toUpperCase(),
       bio:'',status:'online',
       createdAt:new Date().toISOString(),
       isOnline:true,lastSeen:new Date().toISOString(),
-      badges:['og']
+      badges:badges,
+      galaxyPlus: galaxyPlusUsers.includes(em.toLowerCase()),
+      galaxyPlusExpires: galaxyPlusUsers.includes(em.toLowerCase()) ? 
+        new Date(Date.now() + 30*24*60*60*1000).toISOString() : null,
+      boosts: galaxyPlusUsers.includes(em.toLowerCase()) ? 3 : 1
     });
     await set(ref(db,`usernames/${un.toLowerCase()}`),uid);
+    
+    if(galaxyPlusUsers.includes(em.toLowerCase())){
+      toast('✨ GalaxyPLUS activated for your account!','galaxy-plus');
+    }
   }catch(e){showErr('regErr',e.message);}
 };
 
@@ -853,8 +1165,11 @@ window.doLogin = async function(){
   const em=document.getElementById('loginEmail').value.trim();
   const pw=document.getElementById('loginPw').value;
   if(!em||!pw) return showErr('loginErr','Please fill all fields');
-  try{await signInWithEmailAndPassword(auth,em,pw);}
-  catch(e){showErr('loginErr','Invalid email or password');}
+  try{
+    await signInWithEmailAndPassword(auth,em,pw);
+  }catch(e){
+    showErr('loginErr','Invalid email or password');
+  }
 };
 
 // ── LOGOUT ────────────────────────────────────────────
@@ -872,29 +1187,231 @@ onAuthStateChanged(auth, async user=>{
     let snap=await get(ref(db,`users/${user.uid}`));
     if(!snap.exists()){
       const un=user.email.split('@')[0];
+      const badges = ['og'];
+      if(galaxyPlusUsers.includes(user.email.toLowerCase())){
+        badges.push('galaxy-plus');
+      }
+      
       await set(ref(db,`users/${user.uid}`),{
         username:un,email:user.email,avatar:un[0].toUpperCase(),
         bio:'',status:'online',createdAt:new Date().toISOString(),
-        isOnline:true,lastSeen:new Date().toISOString(),badges:['og']
+        isOnline:true,lastSeen:new Date().toISOString(),
+        badges:badges,
+        galaxyPlus: galaxyPlusUsers.includes(user.email.toLowerCase()),
+        galaxyPlusExpires: galaxyPlusUsers.includes(user.email.toLowerCase()) ? 
+          new Date(Date.now() + 30*24*60*60*1000).toISOString() : null,
+        boosts: galaxyPlusUsers.includes(user.email.toLowerCase()) ? 3 : 1
       });
       await set(ref(db,`usernames/${un.toLowerCase()}`),user.uid);
       snap=await get(ref(db,`users/${user.uid}`));
     }
     CU={uid:user.uid,...snap.val()};
+    
+    // Check GalaxyPLUS status
+    if(CU.galaxyPlusExpires && new Date(CU.galaxyPlusExpires) < new Date()){
+      CU.galaxyPlus = false;
+      CU.badges = CU.badges.filter(b => b !== 'galaxy-plus');
+      CU.boosts = 1;
+      await update(ref(db,`users/${CU.uid}`),{galaxyPlus:false,boosts:1,badges:CU.badges});
+    }
+    
     await update(ref(db,`users/${user.uid}`),{isOnline:true,lastSeen:new Date().toISOString()});
-    document.getElementById('ubAv').textContent=CU.avatar||'U';
+    
+    const avEl = document.getElementById('ubAv');
+    avEl.textContent=CU.avatar||'U';
+    if(CU.galaxyPlus) avEl.classList.add('galaxy-plus');
+    else avEl.classList.remove('galaxy-plus');
+    
     document.getElementById('ubName').textContent=CU.username;
+    document.getElementById('ubStatus').textContent = CU.status === 'online' ? '● Online' : 
+                                                      CU.status === 'idle' ? '🌙 Idle' : 
+                                                      CU.status === 'dnd' ? '⛔ Do Not Disturb' : '⚫ Offline';
+    
     document.getElementById('authSection').style.display='none';
     document.getElementById('mainApp').style.display='flex';
     selectServer('dms',document.getElementById('railDMs'));
     loadMyServers();
     checkServerInvites();
+    
+    // Apply saved theme
+    const themeSnap = await get(ref(db,`users/${CU.uid}/settings/theme`));
+    if(themeSnap.exists()){
+      userSettings.theme = themeSnap.val();
+      document.body.className = `theme-${userSettings.theme}`;
+    }
   }else{
     CU=null;
     document.getElementById('authSection').style.display='flex';
     document.getElementById('mainApp').style.display='none';
   }
 });
+
+// ── USER SETTINGS ─────────────────────────────────────
+window.openUserSettings = function(){
+  document.getElementById('settingsUsername').value = CU.username;
+  document.getElementById('settingsEmail').value = CU.email;
+  document.getElementById('settingsBio').value = CU.bio || '';
+  document.getElementById('settingsStatus').value = CU.status || 'online';
+  
+  // Load boosts
+  document.getElementById('availableBoosts').textContent = CU.boosts || 1;
+  const boostProgress = ((CU.usedBoosts || 0) / (CU.boosts || 1)) * 100;
+  document.getElementById('boostProgress').style.width = boostProgress + '%';
+  
+  loadUserBoosts();
+  openModal('userSettingsModal');
+};
+
+window.switchUserSettingsTab = function(tab, el){
+  document.querySelectorAll('.settings-menu-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('#userSettingsModal .stab-content').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(`settings-${tab}`).classList.add('active');
+};
+
+window.setTheme = function(theme){
+  userSettings.theme = theme;
+  document.body.className = `theme-${theme}`;
+  document.querySelectorAll('.theme-option').forEach(o=>o.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+};
+
+window.saveUserSettings = async function(){
+  const username = document.getElementById('settingsUsername').value.trim();
+  const bio = document.getElementById('settingsBio').value.trim();
+  const status = document.getElementById('settingsStatus').value;
+  
+  if(!username) return toast('Username cannot be empty','error');
+  
+  await update(ref(db,`users/${CU.uid}`),{
+    username, bio, status,
+    avatar: username[0].toUpperCase()
+  });
+  
+  CU = {...CU, username, bio, status, avatar: username[0].toUpperCase()};
+  document.getElementById('ubName').textContent = username;
+  document.getElementById('ubAv').textContent = username[0].toUpperCase();
+  document.getElementById('ubStatus').textContent = status === 'online' ? '● Online' : 
+                                                    status === 'idle' ? '🌙 Idle' : 
+                                                    status === 'dnd' ? '⛔ Do Not Disturb' : '⚫ Offline';
+  
+  toast('Profile updated!','success');
+  closeModal('userSettingsModal');
+};
+
+window.saveAppearanceSettings = function(){
+  const display = document.getElementById('messageDisplay').value;
+  const fontSize = document.getElementById('fontSize').value;
+  
+  // Save to user settings
+  update(ref(db,`users/${CU.uid}/settings`),{
+    messageDisplay: display,
+    fontSize: fontSize,
+    theme: userSettings.theme
+  });
+  
+  document.documentElement.style.fontSize = fontSize + 'px';
+  toast('Appearance updated!','success');
+};
+
+window.activateGalaxyPlus = function(){
+  toast('✨ GalaxyPLUS is coming soon!','galaxy-plus');
+};
+
+async function loadUserBoosts(){
+  const container = document.getElementById('boostsList');
+  container.innerHTML = '';
+  
+  const snap = await get(ref(db,`servers`));
+  if(!snap.exists()) return;
+  
+  const servers = snap.val();
+  let boostedServers = [];
+  
+  for(const [sid, srv] of Object.entries(servers)){
+    if(srv.boosts && srv.boosts[CU.uid]){
+      boostedServers.push({sid, ...srv, boostCount: srv.boosts[CU.uid]});
+    }
+  }
+  
+  if(boostedServers.length === 0){
+    container.innerHTML = '<div class="empty-state">You haven\'t boosted any servers yet</div>';
+    return;
+  }
+  
+  boostedServers.forEach(srv => {
+    const div = document.createElement('div');
+    div.className = 'member-manage-row';
+    div.innerHTML = `
+      <div style="flex:1">
+        <div class="mmr-name">${esc(srv.name)}</div>
+        <div class="mmr-role">Boosted: ${srv.boostCount}x</div>
+      </div>
+      <div class="mmr-actions">
+        <button class="mmr-btn kick" onclick="removeBoost('${srv.sid}')">Remove Boost</button>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+window.removeBoost = async function(sid){
+  if(!confirm('Remove boost from this server?')) return;
+  
+  const boosts = {...serverData[sid]?.boosts} || {};
+  delete boosts[CU.uid];
+  
+  await update(ref(db,`servers/${sid}`), {boosts});
+  CU.usedBoosts = (CU.usedBoosts || 0) - 1;
+  await update(ref(db,`users/${CU.uid}`), {usedBoosts: CU.usedBoosts});
+  
+  toast('Boost removed','success');
+  loadUserBoosts();
+};
+
+// ── SERVER BOOSTS ─────────────────────────────────────
+window.openServerBoostModal = async function(){
+  if(!curServer || curServer === 'dms') return;
+  
+  const sd = serverData[curServer] || {};
+  const boosts = sd.boosts || {};
+  const boostCount = Object.values(boosts).reduce((a,b)=>a+b,0);
+  const boostLevel = Math.floor(boostCount / 2) + 1;
+  
+  document.getElementById('currentBoosts').textContent = boostCount;
+  document.getElementById('boostLevel').textContent = boostLevel;
+  document.getElementById('boostLevelProgress').style.width = ((boostCount % 2) / 2 * 100) + '%';
+  
+  const availableBoosts = (CU.boosts || 1) - (CU.usedBoosts || 0);
+  document.getElementById('boostServerBtn').innerHTML = `Boost Server (${availableBoosts} available)`;
+  document.getElementById('boostServerBtn').disabled = availableBoosts <= 0;
+  
+  openModal('serverBoostModal');
+};
+
+window.boostServer = async function(){
+  if(!curServer || curServer === 'dms') return;
+  
+  const availableBoosts = (CU.boosts || 1) - (CU.usedBoosts || 0);
+  if(availableBoosts <= 0) return toast('No boosts available','error');
+  
+  const sd = serverData[curServer] || {};
+  const boosts = {...sd.boosts} || {};
+  boosts[CU.uid] = (boosts[CU.uid] || 0) + 1;
+  
+  await update(ref(db,`servers/${curServer}`), {boosts});
+  CU.usedBoosts = (CU.usedBoosts || 0) + 1;
+  await update(ref(db,`users/${CU.uid}`), {usedBoosts: CU.usedBoosts});
+  
+  serverData[curServer].boosts = boosts;
+  
+  toast('Server boosted! 🚀','success');
+  closeModal('serverBoostModal');
+  
+  // Update boost display in settings
+  document.getElementById('availableBoosts').textContent = CU.boosts - (CU.usedBoosts || 0);
+  const boostProgress = ((CU.usedBoosts || 0) / (CU.boosts || 1)) * 100;
+  document.getElementById('boostProgress').style.width = boostProgress + '%';
+};
 
 // ── SERVER COLOR SELECT ────────────────────────────────
 window.selectColor = function(el){
@@ -935,6 +1452,16 @@ function addServerToRail(sid,sd){
   btn.id=`rail-${sid}`;
   btn.style.fontSize='.85rem';
   btn.innerHTML=`${esc(sd.name[0].toUpperCase())}<span class="rail-tip">${esc(sd.name)}</span>`;
+  
+  // Check if server has boosts
+  if(sd.boosts && Object.keys(sd.boosts).length > 0){
+    const boostCount = Object.values(sd.boosts).reduce((a,b)=>a+b,0);
+    const badge = document.createElement('span');
+    badge.className = 'boost-badge';
+    badge.textContent = boostCount;
+    btn.appendChild(badge);
+  }
+  
   btn.onclick=()=>selectServer(sid,btn);
   document.getElementById('addSrvBtn').before(btn);
 }
@@ -956,6 +1483,7 @@ window.selectServer = function(sid, el){
   document.getElementById('panelActions').style.display=isDM?'none':'flex';
   document.getElementById('inviteBtn').style.display=isDM?'none':'flex';
   document.getElementById('settingsBtn').style.display=isDM?'none':'flex';
+  document.getElementById('boostBtn').style.display=isDM?'none':'flex';
   document.getElementById('callBtn').style.display='none';
 
   if(isDM){
@@ -1097,7 +1625,8 @@ window.createServer = async function(){
       inviteCode,description:desc,
       vanityUrl:name.toLowerCase().replace(/\s+/g,'-'),
       slowMode:0,
-      defaultRole:'member'
+      defaultRole:'member',
+      boosts: {}
     });
     
     // Create roles
@@ -1145,7 +1674,7 @@ window.createServer = async function(){
     // Join server
     await set(ref(db,`servers/${sid}/members/${CU.uid}`),{role:'owner',joinedAt:new Date().toISOString(),username:CU.username});
     await set(ref(db,`userServers/${CU.uid}/${sid}`),true);
-    serverData[sid]={name,color:selectedSrvColor,owner:CU.uid,inviteCode,description:desc};
+    serverData[sid]={name,color:selectedSrvColor,owner:CU.uid,inviteCode,description:desc,boosts:{}};
     
     closeModal('createServerModal');
     document.getElementById('srvNameIn').value='';
@@ -1172,6 +1701,15 @@ window.openServerSettings = async function(){
   });
   
   document.getElementById('slowMode').value=sd.slowMode||0;
+  
+  // Boost info
+  const boosts = sd.boosts || {};
+  const boostCount = Object.values(boosts).reduce((a,b)=>a+b,0);
+  document.getElementById('boostCount').textContent = boostCount;
+  const boostLevel = Math.floor(boostCount / 2) + 1;
+  document.getElementById('boostLevelDisplay').textContent = boostLevel;
+  document.getElementById('boostNextLevel').textContent = Math.floor(boostCount / 2) + 2;
+  document.getElementById('boostLevelProgressBar').style.width = ((boostCount % 2) / 2 * 100) + '%';
   
   await loadSettingsMembers();
   await loadRolesList();
@@ -1424,9 +1962,13 @@ async function loadSettingsMembers(){
     else if(m.role==='admin') roleCls='role-admin';
     else if(m.role==='mod') roleCls='role-mod';
     
+    // Check if user is booster
+    const boosts = serverData[curServer]?.boosts || {};
+    const isBooster = boosts[uid];
+    
     div.innerHTML=`
-      <div class="member-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-raised)"></div></div>
-      <div class="mmr-info"><div class="mmr-name">${esc(ud.username)}</div><div class="mmr-role"><span class="role-badge ${roleCls}">${m.role}</span></div></div>
+      <div class="member-av ${ud.galaxyPlus ? 'galaxy-plus' : ''}">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-raised)"></div></div>
+      <div class="mmr-info"><div class="mmr-name">${esc(ud.username)} ${isBooster ? '🚀' : ''}</div><div class="mmr-role"><span class="role-badge ${roleCls}">${m.role}</span>${isBooster ? '<span class="role-badge role-booster" style="margin-left:.3rem">Booster</span>' : ''}</div></div>
       <div class="mmr-actions">
         ${isOwner && uid!==CU.uid?`
           <select class="mmr-btn" onchange="changeMemberRole('${uid}',this.value)">
@@ -1571,7 +2113,7 @@ window.openInviteFriendsModal = async function(){
     div.className='invite-friend-item';
     div.innerHTML=`
       <input type="checkbox" id="inv-${fid}" value="${fid}">
-      <div class="dm-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}"></div></div>
+      <div class="dm-av ${ud.galaxyPlus ? 'galaxy-plus' : ''}">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}"></div></div>
       <div class="dm-info"><div class="dm-name">${esc(ud.username)}</div><div class="dm-status-txt">${ud.isOnline?'Online':'Offline'}</div></div>`;
     div.onclick=e=>{if(e.target.tagName!=='INPUT'){document.getElementById(`inv-${fid}`).click();}};
     container.appendChild(div);
@@ -1744,6 +2286,10 @@ function appendMsg(key,msg){
   div.className='msg-group';div.id=`msg-${key}`;
   const time=new Date(msg.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   let content='';
+  
+  // Check if sender has GalaxyPLUS
+  const isGalaxyPlus = msg.senderBadge === 'galaxy-plus';
+  
   if(msg.type==='image'&&msg.imageUrl){
     content=`<div class="msg-txt">${esc(msg.text||'')}</div><img src="${msg.imageUrl}" class="msg-img" onclick="openModal('imgModal');document.getElementById('bigImg').src='${msg.imageUrl}'" alt="img">`;
   }else{
@@ -1763,10 +2309,10 @@ function appendMsg(key,msg){
   
   const canDel=msg.senderId===CU?.uid || hasPermission('manageMessages');
   div.innerHTML=`
-    <div class="msg-av-wrap"><div class="msg-av${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.senderAvatar||'?')}</div></div>
+    <div class="msg-av-wrap"><div class="msg-av${isDM?' dm':''} ${isGalaxyPlus ? 'galaxy-plus' : ''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.senderAvatar||'?')}</div></div>
     <div class="msg-body">
       <div class="msg-meta">
-        <span class="msg-sender${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.sender)}</span>
+        <span class="msg-sender${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.sender)} ${isGalaxyPlus ? '✨' : ''}</span>
         <span class="msg-time">${time}</span>
         ${canDel?`<div class="msg-acts"><button class="msg-act" onclick="delMsg('${key}')" title="Delete">🗑</button></div>`:''}
       </div>${content}${reactionsHtml}
@@ -1804,9 +2350,14 @@ window.sendMsg = async function(){
       text:text||(selectedFile?'📸 Image':''),
       sender:CU.username,senderId:CU.uid,
       senderAvatar:CU.avatar||CU.username[0].toUpperCase(),
+      senderBadge: CU.galaxyPlus ? 'galaxy-plus' : null,
       timestamp:new Date().toISOString(),type:'text'
     };
     if(selectedFile){
+      const maxSize = CU.galaxyPlus ? 50 : 10; // GalaxyPLUS: 50MB, normal: 10MB
+      if(selectedFile.size > maxSize * 1024 * 1024){
+        return toast(`Max file size: ${maxSize}MB`,`error`);
+      }
       const fname=`${Date.now()}_${selectedFile.name}`;
       const imgRef=sRef(stor,`images/${fname}`);
       await uploadBytes(imgRef,selectedFile);
@@ -1851,7 +2402,8 @@ window.delMsg = async function(key){
 window.handleFile = function(e){
   const file=e.target.files[0];if(!file) return;
   if(!file.type.startsWith('image/')) return toast('Images only','error');
-  if(file.size>10*1024*1024) return toast('Max 10MB','error');
+  const maxSize = CU.galaxyPlus ? 50 : 10;
+  if(file.size>maxSize*1024*1024) return toast(`Max ${maxSize}MB`,'error');
   selectedFile=file;
   const r=new FileReader();
   r.onload=ev=>{
@@ -1885,8 +2437,8 @@ function loadFriends(){
       el.className='dm-item';el.id=`dm-${fid}`;
       if(curDmUid===fid) el.classList.add('active');
       el.innerHTML=`
-        <div class="dm-av">${esc(ud.avatar||'?')}<div class="sdot ${ud.isOnline?'on':'off'}"></div></div>
-        <div class="dm-info"><div class="dm-name">${esc(ud.username)}</div><div class="dm-status-txt">${ud.isOnline?'Online':'Offline'}</div></div>
+        <div class="dm-av ${ud.galaxyPlus ? 'galaxy-plus' : ''}">${esc(ud.avatar||'?')}<div class="sdot ${ud.isOnline?'on':'off'}"></div></div>
+        <div class="dm-info"><div class="dm-name">${esc(ud.username)} ${ud.galaxyPlus ? '✨' : ''}</div><div class="dm-status-txt">${ud.isOnline?'Online':'Offline'}</div></div>
         <button class="dm-x" onclick="event.stopPropagation();removeFriend('${fid}','${esc(ud.username)}')" title="Remove">✕</button>`;
       el.onclick=()=>startDM(fid,ud.username);
       container.appendChild(el);
@@ -1910,7 +2462,7 @@ function loadFriendRequests(){
       const el=document.createElement('div');
       el.style.cssText='background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:.6rem;margin:.3rem 0;display:flex;align-items:center;gap:.6rem';
       el.innerHTML=`
-        <div class="dm-av" style="width:26px;height:26px;font-size:.7rem">${ud.avatar||'?'}</div>
+        <div class="dm-av ${ud.galaxyPlus ? 'galaxy-plus' : ''}" style="width:26px;height:26px;font-size:.7rem">${ud.avatar||'?'}</div>
         <div style="flex:1;font-size:.82rem;font-weight:500">${esc(ud.username)}</div>
         <div style="display:flex;gap:.25rem">
           <button style="padding:.25rem .5rem;background:var(--green);border:none;border-radius:6px;color:var(--bg-void);font-size:.75rem;font-weight:700;cursor:pointer" onclick="acceptReq('${rid}')">✓</button>
@@ -1992,12 +2544,17 @@ async function loadServerMembers(sid){
   for(const [uid,m] of Object.entries(members)){
     const usnap=await get(ref(db,`users/${uid}`));
     const ud=usnap.val();if(!ud) continue;
+    
+    // Check if user is booster
+    const boosts = serverData[sid]?.boosts || {};
+    const isBooster = boosts[uid];
+    
     const div=document.createElement('div');
     div.className='member-row';
     div.onclick=()=>showProfilePopup(uid,null);
     div.innerHTML=`
-      <div class="member-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-deep)"></div></div>
-      <div class="member-name">${esc(ud.username)}</div>
+      <div class="member-av ${ud.galaxyPlus ? 'galaxy-plus' : ''}">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-deep)"></div></div>
+      <div class="member-name">${esc(ud.username)} ${isBooster ? '🚀' : ''}</div>
       <div class="member-role">${m.role==='owner'?'👑':m.role==='admin'?'⭐':m.role==='mod'?'🛡️':''}</div>`;
     list.appendChild(div);
   }
@@ -2017,7 +2574,13 @@ window.showProfilePopup = async function(uid, event){
   const colors=['#7a5fff','#38bdf8','#4ade80','#f87171','#fbbf24','#e879f9','#fb923c'];
   const ci=ud.username.charCodeAt(0)%colors.length;
   document.getElementById('ppBanner').style.background=`linear-gradient(135deg,${colors[ci]},${colors[(ci+2)%colors.length]})`;
+  if(ud.galaxyPlus) document.getElementById('ppBanner').classList.add('galaxy-plus');
+  else document.getElementById('ppBanner').classList.remove('galaxy-plus');
+  
   document.getElementById('ppAv').textContent=ud.avatar||'?';
+  if(ud.galaxyPlus) document.getElementById('ppAv').classList.add('galaxy-plus');
+  else document.getElementById('ppAv').classList.remove('galaxy-plus');
+  
   document.getElementById('ppUsername').textContent=ud.username;
   document.getElementById('ppTag').textContent=ud.isOnline?'🟢 Online':'⚫ Offline';
   
@@ -2026,6 +2589,9 @@ window.showProfilePopup = async function(uid, event){
   const badges=ud.badges||[];
   if(badges.includes('og')){
     badgesEl.innerHTML+=`<div class="badge og"><span class="badge-icon">🌌</span>PartexChat OG</div>`;
+  }
+  if(ud.galaxyPlus){
+    badgesEl.innerHTML+=`<div class="badge galaxy-plus"><span class="badge-icon">✨</span>GalaxyPLUS</div>`;
   }
   const badgesSec=document.getElementById('ppBadgesSection');
   badgesSec.style.display=badges.length>0?'block':'none';
@@ -2110,6 +2676,9 @@ window.saveProfile = async function(){
     CU={...CU,username:newUn,bio:newBio,status:newStatus,avatar:newUn[0].toUpperCase()};
     document.getElementById('ubAv').textContent=CU.avatar;
     document.getElementById('ubName').textContent=CU.username;
+    document.getElementById('ubStatus').textContent = newStatus === 'online' ? '● Online' : 
+                                                      newStatus === 'idle' ? '🌙 Idle' : 
+                                                      newStatus === 'dnd' ? '⛔ Do Not Disturb' : '⚫ Offline';
     closeModal('editProfileModal');
     toast('Profile updated ✓','success');
   }catch(e){toast(e.message,'error');}
@@ -2120,12 +2689,16 @@ window.startCall = async function(){
   if(!curDmUid) return;
   const snap=await get(ref(db,`users/${curDmUid}`));
   const ud=snap.val();
-  document.getElementById('callTitle').textContent=`📞 Calling ${ud?.username||'Friend'}...`;
+  const quality = CU.galaxyPlus ? 'high' : 'standard';
+  document.getElementById('callTitle').textContent=`📞 Calling ${ud?.username||'Friend'}... (${quality} quality)`;
   document.getElementById('callOverlay').style.display='block';
   try{
-    localStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    const constraints = CU.galaxyPlus ? 
+      {video: {width:1280,height:720}, audio: true} : 
+      {video: true, audio: true};
+    localStream=await navigator.mediaDevices.getUserMedia(constraints);
     document.getElementById('localVid').srcObject=localStream;
-    setTimeout(()=>{document.getElementById('callTitle').textContent=`📞 In call with ${ud?.username||'Friend'}`;},2000);
+    setTimeout(()=>{document.getElementById('callTitle').textContent=`📞 In call with ${ud?.username||'Friend'} (${quality})`;},2000);
     toast('Call started (demo mode)','success');
   }catch(e){toast('Camera/mic permission denied','error');endCall();}
 };
