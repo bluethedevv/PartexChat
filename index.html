@@ -1,2443 +1,1671 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PartexChat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-void: #050507;
-      --bg-deep: #0c0c10;
-      --bg-base: #111116;
-      --bg-raised: #18181f;
-      --bg-elevated: #1f1f28;
-      --bg-hover: #26262f;
-      --border: rgba(255,255,255,0.06);
-      --border-glow: rgba(122,95,255,0.3);
-      --accent: #7a5fff;
-      --accent-soft: rgba(122,95,255,0.15);
-      --accent-glow: rgba(122,95,255,0.4);
-      --green: #4ade80;
-      --green-soft: rgba(74,222,128,0.15);
-      --blue: #38bdf8;
-      --blue-soft: rgba(56,189,248,0.12);
-      --red: #f87171;
-      --red-soft: rgba(248,113,113,0.15);
-      --amber: #fbbf24;
-      --text-primary: #f0f0f5;
-      --text-secondary: #9090a0;
-      --text-muted: #5a5a6a;
-      --radius: 10px;
-      --radius-lg: 16px;
-      --sidebar-w: 68px;
-      --channels-w: 255px;
-      --members-w: 230px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg-void);
-      color: var(--text-primary);
-      height: 100vh;
-      overflow: hidden;
-      font-size: 14px;
-    }
-
-    /* ─── SCROLLBARS ─── */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--bg-elevated); border-radius: 2px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-    /* ─── AUTH ─── */
-    #authSection {
-      display: flex;
-      height: 100vh;
-      background: var(--bg-void);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .auth-bg-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      pointer-events: none;
-    }
-    .auth-bg-orb.orb1 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(122,95,255,0.2), transparent 70%);
-      top: -150px; left: -150px;
-    }
-    .auth-bg-orb.orb2 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, rgba(56,189,248,0.12), transparent 70%);
-      bottom: -100px; right: -100px;
-    }
-
-    .auth-left {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 60px;
-      position: relative;
-    }
-
-    .auth-brand {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 2.2rem;
-      color: var(--text-primary);
-      letter-spacing: -1px;
-      margin-bottom: 0.5rem;
-    }
-
-    .auth-brand span {
-      background: linear-gradient(135deg, var(--accent), var(--blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .auth-tagline {
-      color: var(--text-muted);
-      font-size: 1rem;
-      margin-bottom: 3rem;
-      line-height: 1.6;
-    }
-
-    .auth-features {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
-
-    .auth-feature {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      color: var(--text-secondary);
-      font-size: 1rem;
-    }
-
-    .auth-feature-icon {
-      width: 44px;
-      height: 44px;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-
-    .auth-right {
-      width: 440px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      position: relative;
-    }
-
-    .auth-card {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem;
-      width: 100%;
-      position: relative;
-      backdrop-filter: blur(10px);
-    }
-
-    .auth-card::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: var(--radius-lg);
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(122,95,255,0.4), transparent, rgba(56,189,248,0.2));
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    .auth-tabs {
-      display: flex;
-      gap: 0.3rem;
-      margin-bottom: 2rem;
-      background: var(--bg-deep);
-      padding: 4px;
-      border-radius: 8px;
-    }
-
-    .auth-tab {
-      flex: 1;
-      padding: 0.6rem;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-
-    .auth-tab.active {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-
-    .auth-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-    }
-
-    .auth-subtitle {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-bottom: 1.8rem;
-    }
-
-    .field-group { margin-bottom: 1rem; }
-
-    .field-label {
-      display: block;
-      color: var(--text-secondary);
-      font-size: 0.8rem;
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
-    .field-input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text-primary);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      outline: none;
-    }
-
-    .field-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .auth-btn {
-      width: 100%;
-      padding: 0.85rem;
-      background: var(--accent);
-      border: none;
-      border-radius: var(--radius);
-      color: white;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: opacity 0.2s, transform 0.15s;
-      letter-spacing: 0.02em;
-    }
-
-    .auth-btn:hover { opacity: 0.88; transform: translateY(-1px); }
-    .auth-btn:active { transform: translateY(0); }
-
-    .auth-error {
-      color: var(--red);
-      background: var(--red-soft);
-      border: 1px solid rgba(248,113,113,0.2);
-      border-radius: 8px;
-      padding: 0.7rem 1rem;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      display: none;
-    }
-
-    /* ─── MAIN APP ─── */
-    #mainApp {
-      display: none;
-      height: 100vh;
-      flex-direction: row;
-    }
-
-    /* ─── SERVER SIDEBAR ─── */
-    .server-rail {
-      width: var(--sidebar-w);
-      background: var(--bg-void);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0.75rem 0;
-      gap: 0.5rem;
-      border-right: 1px solid var(--border);
-    }
-
-    .rail-divider {
-      width: 36px;
-      height: 1px;
-      background: var(--border);
-      margin: 0.25rem 0;
-    }
-
-    .rail-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.1rem;
-      color: var(--text-secondary);
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .rail-btn:hover {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-      border-color: rgba(255,255,255,0.12);
-      transform: scale(1.05);
-    }
-
-    .rail-btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: white;
-      border-radius: 14px;
-    }
-
-    .rail-btn.dm-btn.active {
-      background: var(--blue);
-      border-color: var(--blue);
-      border-radius: 14px;
-    }
-
-    .rail-btn.add-btn {
-      color: var(--green);
-      font-size: 1.4rem;
-    }
-
-    .rail-btn.add-btn:hover {
-      background: var(--green-soft);
-      border-color: rgba(74,222,128,0.3);
-      color: var(--green);
-    }
-
-    .rail-tooltip {
-      position: absolute;
-      left: calc(100% + 12px);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      padding: 0.4rem 0.7rem;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s;
-      z-index: 100;
-    }
-
-    .rail-btn:hover .rail-tooltip { opacity: 1; }
-
-    /* ─── CHANNELS PANEL ─── */
-    .channels-panel {
-      width: var(--channels-w);
-      background: var(--bg-deep);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .panel-header {
-      padding: 1rem 1rem 0.75rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .panel-server-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: 0.01em;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .panel-actions {
-      display: flex;
-      gap: 0.25rem;
-    }
-
-    .panel-action-btn {
-      width: 28px;
-      height: 28px;
-      background: transparent;
-      border: none;
-      border-radius: 6px;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .panel-action-btn:hover {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-
-    .panel-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.75rem;
-    }
-
-    .section-label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0 0.5rem;
-      margin-bottom: 0.4rem;
-      margin-top: 0.75rem;
-    }
-
-    .section-label:first-child { margin-top: 0; }
-
-    .section-add-btn {
-      width: 20px;
-      height: 20px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.2s;
-    }
-    .section-add-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
-
-    .channel-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.55rem 0.75rem;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      transition: all 0.15s;
-      position: relative;
-    }
-
-    .channel-row:hover {
-      background: var(--bg-hover);
-      color: var(--text-secondary);
-    }
-
-    .channel-row.active {
-      background: var(--accent-soft);
-      color: var(--text-primary);
-    }
-
-    .channel-row.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 25%;
-      bottom: 25%;
-      width: 3px;
-      background: var(--accent);
-      border-radius: 0 3px 3px 0;
-    }
-
-    .ch-icon {
-      font-size: 0.85rem;
-      width: 18px;
-      text-align: center;
-    }
-
-    /* DM List */
-    .dm-item {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.15s;
-      position: relative;
-    }
-
-    .dm-item:hover {
-      background: var(--bg-hover);
-      color: var(--text-secondary);
-    }
-
-    .dm-item.active {
-      background: var(--blue-soft);
-      color: var(--text-primary);
-    }
-
-    .dm-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-      position: relative;
-    }
-
-    .status-dot {
-      position: absolute;
-      bottom: -1px;
-      right: -1px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 2px solid var(--bg-deep);
-    }
-
-    .status-dot.online { background: var(--green); }
-    .status-dot.offline { background: var(--text-muted); }
-
-    .dm-info { flex: 1; min-width: 0; }
-
-    .dm-name {
-      font-size: 0.875rem;
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .dm-status-text {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
-
-    .dm-close-btn {
-      width: 20px;
-      height: 20px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 0.8rem;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-
-    .dm-item:hover .dm-close-btn { display: flex; }
-    .dm-close-btn:hover { background: var(--red-soft); color: var(--red); }
-
-    /* Friend request badge */
-    .req-badge {
-      background: var(--amber);
-      color: var(--bg-void);
-      font-size: 0.65rem;
-      font-weight: 700;
-      min-width: 16px;
-      height: 16px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 3px;
-    }
-
-    /* ─── CHAT AREA ─── */
-    .chat-pane {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-base);
-      min-width: 0;
-    }
-
-    .chat-topbar {
-      height: 52px;
-      background: var(--bg-deep);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      padding: 0 1.25rem;
-      gap: 0.75rem;
-    }
-
-    .topbar-icon {
-      color: var(--text-muted);
-      font-size: 1rem;
-    }
-
-    .topbar-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
-      flex: 1;
-    }
-
-    .topbar-actions {
-      display: flex;
-      gap: 0.4rem;
-    }
-
-    .topbar-btn {
-      width: 32px;
-      height: 32px;
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.15s;
-    }
-
-    .topbar-btn:hover {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-
-    .topbar-btn.call-active {
-      background: var(--green-soft);
-      color: var(--green);
-    }
-
-    /* Messages */
-    .messages-feed {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .day-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      margin: 1rem 0 0.5rem;
-    }
-
-    .day-divider::before, .day-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .welcome-card {
-      background: linear-gradient(135deg, var(--accent-soft), var(--blue-soft));
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .welcome-card h3 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .welcome-card p {
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-    }
-
-    /* Message Group */
-    .msg-group {
-      display: flex;
-      gap: 0.75rem;
-      padding: 0.3rem 0;
-      border-radius: var(--radius);
-      transition: background 0.1s;
-    }
-
-    .msg-group:hover {
-      background: var(--bg-raised);
-    }
-
-    .msg-avatar-wrap {
-      width: 36px;
-      flex-shrink: 0;
-    }
-
-    .msg-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-    }
-
-    .msg-body { flex: 1; min-width: 0; }
-
-    .msg-meta {
-      display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .msg-sender {
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-
-    .msg-sender:hover { color: var(--accent); }
-
-    .msg-sender.dm-sender { color: var(--blue); }
-    .msg-sender.dm-sender:hover { color: #7dd3fc; }
-
-    .msg-time {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .msg-text {
-      color: #c8c8d5;
-      line-height: 1.5;
-      font-size: 0.875rem;
-      word-break: break-word;
-    }
-
-    .msg-text.system {
-      color: var(--text-muted);
-      font-style: italic;
-      font-size: 0.8rem;
-    }
-
-    .msg-image {
-      max-width: 380px;
-      max-height: 320px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      display: block;
-      margin-top: 0.4rem;
-      cursor: zoom-in;
-      transition: border-color 0.2s;
-    }
-
-    .msg-image:hover { border-color: var(--accent); }
-
-    .msg-actions {
-      display: none;
-      gap: 0.25rem;
-      margin-left: auto;
-    }
-
-    .msg-group:hover .msg-actions { display: flex; }
-
-    .msg-action-btn {
-      width: 28px;
-      height: 28px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-    }
-
-    .msg-action-btn:hover { background: var(--red-soft); border-color: rgba(248,113,113,0.3); color: var(--red); }
-
-    /* Input */
-    .input-zone {
-      padding: 0 1.25rem 1.25rem;
-    }
-
-    .input-box {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 0.75rem 0.75rem 0.5rem;
-      transition: border-color 0.2s;
-    }
-
-    .input-box:focus-within {
-      border-color: rgba(122,95,255,0.3);
-    }
-
-    .input-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 0.5rem;
-    }
-
-    #messageInput {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text-primary);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.9rem;
-      resize: none;
-      min-height: 36px;
-      max-height: 160px;
-      line-height: 1.5;
-      outline: none;
-    }
-
-    #messageInput::placeholder { color: var(--text-muted); }
-    #messageInput:disabled { cursor: not-allowed; opacity: 0.5; }
-
-    .input-tools {
-      display: flex;
-      gap: 0.25rem;
-      align-items: center;
-    }
-
-    .tool-btn {
-      width: 32px;
-      height: 32px;
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.15s;
-    }
-
-    .tool-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
-
-    .send-btn {
-      width: 36px;
-      height: 36px;
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      transition: all 0.15s;
-      flex-shrink: 0;
-    }
-
-    .send-btn:hover { background: #6a4fee; transform: scale(1.05); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    .img-preview-strip {
-      display: none;
-      margin-bottom: 0.5rem;
-    }
-
-    .img-preview-strip img {
-      height: 80px;
-      border-radius: 8px;
-      border: 2px solid var(--accent);
-      position: relative;
-    }
-
-    .img-preview-strip-inner {
-      display: inline-flex;
-      position: relative;
-    }
-
-    .img-preview-remove {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      width: 18px;
-      height: 18px;
-      background: var(--red);
-      border: none;
-      border-radius: 50%;
-      color: white;
-      font-size: 0.7rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ─── MEMBERS PANEL ─── */
-    .members-panel {
-      width: var(--members-w);
-      background: var(--bg-deep);
-      border-left: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .members-top {
-      padding: 1rem;
-      border-bottom: 1px solid var(--border);
-      font-family: 'Syne', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .members-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.5rem;
-    }
-
-    .member-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.45rem 0.6rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .member-row:hover { background: var(--bg-elevated); }
-
-    .member-av {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: white;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .member-name {
-      flex: 1;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* ─── USER BOTTOM BAR ─── */
-    .user-bar {
-      margin-top: auto;
-      padding: 0.75rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      background: rgba(0,0,0,0.2);
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .user-bar:hover { background: var(--bg-elevated); }
-
-    .user-bar-av {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .user-bar-info { flex: 1; min-width: 0; }
-
-    .user-bar-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-bar-status {
-      font-size: 0.72rem;
-      color: var(--green);
-    }
-
-    .user-bar-logout {
-      width: 28px;
-      height: 28px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      transition: all 0.15s;
-    }
-
-    .user-bar-logout:hover { background: var(--red-soft); color: var(--red); }
-
-    /* ─── CALL OVERLAY ─── */
-    .call-overlay {
-      display: none;
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 340px;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-      z-index: 200;
-    }
-
-    .call-overlay-header {
-      padding: 0.75rem 1rem;
-      background: var(--accent-soft);
-      border-bottom: 1px solid var(--border-glow);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .call-overlay-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .call-overlay-close {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
-
-    .call-video-area {
-      position: relative;
-      height: 200px;
-      background: var(--bg-void);
-    }
-
-    .call-video-area video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    #localVideo {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      width: 80px;
-      height: 60px;
-      border-radius: 8px;
-      border: 2px solid var(--accent);
-      object-fit: cover;
-      z-index: 2;
-    }
-
-    #remoteVideo {
-      width: 100%;
-      height: 100%;
-    }
-
-    .call-btns {
-      display: flex;
-      gap: 0.75rem;
-      justify-content: center;
-      padding: 1rem;
-    }
-
-    .call-circle-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: all 0.2s;
-    }
-
-    .call-circle-btn:hover { transform: scale(1.1); }
-
-    .call-circle-btn.mute { background: var(--bg-elevated); color: var(--text-primary); }
-    .call-circle-btn.mute.muted { background: var(--red-soft); color: var(--red); }
-    .call-circle-btn.end-call { background: var(--red); color: white; }
-
-    /* ─── MODALS ─── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(6px);
-      z-index: 500;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-box {
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      width: 90%;
-      max-width: 460px;
-      position: relative;
-    }
-
-    .modal-box::before {
-      content: '';
-      position: absolute;
-      inset: -1px;
-      border-radius: var(--radius-lg);
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(122,95,255,0.35), transparent);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    .modal-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.4rem;
-    }
-
-    .modal-sub {
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .modal-input, .modal-textarea, .modal-select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text-primary);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      margin-bottom: 0.75rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .modal-input:focus, .modal-textarea:focus, .modal-select:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
-    }
-
-    .modal-textarea { min-height: 100px; resize: vertical; }
-
-    .modal-select { appearance: none; cursor: pointer; }
-
-    .modal-btns {
-      display: flex;
-      gap: 0.75rem;
-      margin-top: 1.25rem;
-    }
-
-    .modal-btn-primary {
-      flex: 1;
-      padding: 0.75rem;
-      background: var(--accent);
-      border: none;
-      border-radius: var(--radius);
-      color: white;
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
-    .modal-btn-primary:hover { opacity: 0.85; }
-
-    .modal-btn-secondary {
-      padding: 0.75rem 1.25rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text-secondary);
-      font-family: 'DM Sans', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .modal-btn-secondary:hover { background: var(--bg-hover); color: var(--text-primary); }
-
-    /* Friend request inside modal */
-    .friend-req-card {
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .freq-info { flex: 1; }
-    .freq-name { font-size: 0.875rem; font-weight: 600; }
-    .freq-sub { font-size: 0.75rem; color: var(--text-muted); }
-
-    .freq-btns { display: flex; gap: 0.4rem; }
-
-    .freq-btn {
-      padding: 0.35rem 0.7rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.15s;
-    }
-
-    .freq-btn:hover { opacity: 0.8; }
-    .freq-btn.accept { background: var(--green); color: var(--bg-void); }
-    .freq-btn.reject { background: var(--bg-elevated); color: var(--text-secondary); }
-
-    /* Profile modal */
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .profile-av-large {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .profile-info { flex: 1; }
-    .profile-name { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
-    .profile-email { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
-
-    .profile-stat-row {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .profile-stat {
-      flex: 1;
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.75rem;
-      text-align: center;
-    }
-
-    .profile-stat-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--accent);
-    }
-
-    .profile-stat-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-    }
-
-    .profile-bio-box {
-      background: var(--bg-deep);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.75rem 1rem;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      line-height: 1.5;
-      margin-bottom: 0.75rem;
-    }
-
-    /* Image modal */
-    .img-modal-box {
-      background: transparent;
-      border: none;
-      max-width: 90vw;
-      text-align: center;
-    }
-
-    .img-modal-box img {
-      max-width: 100%;
-      max-height: 85vh;
-      border-radius: var(--radius);
-    }
-
-    /* Friend requests section */
-    #friendRequestsSection {
-      margin-top: 1rem;
-    }
-
-    /* Typing indicator */
-    .typing-indicator {
-      display: none;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0 0.5rem;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      padding-left: 0.5rem;
-    }
-
-    .typing-dots span {
-      display: inline-block;
-      width: 5px;
-      height: 5px;
-      background: var(--text-muted);
-      border-radius: 50%;
-      margin: 0 1px;
-      animation: bounce 1.2s infinite;
-    }
-
-    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes bounce {
-      0%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-4px); }
-    }
-
-    /* Notification toast */
-    .toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.85rem 1.2rem;
-      color: var(--text-primary);
-      font-size: 0.875rem;
-      z-index: 9999;
-      transform: translateX(400px);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      max-width: 300px;
-    }
-
-    .toast.show { transform: translateX(0); }
-    .toast.success { border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.05); }
-    .toast.error { border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.05); }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .members-panel { display: none; }
-      :root { --channels-w: 220px; }
-    }
-
-    @media (max-width: 600px) {
-      .channels-panel { display: none; }
-      .auth-left { display: none; }
-      .auth-right { width: 100%; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PartexChat</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-void: #050507;
+  --bg-deep: #0c0c10;
+  --bg-base: #111116;
+  --bg-raised: #18181f;
+  --bg-elevated: #1f1f28;
+  --bg-hover: #26262f;
+  --border: rgba(255,255,255,0.06);
+  --border-active: rgba(122,95,255,0.35);
+  --accent: #7a5fff;
+  --accent-soft: rgba(122,95,255,0.15);
+  --green: #4ade80;
+  --green-soft: rgba(74,222,128,0.12);
+  --blue: #38bdf8;
+  --blue-soft: rgba(56,189,248,0.12);
+  --red: #f87171;
+  --red-soft: rgba(248,113,113,0.12);
+  --amber: #fbbf24;
+  --amber-soft: rgba(251,191,36,0.12);
+  --gold: #f59e0b;
+  --text-primary: #f0f0f5;
+  --text-secondary: #9090a0;
+  --text-muted: #5a5a6a;
+  --r: 10px;
+  --rlg: 16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg-void);color:var(--text-primary);height:100vh;overflow:hidden;font-size:14px}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg-elevated);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ═══════════ AUTH ═══════════ */
+#authSection{display:flex;height:100vh;background:var(--bg-void);position:relative;overflow:hidden}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none}
+.orb1{width:500px;height:500px;background:radial-gradient(circle,rgba(122,95,255,0.18),transparent 70%);top:-150px;left:-150px}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(56,189,248,0.1),transparent 70%);bottom:-100px;right:-100px}
+.auth-left{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px;position:relative}
+.auth-features{display:flex;flex-direction:column;gap:1.3rem}
+.auth-feature{display:flex;align-items:center;gap:1rem;color:var(--text-secondary);font-size:1rem}
+.auth-feat-icon{width:46px;height:46px;background:var(--bg-raised);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.auth-right{width:440px;display:flex;align-items:center;justify-content:center;padding:40px;position:relative}
+.auth-card{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);padding:2.5rem;width:100%;position:relative}
+.auth-card::before{content:'';position:absolute;inset:-1px;border-radius:var(--rlg);padding:1px;background:linear-gradient(135deg,rgba(122,95,255,0.4),transparent,rgba(56,189,248,0.15));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.auth-tabs{display:flex;gap:3px;margin-bottom:2rem;background:var(--bg-deep);padding:4px;border-radius:8px}
+.auth-tab{flex:1;padding:.6rem;background:transparent;border:none;color:var(--text-muted);border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;transition:all .2s}
+.auth-tab.active{background:var(--bg-elevated);color:var(--text-primary)}
+.auth-title{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:.3rem}
+.auth-sub{color:var(--text-muted);font-size:.82rem;margin-bottom:1.6rem}
+.field-label{display:block;color:var(--text-secondary);font-size:.75rem;font-weight:600;margin-bottom:.35rem;letter-spacing:.04em;text-transform:uppercase}
+.field-input{width:100%;padding:.75rem 1rem;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--r);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:.9rem;transition:border-color .2s,box-shadow .2s;outline:none;margin-bottom:1rem}
+.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.auth-btn{width:100%;padding:.85rem;background:var(--accent);border:none;border-radius:var(--r);color:white;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:opacity .2s,transform .15s;letter-spacing:.02em}
+.auth-btn:hover{opacity:.88;transform:translateY(-1px)}
+.auth-error{color:var(--red);background:var(--red-soft);border:1px solid rgba(248,113,113,0.2);border-radius:8px;padding:.7rem 1rem;font-size:.83rem;margin-bottom:1rem;display:none}
+
+/* ═══════════ APP LAYOUT ═══════════ */
+#mainApp{display:none;height:100vh;flex-direction:row}
+
+/* ═══════════ SERVER RAIL ═══════════ */
+.rail{width:68px;background:var(--bg-void);display:flex;flex-direction:column;align-items:center;padding:.75rem 0;gap:.5rem;border-right:1px solid var(--border);flex-shrink:0;overflow-y:auto}
+.rail-divider{width:36px;height:1px;background:var(--border);margin:.2rem 0;flex-shrink:0}
+.rail-btn{width:44px;height:44px;border-radius:50%;background:var(--bg-raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.05rem;color:var(--text-secondary);transition:all .2s;position:relative;flex-shrink:0;user-select:none}
+.rail-btn:hover{background:var(--bg-elevated);color:var(--text-primary);border-color:rgba(255,255,255,0.1);transform:scale(1.05)}
+.rail-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;border-radius:14px}
+.rail-btn.dm-active{background:var(--blue);border-color:var(--blue);border-radius:14px}
+.rail-btn.add-btn{color:var(--green);font-size:1.5rem}
+.rail-btn.add-btn:hover{background:var(--green-soft);border-color:rgba(74,222,128,0.25);color:var(--green)}
+.rail-tip{position:absolute;left:calc(100% + 10px);background:var(--bg-elevated);border:1px solid var(--border);padding:.35rem .65rem;border-radius:6px;font-size:.78rem;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:200;color:var(--text-primary)}
+.rail-btn:hover .rail-tip{opacity:1}
+
+/* ═══════════ CHANNELS PANEL ═══════════ */
+.ch-panel{width:255px;background:var(--bg-deep);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.ch-panel-header{padding:1rem 1rem .8rem;border-bottom:1px solid var(--border)}
+.ch-server-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--text-primary);display:flex;align-items:center;justify-content:space-between}
+.ch-panel-actions{display:flex;gap:.2rem}
+.ch-act-btn{width:28px;height:28px;background:transparent;border:none;border-radius:6px;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s}
+.ch-act-btn:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.ch-scroll{flex:1;overflow-y:auto;padding:.6rem}
+.sec-label{display:flex;align-items:center;justify-content:space-between;color:var(--text-muted);font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:0 .4rem;margin:.8rem 0 .3rem}
+.sec-label:first-child{margin-top:0}
+.sec-add{width:18px;height:18px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s}
+.sec-add:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.ch-row{display:flex;align-items:center;gap:.45rem;padding:.5rem .7rem;border-radius:8px;cursor:pointer;color:var(--text-muted);font-size:.875rem;transition:all .15s;position:relative}
+.ch-row:hover{background:var(--bg-hover);color:var(--text-secondary)}
+.ch-row.active{background:var(--accent-soft);color:var(--text-primary)}
+.ch-row.active::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:3px;background:var(--accent);border-radius:0 3px 3px 0}
+.ch-icon{font-size:.82rem;width:16px;text-align:center}
+.ch-row-actions{margin-left:auto;display:none;gap:.15rem}
+.ch-row:hover .ch-row-actions{display:flex}
+.ch-row-act{width:20px;height:20px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:4px;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ch-row-act:hover{background:var(--red-soft);color:var(--red)}
+
+/* DM items */
+.dm-item{display:flex;align-items:center;gap:.65rem;padding:.5rem .7rem;border-radius:8px;cursor:pointer;color:var(--text-muted);transition:all .15s;position:relative}
+.dm-item:hover{background:var(--bg-hover);color:var(--text-secondary)}
+.dm-item.active{background:var(--blue-soft);color:var(--text-primary)}
+.dm-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0;position:relative}
+.sdot{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg-deep)}
+.sdot.on{background:var(--green)}
+.sdot.off{background:var(--text-muted)}
+.dm-info{flex:1;min-width:0}
+.dm-name{font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-status-txt{font-size:.72rem;color:var(--text-muted);margin-top:1px}
+.dm-x{width:18px;height:18px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:4px;font-size:.75rem;display:none;align-items:center;justify-content:center;transition:all .15s}
+.dm-item:hover .dm-x{display:flex}
+.dm-x:hover{background:var(--red-soft);color:var(--red)}
+.req-badge{background:var(--amber);color:#000;font-size:.63rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;padding:0 3px}
+
+/* User bar */
+.user-bar{margin-top:auto;padding:.7rem;border-top:1px solid var(--border);display:flex;align-items:center;gap:.6rem;cursor:pointer;transition:background .15s;flex-shrink:0}
+.user-bar:hover{background:var(--bg-elevated)}
+.user-bar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}
+.user-bar-info{flex:1;min-width:0}
+.user-bar-name{font-size:.85rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-bar-status{font-size:.7rem;color:var(--green)}
+.ub-logout{width:28px;height:28px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .15s}
+.ub-logout:hover{background:var(--red-soft);color:var(--red)}
+
+/* ═══════════ CHAT PANE ═══════════ */
+.chat-pane{flex:1;display:flex;flex-direction:column;background:var(--bg-base);min-width:0}
+.topbar{height:52px;background:var(--bg-deep);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:.75rem;flex-shrink:0}
+.topbar-icon{color:var(--text-muted);font-size:1rem}
+.topbar-name{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;flex:1}
+.topbar-acts{display:flex;gap:.4rem}
+.topbar-btn{width:32px;height:32px;background:transparent;border:none;border-radius:8px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s}
+.topbar-btn:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.feed{flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:.2rem}
+.welcome-card{background:linear-gradient(135deg,var(--accent-soft),var(--blue-soft));border:1px solid var(--border);border-radius:var(--rlg);padding:2rem;text-align:center;margin-bottom:.75rem}
+.welcome-card h3{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:.4rem}
+.welcome-card p{color:var(--text-secondary);font-size:.875rem}
+.msg-group{display:flex;gap:.7rem;padding:.3rem .5rem;border-radius:var(--r);transition:background .1s}
+.msg-group:hover{background:var(--bg-raised)}
+.msg-av-wrap{width:36px;flex-shrink:0}
+.msg-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s}
+.msg-av:hover{opacity:.8}
+.msg-body{flex:1;min-width:0}
+.msg-meta{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.15rem}
+.msg-sender{font-size:.875rem;font-weight:600;color:var(--text-primary);cursor:pointer}
+.msg-sender:hover{color:var(--accent)}
+.msg-sender.dm{color:var(--blue)}
+.msg-sender.dm:hover{color:#7dd3fc}
+.msg-time{font-size:.7rem;color:var(--text-muted)}
+.msg-txt{color:#c8c8d5;line-height:1.5;font-size:.875rem;word-break:break-word}
+.msg-txt.sys{color:var(--text-muted);font-style:italic;font-size:.8rem}
+.msg-img{max-width:360px;max-height:300px;border-radius:var(--r);border:1px solid var(--border);display:block;margin-top:.4rem;cursor:zoom-in;transition:border-color .2s}
+.msg-img:hover{border-color:var(--accent)}
+.msg-acts{display:none;gap:.2rem;margin-left:auto}
+.msg-group:hover .msg-acts{display:flex}
+.msg-act{width:26px;height:26px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.msg-act:hover{background:var(--red-soft);border-color:rgba(248,113,113,0.25);color:var(--red)}
+.input-zone{padding:0 1.25rem 1.25rem;flex-shrink:0}
+.input-box{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);padding:.7rem .7rem .5rem;transition:border-color .2s}
+.input-box:focus-within{border-color:rgba(122,95,255,0.3)}
+.input-row{display:flex;align-items:flex-end;gap:.45rem}
+#msgInput{flex:1;background:transparent;border:none;color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:.9rem;resize:none;min-height:36px;max-height:160px;line-height:1.5;outline:none}
+#msgInput::placeholder{color:var(--text-muted)}
+#msgInput:disabled{cursor:not-allowed;opacity:.4}
+.tool-btn{width:32px;height:32px;background:transparent;border:none;border-radius:8px;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:all .15s}
+.tool-btn:hover{background:var(--bg-elevated);color:var(--text-primary)}
+.send-btn{width:36px;height:36px;background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:all .15s;flex-shrink:0}
+.send-btn:hover{background:#6a4fee;transform:scale(1.05)}
+.img-strip{display:none;margin-bottom:.5rem}
+.img-strip-inner{display:inline-flex;position:relative}
+.img-strip img{height:80px;border-radius:8px;border:2px solid var(--accent)}
+.img-strip-x{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--red);border:none;border-radius:50%;color:#fff;font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* ═══════════ MEMBERS PANEL ═══════════ */
+.members-panel{width:220px;background:var(--bg-deep);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.members-top{padding:1rem;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;color:var(--text-muted);letter-spacing:.08em;text-transform:uppercase}
+.members-scroll{flex:1;overflow-y:auto;padding:.5rem}
+.member-row{display:flex;align-items:center;gap:.6rem;padding:.45rem .6rem;border-radius:8px;cursor:pointer;transition:background .15s}
+.member-row:hover{background:var(--bg-elevated)}
+.member-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;position:relative;flex-shrink:0}
+.member-name{flex:1;font-size:.875rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-role{font-size:.65rem;color:var(--accent);font-weight:600}
+
+/* ═══════════ CALL OVERLAY ═══════════ */
+.call-overlay{display:none;position:fixed;bottom:24px;right:24px;width:330px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:200}
+.call-hdr{padding:.7rem 1rem;background:var(--accent-soft);border-bottom:1px solid rgba(122,95,255,.2);display:flex;align-items:center;justify-content:space-between}
+.call-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:var(--accent)}
+.call-x{background:transparent;border:none;color:var(--text-muted);cursor:pointer;font-size:1.2rem}
+.call-vid{position:relative;height:190px;background:var(--bg-void)}
+.call-vid video{width:100%;height:100%;object-fit:cover}
+#localVid{position:absolute;bottom:8px;right:8px;width:80px;height:60px;border-radius:8px;border:2px solid var(--accent);object-fit:cover;z-index:2}
+#remoteVid{width:100%;height:100%}
+.call-btns{display:flex;gap:.75rem;justify-content:center;padding:.9rem}
+.call-cir{width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;font-size:1.1rem;transition:all .2s}
+.call-cir:hover{transform:scale(1.1)}
+.call-cir.mute-btn{background:var(--bg-elevated);color:var(--text-primary)}
+.call-cir.muted{background:var(--red-soft);color:var(--red)}
+.call-cir.end-btn{background:var(--red);color:#fff}
+
+/* ═══════════ MODALS ═══════════ */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center}
+.mbox{background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);padding:2rem;width:90%;max-width:480px;position:relative;max-height:90vh;overflow-y:auto}
+.mbox::before{content:'';position:absolute;inset:-1px;border-radius:var(--rlg);padding:1px;background:linear-gradient(135deg,rgba(122,95,255,.3),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.mtitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;margin-bottom:.3rem}
+.msub{color:var(--text-muted);font-size:.82rem;margin-bottom:1.4rem}
+.mi,.mta,.msel{width:100%;padding:.72rem 1rem;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--r);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:.875rem;margin-bottom:.75rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.mi:focus,.mta:focus,.msel:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.mta{min-height:90px;resize:vertical}
+.msel{appearance:none;cursor:pointer}
+.mbtns{display:flex;gap:.7rem;margin-top:1.2rem}
+.mbtn-p{flex:1;padding:.75rem;background:var(--accent);border:none;border-radius:var(--r);color:#fff;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;transition:opacity .15s;font-size:.88rem}
+.mbtn-p:hover{opacity:.85}
+.mbtn-s{padding:.75rem 1.1rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r);color:var(--text-secondary);font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;font-size:.875rem}
+.mbtn-s:hover{background:var(--bg-hover);color:var(--text-primary)}
+.mbtn-d{flex:1;padding:.75rem;background:var(--red-soft);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);color:var(--red);font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;transition:all .15s;font-size:.88rem}
+.mbtn-d:hover{background:var(--red);color:#fff}
+.field-grp{margin-bottom:.85rem}
+.flabel{display:block;color:var(--text-secondary);font-size:.75rem;font-weight:600;margin-bottom:.35rem;letter-spacing:.04em;text-transform:uppercase}
+.img-modal-box{background:transparent;border:none;max-width:90vw;text-align:center;padding:0}
+.img-modal-box img{max-width:100%;max-height:85vh;border-radius:var(--r)}
+
+/* ═══════════ PROFILE POPUP (Discord style) ═══════════ */
+.profile-popup{display:none;position:fixed;z-index:600;width:320px;background:var(--bg-raised);border:1px solid var(--border);border-radius:var(--rlg);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.profile-popup::before{content:'';position:absolute;inset:-1px;border-radius:var(--rlg);padding:1px;background:linear-gradient(135deg,rgba(122,95,255,.35),transparent);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.pp-banner{height:80px;background:linear-gradient(135deg,var(--accent),var(--blue));position:relative;flex-shrink:0}
+.pp-av-wrap{position:absolute;bottom:-22px;left:16px}
+.pp-av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--blue));display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:700;color:#fff;border:4px solid var(--bg-raised)}
+.pp-body{padding:28px 16px 16px}
+.pp-username{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800}
+.pp-tag{font-size:.8rem;color:var(--text-muted);margin-top:1px}
+.pp-divider{height:1px;background:var(--border);margin:12px 0}
+.pp-section-title{font-size:.68rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+.pp-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:4px}
+.badge{display:flex;align-items:center;gap:.35rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;padding:.3rem .65rem;font-size:.75rem;font-weight:600;color:var(--text-secondary)}
+.badge.og{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.08);color:var(--amber)}
+.badge-icon{font-size:.95rem}
+.pp-bio{color:var(--text-secondary);font-size:.83rem;line-height:1.5}
+.pp-mutual{color:var(--text-secondary);font-size:.83rem}
+.pp-actions{display:flex;gap:.5rem;margin-top:12px}
+.pp-action-btn{flex:1;padding:.6rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-elevated);color:var(--text-secondary);cursor:pointer;font-size:.82rem;font-weight:500;transition:all .15s;font-family:'DM Sans',sans-serif}
+.pp-action-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+.pp-action-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.pp-action-btn.primary:hover{background:#6a4fee}
+.pp-close{position:absolute;top:8px;right:8px;width:26px;height:26px;background:rgba(0,0,0,.4);border:none;border-radius:50%;color:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+
+/* ═══════════ SERVER SETTINGS ═══════════ */
+.settings-modal{max-width:640px}
+.settings-tabs{display:flex;gap:2px;margin-bottom:1.5rem;background:var(--bg-deep);padding:4px;border-radius:8px}
+.stab{flex:1;padding:.55rem;background:transparent;border:none;color:var(--text-muted);border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:500;transition:all .2s;font-family:'DM Sans',sans-serif}
+.stab.active{background:var(--bg-elevated);color:var(--text-primary)}
+.stab-content{display:none}
+.stab-content.active{display:block}
+.danger-zone{background:var(--red-soft);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);padding:1rem;margin-top:1rem}
+.danger-title{color:var(--red);font-weight:700;font-size:.9rem;margin-bottom:.4rem}
+.danger-sub{color:var(--text-secondary);font-size:.82rem;margin-bottom:.8rem}
+.invite-link-box{display:flex;gap:.5rem;align-items:center}
+.invite-link-input{flex:1;padding:.65rem .9rem;background:var(--bg-deep);border:1px solid var(--border);border-radius:var(--r);color:var(--text-secondary);font-size:.82rem;cursor:text;user-select:all;outline:none}
+.copy-btn{padding:.65rem 1rem;background:var(--accent);border:none;border-radius:var(--r);color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;transition:opacity .15s;white-space:nowrap}
+.copy-btn:hover{opacity:.85}
+.member-manage-row{display:flex;align-items:center;gap:.7rem;padding:.6rem;border-radius:8px;transition:background .15s}
+.member-manage-row:hover{background:var(--bg-elevated)}
+.mmr-info{flex:1}
+.mmr-name{font-size:.875rem;font-weight:500}
+.mmr-role{font-size:.72rem;color:var(--text-muted)}
+.mmr-actions{display:flex;gap:.3rem}
+.mmr-btn{padding:.3rem .6rem;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text-muted);cursor:pointer;font-size:.75rem;transition:all .15s}
+.mmr-btn:hover{background:var(--bg-hover);color:var(--text-primary)}
+.mmr-btn.kick:hover{background:var(--red-soft);border-color:rgba(248,113,113,.25);color:var(--red)}
+.role-badge{padding:.15rem .45rem;border-radius:12px;font-size:.65rem;font-weight:700}
+.role-owner{background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.25);color:var(--amber)}
+.role-admin{background:var(--accent-soft);border:1px solid rgba(122,95,255,.25);color:var(--accent)}
+.role-member{background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-muted)}
+.color-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.4rem}
+.color-opt{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.color-opt:hover,.color-opt.selected{border-color:#fff;transform:scale(1.15)}
+/* Invite friend checkboxes */
+.invite-friend-item{display:flex;align-items:center;gap:.7rem;padding:.55rem .7rem;border-radius:8px;cursor:pointer;transition:background .15s}
+.invite-friend-item:hover{background:var(--bg-elevated)}
+.invite-friend-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r);padding:.8rem 1.1rem;color:var(--text-primary);font-size:.875rem;z-index:9999;transform:translateX(400px);transition:transform .3s cubic-bezier(.34,1.56,.64,1);max-width:280px}
+.toast.show{transform:translateX(0)}
+.toast.success{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)}
+.toast.error{border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.05)}
+
+/* Empty state */
+.empty-state{color:var(--text-muted);font-size:.82rem;padding:.75rem;text-align:center}
+
+@media(max-width:900px){.members-panel{display:none}}
+@media(max-width:600px){.ch-panel{display:none}.auth-left{display:none}.auth-right{width:100%}}
+</style>
 </head>
 <body>
 
-<!-- ══════════════ AUTH ══════════════ -->
+<!-- ══════════ AUTH ══════════ -->
 <div id="authSection">
-  <div class="auth-bg-orb orb1"></div>
-  <div class="auth-bg-orb orb2"></div>
-
+  <div class="orb orb1"></div><div class="orb orb2"></div>
   <div class="auth-left">
     <div class="auth-features">
-      <div class="auth-feature"><div class="auth-feature-icon">💬</div> Real-time messaging</div>
-      <div class="auth-feature"><div class="auth-feature-icon">👥</div> Friends &amp; Direct Messages</div>
-      <div class="auth-feature"><div class="auth-feature-icon">📡</div> Public servers &amp; channels</div>
-      <div class="auth-feature"><div class="auth-feature-icon">📷</div> Image sharing</div>
+      <div class="auth-feature"><div class="auth-feat-icon">💬</div>Real-time messaging</div>
+      <div class="auth-feature"><div class="auth-feat-icon">👥</div>Friends &amp; Direct Messages</div>
+      <div class="auth-feature"><div class="auth-feat-icon">📡</div>Custom servers &amp; channels</div>
+      <div class="auth-feature"><div class="auth-feat-icon">📷</div>Image sharing</div>
     </div>
   </div>
-
   <div class="auth-right">
     <div class="auth-card">
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Sign In</button>
-        <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Create Account</button>
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tabReg" onclick="switchTab('register')">Create Account</button>
       </div>
-
-      <!-- Login -->
       <div id="loginForm">
         <div class="auth-title">Welcome back</div>
-        <div class="auth-subtitle">Sign in to continue chatting</div>
-        <div id="loginError" class="auth-error"></div>
-        <div class="field-group">
-          <label class="field-label">Email</label>
-          <input type="email" id="loginEmail" class="field-input" placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Password</label>
-          <input type="password" id="loginPassword" class="field-input" placeholder="••••••••" autocomplete="current-password">
-        </div>
-        <button class="auth-btn" onclick="login()">Sign In →</button>
+        <div class="auth-sub">Sign in to continue</div>
+        <div class="auth-error" id="loginErr"></div>
+        <label class="field-label">Email</label>
+        <input type="email" id="loginEmail" class="field-input" placeholder="you@example.com" autocomplete="email">
+        <label class="field-label">Password</label>
+        <input type="password" id="loginPw" class="field-input" placeholder="••••••••" autocomplete="current-password">
+        <button class="auth-btn" onclick="doLogin()">Sign In →</button>
       </div>
-
-      <!-- Register -->
-      <div id="registerForm" style="display:none;">
+      <div id="regForm" style="display:none">
         <div class="auth-title">Join PartexChat</div>
-        <div class="auth-subtitle">Create your account for free</div>
-        <div id="registerError" class="auth-error"></div>
-        <div class="field-group">
-          <label class="field-label">Username</label>
-          <input type="text" id="registerUsername" class="field-input" placeholder="cooluser123" autocomplete="username">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Email</label>
-          <input type="email" id="registerEmail" class="field-input" placeholder="you@example.com" autocomplete="email">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Password</label>
-          <input type="password" id="registerPassword" class="field-input" placeholder="Min. 6 characters" autocomplete="new-password">
-        </div>
-        <button class="auth-btn" onclick="register()">Create Account →</button>
+        <div class="auth-sub">Create your free account</div>
+        <div class="auth-error" id="regErr"></div>
+        <label class="field-label">Username</label>
+        <input type="text" id="regUsername" class="field-input" placeholder="cooluser" autocomplete="username">
+        <label class="field-label">Email</label>
+        <input type="email" id="regEmail" class="field-input" placeholder="you@example.com" autocomplete="email">
+        <label class="field-label">Password</label>
+        <input type="password" id="regPw" class="field-input" placeholder="Min. 6 characters" autocomplete="new-password">
+        <button class="auth-btn" onclick="doRegister()">Create Account →</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ MAIN APP ══════════════ -->
+<!-- ══════════ APP ══════════ -->
 <div id="mainApp">
-
-  <!-- Server Rail -->
-  <div class="server-rail" id="serverRail">
-    <div class="rail-btn active" id="railGlobal" onclick="selectServer('global', this)">
-      🌍
-      <span class="rail-tooltip">Global Server</span>
-    </div>
-    <div class="rail-btn dm-btn" id="railDMs" onclick="selectServer('dms', this)">
-      💬
-      <span class="rail-tooltip">Direct Messages</span>
+  <!-- Rail -->
+  <div class="rail" id="serverRail">
+    <div class="rail-btn dm-btn" id="railDMs" onclick="selectServer('dms',this)">
+      💬<span class="rail-tip">Direct Messages</span>
     </div>
     <div class="rail-divider"></div>
-    <!-- Dynamic servers appended here -->
-    <div class="rail-btn add-btn" id="addServerBtn" onclick="openModal('createServerModal')">
-      +
-      <span class="rail-tooltip">Create Server</span>
+    <!-- servers appended here -->
+    <div class="rail-btn add-btn" id="addSrvBtn" onclick="openModal('createServerModal')">
+      +<span class="rail-tip">Create Server</span>
     </div>
   </div>
 
   <!-- Channels Panel -->
-  <div class="channels-panel">
-    <div class="panel-header">
-      <div class="panel-server-name">
-        <span id="panelServerName">Global Server</span>
-        <div class="panel-actions" id="panelActions">
-          <button class="panel-action-btn" onclick="showInvite()" title="Invite">📨</button>
-          <button class="panel-action-btn" onclick="toast('Server settings coming soon!', 'info')" title="Settings">⚙️</button>
+  <div class="ch-panel">
+    <div class="ch-panel-header">
+      <div class="ch-server-name">
+        <span id="panelName">Direct Messages</span>
+        <div class="ch-panel-actions" id="panelActions" style="display:none">
+          <button class="ch-act-btn" id="inviteBtn" onclick="openInviteFriendsModal()" title="Invite Friends">📨</button>
+          <button class="ch-act-btn" id="settingsBtn" onclick="openServerSettings()" title="Server Settings">⚙️</button>
         </div>
       </div>
     </div>
-
-    <div class="panel-scroll">
-      <!-- Server Channels -->
-      <div id="channelsSection">
-        <div class="section-label">
-          <span>Channels</span>
-          <button class="section-add-btn" onclick="openModal('createChannelModal')" title="New Channel">+</button>
+    <div class="ch-scroll">
+      <div id="channelsSection" style="display:none">
+        <div class="sec-label">
+          <span>CHANNELS</span>
+          <button class="sec-add" onclick="openModal('createChannelModal')" title="New Channel">+</button>
         </div>
-        <ul id="channelsList" style="list-style:none;">
-          <li class="channel-row active" id="ch-welcome" onclick="selectChannel('welcome', this)">
-            <span class="ch-icon">#</span> welcome
-          </li>
-          <li class="channel-row" id="ch-general" onclick="selectChannel('general', this)">
-            <span class="ch-icon">#</span> general
-          </li>
-        </ul>
+        <ul id="channelsList" style="list-style:none"></ul>
       </div>
-
-      <!-- DMs Section -->
-      <div id="dmsSection" style="display:none;">
-        <div class="section-label">
-          <span>Friends</span>
-          <button class="section-add-btn" onclick="openModal('addFriendModal')" title="Add Friend">+</button>
+      <div id="dmsSection">
+        <div class="sec-label">
+          <span>FRIENDS</span>
+          <button class="sec-add" onclick="openModal('addFriendModal')" title="Add Friend">+</button>
         </div>
         <div id="friendsList"></div>
-
-        <div id="friendRequestsSection">
-          <div class="section-label" style="margin-top:1rem;">
-            <span>Requests</span>
-            <span class="req-badge" id="reqBadge" style="display:none;">0</span>
-          </div>
-          <div id="friendRequestsList"></div>
+        <div class="sec-label" style="margin-top:1rem">
+          <span>REQUESTS</span>
+          <span class="req-badge" id="reqBadge" style="display:none">0</span>
         </div>
+        <div id="friendReqList"></div>
       </div>
     </div>
-
-    <!-- User Bar -->
-    <div class="user-bar" onclick="openModal('profileModal')">
-      <div class="user-bar-av" id="userBarAv">U</div>
+    <div class="user-bar" onclick="openOwnProfile()">
+      <div class="user-bar-av" id="ubAv">U</div>
       <div class="user-bar-info">
-        <div class="user-bar-name" id="userBarName">Username</div>
+        <div class="user-bar-name" id="ubName">Username</div>
         <div class="user-bar-status">● Online</div>
       </div>
-      <button class="user-bar-logout" onclick="event.stopPropagation(); logout()" title="Logout">⎋</button>
+      <button class="ub-logout" onclick="event.stopPropagation();doLogout()" title="Logout">⎋</button>
     </div>
   </div>
 
-  <!-- Chat Pane -->
+  <!-- Chat -->
   <div class="chat-pane">
-    <div class="chat-topbar">
-      <span class="topbar-icon" id="topbarIcon">#</span>
-      <span class="topbar-name" id="topbarName">welcome</span>
-      <div class="topbar-actions">
-        <button class="topbar-btn call-active" id="callBtn" style="display:none;" onclick="startCall()" title="Start Call">📞</button>
+    <div class="topbar">
+      <span class="topbar-icon" id="topIcon">#</span>
+      <span class="topbar-name" id="topName">—</span>
+      <div class="topbar-acts">
+        <button class="topbar-btn" id="callBtn" style="display:none" onclick="startCall()" title="Start Call">📞</button>
       </div>
     </div>
-
-    <div class="messages-feed" id="messagesFeed">
-      <div class="welcome-card">
-        <h3>Welcome to PartexChat 🚀</h3>
-        <p>This is the beginning of your conversation. Say something!</p>
-      </div>
+    <div class="feed" id="feed">
+      <div class="welcome-card"><h3>Welcome to PartexChat 🚀</h3><p>Create or join a server to get started!</p></div>
     </div>
-
     <div class="input-zone">
       <div class="input-box">
-        <div class="img-preview-strip" id="imgPreviewStrip">
-          <div class="img-preview-strip-inner">
-            <img id="imgPreviewImg" alt="preview">
-            <button class="img-preview-remove" onclick="clearImagePreview()">✕</button>
+        <div class="img-strip" id="imgStrip">
+          <div class="img-strip-inner">
+            <img id="imgStripImg" alt="preview">
+            <button class="img-strip-x" onclick="clearImg()">✕</button>
           </div>
         </div>
         <div class="input-row">
-          <textarea id="messageInput" placeholder="Type a message..." rows="1" onkeydown="handleKey(event)" oninput="autoGrow(this)"></textarea>
-          <div class="input-tools">
-            <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
-            <button class="tool-btn" onclick="document.getElementById('fileInput').click()" title="Attach image">📷</button>
-            <button class="send-btn" onclick="sendMessage()" id="sendBtn">
-              ➤
-            </button>
-          </div>
+          <textarea id="msgInput" placeholder="Select a conversation..." rows="1" onkeydown="handleKey(event)" oninput="autoGrow(this)" disabled></textarea>
+          <input type="file" id="fileIn" accept="image/*" style="display:none" onchange="handleFile(event)">
+          <button class="tool-btn" onclick="document.getElementById('fileIn').click()" title="Image">📷</button>
+          <button class="send-btn" onclick="sendMsg()">➤</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Members Panel -->
+  <!-- Members -->
   <div class="members-panel">
     <div class="members-top">Members</div>
     <div class="members-scroll" id="membersList"></div>
   </div>
 </div>
 
-<!-- ══════════════ CALL OVERLAY ══════════════ -->
+<!-- ══════════ CALL ══════════ -->
 <div class="call-overlay" id="callOverlay">
-  <div class="call-overlay-header">
-    <span class="call-overlay-title" id="callTitle">📞 In Call</span>
-    <button class="call-overlay-close" onclick="endCall()">✕</button>
+  <div class="call-hdr">
+    <span class="call-title" id="callTitle">📞 In Call</span>
+    <button class="call-x" onclick="endCall()">✕</button>
   </div>
-  <div class="call-video-area">
-    <video id="remoteVideo" autoplay playsinline></video>
-    <video id="localVideo" autoplay muted playsinline></video>
+  <div class="call-vid">
+    <video id="remoteVid" autoplay playsinline></video>
+    <video id="localVid" autoplay muted playsinline></video>
   </div>
   <div class="call-btns">
-    <button class="call-circle-btn mute" id="muteBtn" onclick="toggleMute()">🎤</button>
-    <button class="call-circle-btn end-call" onclick="endCall()">📵</button>
+    <button class="call-cir mute-btn" id="muteBtn" onclick="toggleMute()">🎤</button>
+    <button class="call-cir end-btn" onclick="endCall()">📵</button>
   </div>
 </div>
 
-<!-- ══════════════ MODALS ══════════════ -->
+<!-- ══════════ PROFILE POPUP ══════════ -->
+<div class="profile-popup" id="profilePopup">
+  <div class="pp-banner" id="ppBanner">
+    <div class="pp-av-wrap"><div class="pp-av" id="ppAv">U</div></div>
+  </div>
+  <button class="pp-close" onclick="closeProfilePopup()">✕</button>
+  <div class="pp-body">
+    <div class="pp-username" id="ppUsername">Username</div>
+    <div class="pp-tag" id="ppTag">partexchat</div>
+    <div class="pp-divider"></div>
+    <div id="ppBadgesSection">
+      <div class="pp-section-title">BADGES</div>
+      <div class="pp-badges" id="ppBadges"></div>
+    </div>
+    <div class="pp-divider" id="ppBadgeDiv"></div>
+    <div class="pp-section-title" id="ppBioLabel" style="display:none">ABOUT ME</div>
+    <div class="pp-bio" id="ppBio"></div>
+    <div class="pp-divider"></div>
+    <div class="pp-section-title">MEMBER SINCE</div>
+    <div class="pp-mutual" id="ppSince">—</div>
+    <div class="pp-actions" id="ppActions"></div>
+  </div>
+</div>
+
+<!-- ══════════ MODALS ══════════ -->
 
 <!-- Create Server -->
-<div class="modal-backdrop" id="createServerModal">
-  <div class="modal-box">
-    <div class="modal-title">Create a Server</div>
-    <div class="modal-sub">Give your new server a name</div>
-    <input type="text" id="serverNameInput" class="modal-input" placeholder="My Awesome Server">
-    <div class="modal-btns">
-      <button class="modal-btn-secondary" onclick="closeModal('createServerModal')">Cancel</button>
-      <button class="modal-btn-primary" onclick="createServer()">Create Server</button>
+<div class="modal-bg" id="createServerModal">
+  <div class="mbox">
+    <div class="mtitle">Create a Server</div>
+    <div class="msub">Give your server a name and customize it</div>
+    <div class="field-grp"><label class="flabel">Server Name</label><input type="text" id="srvNameIn" class="mi" placeholder="My Awesome Server"></div>
+    <div class="field-grp"><label class="flabel">Banner Color</label>
+      <div class="color-row" id="srvColorRow">
+        <div class="color-opt selected" style="background:#7a5fff" data-color="#7a5fff" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#38bdf8" data-color="#38bdf8" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#4ade80" data-color="#4ade80" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#f87171" data-color="#f87171" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#fbbf24" data-color="#fbbf24" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#e879f9" data-color="#e879f9" onclick="selectColor(this)"></div>
+        <div class="color-opt" style="background:#fb923c" data-color="#fb923c" onclick="selectColor(this)"></div>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-s" onclick="closeModal('createServerModal')">Cancel</button>
+      <button class="mbtn-p" onclick="createServer()">Create Server</button>
     </div>
   </div>
 </div>
 
 <!-- Create Channel -->
-<div class="modal-backdrop" id="createChannelModal">
-  <div class="modal-box">
-    <div class="modal-title">New Channel</div>
-    <div class="modal-sub">Add a channel to this server</div>
-    <input type="text" id="channelNameInput" class="modal-input" placeholder="channel-name">
-    <div class="modal-btns">
-      <button class="modal-btn-secondary" onclick="closeModal('createChannelModal')">Cancel</button>
-      <button class="modal-btn-primary" onclick="createChannel()">Create Channel</button>
+<div class="modal-bg" id="createChannelModal">
+  <div class="mbox">
+    <div class="mtitle">New Channel</div>
+    <div class="msub">Add a text channel to this server</div>
+    <input type="text" id="chNameIn" class="mi" placeholder="channel-name">
+    <div class="mbtns">
+      <button class="mbtn-s" onclick="closeModal('createChannelModal')">Cancel</button>
+      <button class="mbtn-p" onclick="createChannel()">Create</button>
     </div>
   </div>
 </div>
 
 <!-- Add Friend -->
-<div class="modal-backdrop" id="addFriendModal">
-  <div class="modal-box">
-    <div class="modal-title">Add Friend</div>
-    <div class="modal-sub">Send a friend request by username</div>
-    <input type="text" id="friendUsernameInput" class="modal-input" placeholder="Enter username...">
-    <div class="modal-btns">
-      <button class="modal-btn-secondary" onclick="closeModal('addFriendModal')">Cancel</button>
-      <button class="modal-btn-primary" onclick="sendFriendRequest()">Send Request</button>
+<div class="modal-bg" id="addFriendModal">
+  <div class="mbox">
+    <div class="mtitle">Add Friend</div>
+    <div class="msub">Send a friend request by username</div>
+    <input type="text" id="friendUnameIn" class="mi" placeholder="Username...">
+    <div class="mbtns">
+      <button class="mbtn-s" onclick="closeModal('addFriendModal')">Cancel</button>
+      <button class="mbtn-p" onclick="sendFriendReq()">Send Request</button>
     </div>
   </div>
 </div>
 
-<!-- Profile -->
-<div class="modal-backdrop" id="profileModal">
-  <div class="modal-box">
-    <div class="profile-header">
-      <div class="profile-av-large" id="profileAv">U</div>
-      <div class="profile-info">
-        <div class="profile-name" id="profileName">Username</div>
-        <div class="profile-email" id="profileEmail">user@example.com</div>
+<!-- Invite Friends to Server -->
+<div class="modal-bg" id="inviteFriendsModal">
+  <div class="mbox">
+    <div class="mtitle">Invite Friends</div>
+    <div class="msub" id="inviteSubtitle">Select friends to invite to this server</div>
+    <div id="inviteFriendsList"></div>
+    <div style="margin-top:1rem">
+      <div class="flabel">Or share invite link</div>
+      <div class="invite-link-box">
+        <input type="text" class="invite-link-input" id="inviteLinkInput" readonly>
+        <button class="copy-btn" onclick="copyInviteLink()">Copy</button>
       </div>
     </div>
-    <div class="profile-stat-row">
-      <div class="profile-stat">
-        <div class="profile-stat-value" id="profileFriends">0</div>
-        <div class="profile-stat-label">Friends</div>
-      </div>
-      <div class="profile-stat">
-        <div class="profile-stat-value" id="profileSince">—</div>
-        <div class="profile-stat-label">Member Since</div>
-      </div>
-    </div>
-    <div class="profile-bio-box" id="profileBio">No bio yet.</div>
-    <div class="modal-btns">
-      <button class="modal-btn-secondary" onclick="closeModal('profileModal')">Close</button>
-      <button class="modal-btn-primary" onclick="openEditProfile()">Edit Profile</button>
+    <div class="mbtns">
+      <button class="mbtn-s" onclick="closeModal('inviteFriendsModal')">Close</button>
+      <button class="mbtn-p" onclick="sendSelectedInvites()">Send Invites</button>
     </div>
   </div>
 </div>
 
-<!-- Edit Profile -->
-<div class="modal-backdrop" id="editProfileModal">
-  <div class="modal-box">
-    <div class="modal-title">Edit Profile</div>
-    <div class="modal-sub">Update your public information</div>
-    <label class="field-label">Username</label>
-    <input type="text" id="editUsername" class="modal-input" placeholder="Username">
-    <label class="field-label">Bio</label>
-    <textarea id="editBio" class="modal-textarea" placeholder="Tell us about yourself..."></textarea>
-    <label class="field-label">Status</label>
-    <select id="editStatus" class="modal-select">
-      <option value="online">🟢 Online</option>
-      <option value="idle">🌙 Idle</option>
-      <option value="dnd">⛔ Do Not Disturb</option>
-      <option value="offline">⚫ Offline</option>
-    </select>
-    <div class="modal-btns">
-      <button class="modal-btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
-      <button class="modal-btn-primary" onclick="saveProfile()">Save Changes</button>
+<!-- Server Invites Inbox (pending invites you received) -->
+<div class="modal-bg" id="serverInvitesModal">
+  <div class="mbox">
+    <div class="mtitle">Server Invites</div>
+    <div class="msub">Pending invites from your friends</div>
+    <div id="serverInvitesList"></div>
+    <div class="mbtns"><button class="mbtn-s" onclick="closeModal('serverInvitesModal')">Close</button></div>
+  </div>
+</div>
+
+<!-- Server Settings -->
+<div class="modal-bg" id="serverSettingsModal">
+  <div class="mbox settings-modal">
+    <div class="mtitle" id="settingsTitle">Server Settings</div>
+    <div class="settings-tabs">
+      <button class="stab active" onclick="switchSettingsTab('overview',this)">Overview</button>
+      <button class="stab" onclick="switchSettingsTab('members',this)">Members</button>
+      <button class="stab" onclick="switchSettingsTab('invites',this)">Invites</button>
+      <button class="stab" onclick="switchSettingsTab('danger',this)">Danger</button>
+    </div>
+
+    <!-- Overview -->
+    <div class="stab-content active" id="stab-overview">
+      <div class="field-grp"><label class="flabel">Server Name</label><input type="text" class="mi" id="editSrvName" placeholder="Server name"></div>
+      <div class="field-grp"><label class="flabel">Banner Color</label>
+        <div class="color-row" id="editColorRow">
+          <div class="color-opt selected" style="background:#7a5fff" data-color="#7a5fff" onclick="selectEditColor(this)"></div>
+          <div class="color-opt" style="background:#38bdf8" data-color="#38bdf8" onclick="selectEditColor(this)"></div>
+          <div class="color-opt" style="background:#4ade80" data-color="#4ade80" onclick="selectEditColor(this)"></div>
+          <div class="color-opt" style="background:#f87171" data-color="#f87171" onclick="selectEditColor(this)"></div>
+          <div class="color-opt" style="background:#fbbf24" data-color="#fbbf24" onclick="selectEditColor(this)"></div>
+          <div class="color-opt" style="background:#e879f9" data-color="#e879f9" onclick="selectEditColor(this)"></div>
+          <div class="color-opt" style="background:#fb923c" data-color="#fb923c" onclick="selectEditColor(this)"></div>
+        </div>
+      </div>
+      <div class="field-grp"><label class="flabel">Description</label><textarea class="mta" id="editSrvDesc" placeholder="What's this server about?"></textarea></div>
+      <div class="mbtns"><button class="mbtn-s" onclick="closeModal('serverSettingsModal')">Cancel</button><button class="mbtn-p" onclick="saveServerSettings()">Save Changes</button></div>
+    </div>
+
+    <!-- Members -->
+    <div class="stab-content" id="stab-members">
+      <div id="serverMembersList"></div>
+    </div>
+
+    <!-- Invites -->
+    <div class="stab-content" id="stab-invites">
+      <div class="flabel">Active Invite Link</div>
+      <div class="invite-link-box" style="margin-bottom:1rem">
+        <input type="text" class="invite-link-input" id="settingsInviteLink" readonly>
+        <button class="copy-btn" onclick="copySettingsInviteLink()">Copy</button>
+      </div>
+      <button class="mbtn-p" style="margin-bottom:.5rem;display:block;width:100%" onclick="regenerateInviteLink()">🔄 Regenerate Link</button>
+    </div>
+
+    <!-- Danger -->
+    <div class="stab-content" id="stab-danger">
+      <div class="danger-zone">
+        <div class="danger-title">⚠️ Danger Zone</div>
+        <div class="danger-sub">These actions are irreversible. Please be certain.</div>
+        <div class="mbtns">
+          <button class="mbtn-d" onclick="deleteServer()">🗑 Delete Server</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Image Viewer -->
-<div class="modal-backdrop" id="imageModal" onclick="closeModal('imageModal')">
-  <div class="modal-box img-modal-box">
-    <img id="enlargedImg" alt="full size">
+<!-- Edit Own Profile -->
+<div class="modal-bg" id="editProfileModal">
+  <div class="mbox">
+    <div class="mtitle">Edit Profile</div>
+    <div class="msub">Update your public information</div>
+    <div class="field-grp"><label class="flabel">Username</label><input type="text" class="mi" id="editUname" placeholder="Username"></div>
+    <div class="field-grp"><label class="flabel">Bio</label><textarea class="mta" id="editBio" placeholder="Tell everyone about yourself..."></textarea></div>
+    <div class="field-grp"><label class="flabel">Status</label>
+      <select class="msel" id="editStatus">
+        <option value="online">🟢 Online</option>
+        <option value="idle">🌙 Idle</option>
+        <option value="dnd">⛔ Do Not Disturb</option>
+        <option value="offline">⚫ Invisible</option>
+      </select>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-s" onclick="closeModal('editProfileModal')">Cancel</button>
+      <button class="mbtn-p" onclick="saveProfile()">Save Changes</button>
+    </div>
   </div>
+</div>
+
+<!-- Image viewer -->
+<div class="modal-bg" id="imgModal" onclick="closeModal('imgModal')">
+  <div class="mbox img-modal-box"><img id="bigImg" alt="full"></div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, set, push, onChildAdded, onValue, get, remove, update, off } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getDatabase, ref, set, push, onChildAdded, onValue, off, get, remove, update }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBWxwGrVmF2IQEGIyEZCtwp9vsRdpGAnRs",
-  authDomain: "partexchat.firebaseapp.com",
-  databaseURL: "https://partexchat-default-rtdb.firebaseio.com",
-  projectId: "partexchat",
-  storageBucket: "partexchat.firebasestorage.app",
-  messagingSenderId: "348087049579",
-  appId: "1:348087049579:web:a61c4aef9e7272505d802e",
-  measurementId: "G-KY5XWKYY0D"
+const fbCfg = {
+  apiKey:"AIzaSyBWxwGrVmF2IQEGIyEZCtwp9vsRdpGAnRs",
+  authDomain:"partexchat.firebaseapp.com",
+  databaseURL:"https://partexchat-default-rtdb.firebaseio.com",
+  projectId:"partexchat",
+  storageBucket:"partexchat.firebasestorage.app",
+  messagingSenderId:"348087049579",
+  appId:"1:348087049579:web:a61c4aef9e7272505d802e"
 };
-
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(fbCfg);
 const auth = getAuth(app);
-const db = getDatabase(app);
-const storage = getStorage(app);
+const db   = getDatabase(app);
+const stor = getStorage(app);
 
-// ── STATE ──
-let currentUser = null;
-let currentServer = 'global';
-let currentChannel = 'welcome';
-let currentDmUid = null;
-let msgListener = null;
-let friendsUnsub = null;
-let reqsUnsub = null;
-let selectedFile = null;
-let peerConn = null;
-let localStream = null;
-let isMuted = false;
+// ── STATE ──────────────────────────────────────────────
+let CU = null;            // current user object
+let curServer = null;     // current server id or 'dms'
+let curChannel = null;    // current channel id
+let curDmUid   = null;    // uid of DM partner
+let msgListenerRef = null;
+let msgListenerFn  = null;
+let selectedFile   = null;
+let localStream    = null;
+let isMuted        = false;
+let serverData     = {};  // cache: serverData[sid] = {name,color,...}
+let selectedSrvColor = '#7a5fff';
+let editingSrvColor  = '#7a5fff';
 
-// ── HELPERS ──
-window.toast = function(msg, type = 'info') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
+// ── HELPERS ────────────────────────────────────────────
+window.toast = function(msg, type='info'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
   document.body.appendChild(el);
-  requestAnimationFrame(() => el.classList.add('show'));
-  setTimeout(() => {
-    el.classList.remove('show');
-    setTimeout(() => el.remove(), 350);
-  }, 3000);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),350)},3000);
 };
 
-window._openModalProfile = async function() {};
-
-window.openModal = async function(id) {
-  if (id === 'profileModal') {
-    await window._openModalProfile();
-  }
-  document.getElementById(id).style.display = 'flex';
-};
-window.closeModal = id => { document.getElementById(id).style.display = 'none'; };
+window.openModal  = id=>{document.getElementById(id).style.display='flex';};
+window.closeModal = id=>{document.getElementById(id).style.display='none';};
 
 // Close modal on backdrop click
-document.querySelectorAll('.modal-backdrop').forEach(el => {
-  el.addEventListener('click', e => {
-    if (e.target === el) closeModal(el.id);
-  });
+document.querySelectorAll('.modal-bg').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id);});
 });
 
-// ── AUTH TAB ──
-window.switchAuthTab = function(tab) {
-  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+function esc(t){const d=document.createElement('div');d.appendChild(document.createTextNode(t));return d.innerHTML;}
+
+// ── AUTH TAB ───────────────────────────────────────────
+window.switchTab = function(tab){
+  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+  document.getElementById('regForm').style.display=tab==='register'?'block':'none';
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('tabReg').classList.toggle('active',tab==='register');
 };
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+function hideErr(id){document.getElementById(id).style.display='none';}
 
-function showErr(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-function hideErr(id) { document.getElementById(id).style.display = 'none'; }
-
-// ── REGISTER ──
-window.register = async function() {
-  hideErr('registerError');
-  const username = document.getElementById('registerUsername').value.trim();
-  const email = document.getElementById('registerEmail').value.trim();
-  const password = document.getElementById('registerPassword').value;
-  if (!username || !email || !password) return showErr('registerError', 'Please fill all fields');
-  if (username.length < 3) return showErr('registerError', 'Username must be at least 3 characters');
-  if (password.length < 6) return showErr('registerError', 'Password must be at least 6 characters');
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    const uid = cred.user.uid;
-    await set(ref(db, `users/${uid}`), {
-      username, email,
-      avatar: username[0].toUpperCase(),
-      bio: '',
-      status: 'online',
-      createdAt: new Date().toISOString(),
-      isOnline: true,
-      lastSeen: new Date().toISOString()
+// ── REGISTER ──────────────────────────────────────────
+window.doRegister = async function(){
+  hideErr('regErr');
+  const un=document.getElementById('regUsername').value.trim();
+  const em=document.getElementById('regEmail').value.trim();
+  const pw=document.getElementById('regPw').value;
+  if(!un||!em||!pw) return showErr('regErr','Please fill all fields');
+  if(un.length<3) return showErr('regErr','Username min 3 chars');
+  if(pw.length<6) return showErr('regErr','Password min 6 chars');
+  try{
+    // Check username taken
+    const uCheck=await get(ref(db,`usernames/${un.toLowerCase()}`));
+    if(uCheck.exists()) return showErr('regErr','Username already taken');
+    const cred=await createUserWithEmailAndPassword(auth,em,pw);
+    const uid=cred.user.uid;
+    await set(ref(db,`users/${uid}`),{
+      username:un,email:em,avatar:un[0].toUpperCase(),
+      bio:'',status:'online',
+      createdAt:new Date().toISOString(),
+      isOnline:true,lastSeen:new Date().toISOString(),
+      badges:['og']  // everyone who joins gets OG badge
     });
-    await set(ref(db, `usernames/${username.toLowerCase()}`), uid);
-    await push(ref(db, 'servers/global/channels/welcome/messages'), {
-      text: `🎉 Welcome ${username} to PartexChat!`,
-      sender: 'System', senderId: 'system', senderAvatar: '🤖',
-      timestamp: new Date().toISOString(), isSystem: true
-    });
-  } catch(e) { showErr('registerError', e.message); }
+    await set(ref(db,`usernames/${un.toLowerCase()}`),uid);
+  }catch(e){showErr('regErr',e.message);}
 };
 
-// ── LOGIN ──
-window.login = async function() {
-  hideErr('loginError');
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  if (!email || !password) return showErr('loginError', 'Please fill all fields');
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch(e) { showErr('loginError', 'Invalid email or password'); }
+// ── LOGIN ─────────────────────────────────────────────
+window.doLogin = async function(){
+  hideErr('loginErr');
+  const em=document.getElementById('loginEmail').value.trim();
+  const pw=document.getElementById('loginPw').value;
+  if(!em||!pw) return showErr('loginErr','Please fill all fields');
+  try{await signInWithEmailAndPassword(auth,em,pw);}
+  catch(e){showErr('loginErr','Invalid email or password');}
 };
 
-// ── LOGOUT ──
-window.logout = async function() {
-  if (currentUser) {
-    await update(ref(db, `users/${currentUser.uid}`), { isOnline: false, lastSeen: new Date().toISOString() });
+// ── LOGOUT ────────────────────────────────────────────
+window.doLogout = async function(){
+  if(CU){
+    await update(ref(db,`users/${CU.uid}`),{isOnline:false,lastSeen:new Date().toISOString()});
     endCall();
   }
   await signOut(auth);
 };
 
-// ── AUTH STATE ──
-onAuthStateChanged(auth, async user => {
-  if (user) {
-    let snap = await get(ref(db, `users/${user.uid}`));
-    if (!snap.exists()) {
-      await set(ref(db, `users/${user.uid}`), {
-        username: user.email.split('@')[0], email: user.email,
-        avatar: user.email[0].toUpperCase(), bio: '', status: 'online',
-        createdAt: new Date().toISOString(), isOnline: true,
-        lastSeen: new Date().toISOString()
+// ── AUTH STATE ────────────────────────────────────────
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    let snap=await get(ref(db,`users/${user.uid}`));
+    if(!snap.exists()){
+      const un=user.email.split('@')[0];
+      await set(ref(db,`users/${user.uid}`),{
+        username:un,email:user.email,avatar:un[0].toUpperCase(),
+        bio:'',status:'online',createdAt:new Date().toISOString(),
+        isOnline:true,lastSeen:new Date().toISOString(),badges:['og']
       });
-      snap = await get(ref(db, `users/${user.uid}`));
+      await set(ref(db,`usernames/${un.toLowerCase()}`),user.uid);
+      snap=await get(ref(db,`users/${user.uid}`));
     }
-    currentUser = { uid: user.uid, ...snap.val() };
-    await update(ref(db, `users/${user.uid}`), { isOnline: true, lastSeen: new Date().toISOString() });
-    updateUserBar();
-    document.getElementById('authSection').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'flex';
-    await initGlobal();
-    loadMessages();
-    loadMembers();
-  } else {
-    currentUser = null;
-    document.getElementById('authSection').style.display = 'flex';
-    document.getElementById('mainApp').style.display = 'none';
+    CU={uid:user.uid,...snap.val()};
+    await update(ref(db,`users/${user.uid}`),{isOnline:true,lastSeen:new Date().toISOString()});
+    document.getElementById('ubAv').textContent=CU.avatar||'U';
+    document.getElementById('ubName').textContent=CU.username;
+    document.getElementById('authSection').style.display='none';
+    document.getElementById('mainApp').style.display='flex';
+    // Start on DMs
+    selectServer('dms',document.getElementById('railDMs'));
+    loadMyServers();
+    checkServerInvites();
+  }else{
+    CU=null;
+    document.getElementById('authSection').style.display='flex';
+    document.getElementById('mainApp').style.display='none';
   }
 });
 
-function updateUserBar() {
-  document.getElementById('userBarAv').textContent = currentUser.avatar || 'U';
-  document.getElementById('userBarName').textContent = currentUser.username;
-}
+// ── SERVER COLOR SELECT ────────────────────────────────
+window.selectColor = function(el){
+  document.querySelectorAll('#srvColorRow .color-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedSrvColor=el.dataset.color;
+};
+window.selectEditColor = function(el){
+  document.querySelectorAll('#editColorRow .color-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  editingSrvColor=el.dataset.color;
+};
 
-// ── GLOBAL INIT ──
-async function initGlobal() {
-  const snap = await get(ref(db, 'servers/global'));
-  if (!snap.exists()) {
-    await set(ref(db, 'servers/global'), {
-      name: 'Global Server', owner: 'system', createdAt: new Date().toISOString()
-    });
-    for (const ch of ['welcome', 'general']) {
-      await set(ref(db, `servers/global/channels/${ch}`), { name: ch, createdBy: 'system', createdAt: new Date().toISOString() });
+// ── LOAD MY SERVERS ────────────────────────────────────
+function loadMyServers(){
+  // Listen to user's server memberships
+  onValue(ref(db,`userServers/${CU.uid}`),async snap=>{
+    // Remove existing server rail buttons (keep DMs, divider, add)
+    document.querySelectorAll('.rail-btn.srv-btn').forEach(b=>b.remove());
+    if(!snap.exists()) return;
+    const sids=Object.keys(snap.val());
+    for(const sid of sids){
+      const ssnap=await get(ref(db,`servers/${sid}`));
+      if(!ssnap.exists()) continue;
+      const sd=ssnap.val();
+      serverData[sid]=sd;
+      addServerToRail(sid,sd);
     }
-  }
+  });
 }
 
-// ── SERVER SELECT ──
-window.selectServer = function(serverId, el) {
-  currentServer = serverId;
-  currentDmUid = null;
+function addServerToRail(sid,sd){
+  const btn=document.createElement('div');
+  btn.className='rail-btn srv-btn';
+  btn.id=`rail-${sid}`;
+  btn.style.fontSize='.85rem';
+  btn.innerHTML=`${esc(sd.name[0].toUpperCase())}<span class="rail-tip">${esc(sd.name)}</span>`;
+  btn.onclick=()=>selectServer(sid,btn);
+  // Check for pending invites badge
+  document.getElementById('addSrvBtn').before(btn);
+}
 
-  document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
-  if (el) el.classList.add('active');
+// ── SELECT SERVER ─────────────────────────────────────
+window.selectServer = function(sid, el){
+  curServer=sid; curDmUid=null; curChannel=null;
+  detachMsgListener();
 
-  const isDM = serverId === 'dms';
-  document.getElementById('channelsSection').style.display = isDM ? 'none' : 'block';
-  document.getElementById('dmsSection').style.display = isDM ? 'block' : 'none';
-  document.getElementById('panelActions').style.display = isDM ? 'none' : 'flex';
-  document.getElementById('panelServerName').textContent = isDM ? 'Direct Messages' : 'Global Server';
-  document.getElementById('callBtn').style.display = 'none';
+  document.querySelectorAll('.rail-btn').forEach(b=>{b.classList.remove('active');b.classList.remove('dm-active');});
+  if(el){
+    if(sid==='dms') el.classList.add('dm-active');
+    else el.classList.add('active');
+  }
 
-  if (isDM) {
-    document.getElementById('topbarIcon').textContent = '💬';
-    document.getElementById('topbarName').textContent = 'Direct Messages';
-    document.getElementById('messageInput').placeholder = 'Select a friend to start chatting...';
-    document.getElementById('messageInput').disabled = true;
-    showWelcomeCard('Direct Messages 💬', 'Select a friend from the list to start chatting');
+  const isDM=sid==='dms';
+  document.getElementById('channelsSection').style.display=isDM?'none':'block';
+  document.getElementById('dmsSection').style.display=isDM?'block':'none';
+  document.getElementById('panelActions').style.display=isDM?'none':'flex';
+  document.getElementById('inviteBtn').style.display=isDM?'none':'flex';
+  document.getElementById('settingsBtn').style.display=isDM?'none':'flex';
+  document.getElementById('callBtn').style.display='none';
+
+  if(isDM){
+    document.getElementById('panelName').textContent='Direct Messages';
+    document.getElementById('topIcon').textContent='💬';
+    document.getElementById('topName').textContent='Direct Messages';
+    document.getElementById('msgInput').placeholder='Select a friend to start chatting...';
+    document.getElementById('msgInput').disabled=true;
+    setFeedWelcome('Direct Messages 💬','Select a friend from the list');
     loadFriends();
     loadFriendRequests();
-  } else {
-    document.getElementById('messageInput').disabled = false;
-    selectChannel('welcome', document.getElementById('ch-welcome'));
+    loadMembersPanel([]);
+  }else{
+    const sd=serverData[sid]||{};
+    document.getElementById('panelName').textContent=sd.name||'Server';
+    loadChannels(sid);
+    checkServerInvites();
   }
 };
 
-// ── CHANNEL SELECT ──
-window.selectChannel = function(chId, el) {
-  currentChannel = chId;
-  currentDmUid = null;
-  document.querySelectorAll('.channel-row').forEach(r => r.classList.remove('active'));
-  if (el) el.classList.add('active');
-  document.getElementById('topbarIcon').textContent = '#';
-  document.getElementById('topbarName').textContent = chId;
-  document.getElementById('callBtn').style.display = 'none';
-  document.getElementById('messageInput').disabled = false;
-  document.getElementById('messageInput').placeholder = `Message #${chId}`;
-  loadMessages();
-};
-
-// ── START DM ──
-window.startDM = function(friendUid, friendName, avatarChar) {
-  currentServer = 'dms';
-  currentDmUid = friendUid;
-
-  document.querySelectorAll('.dm-item').forEach(i => i.classList.remove('active'));
-  const el = document.getElementById(`dm-${friendUid}`);
-  if (el) el.classList.add('active');
-
-  document.getElementById('topbarIcon').textContent = '💬';
-  document.getElementById('topbarName').textContent = friendName;
-  document.getElementById('callBtn').style.display = 'flex';
-  document.getElementById('messageInput').disabled = false;
-  document.getElementById('messageInput').placeholder = `Message ${friendName}...`;
-  loadMessages();
-};
-
-// ── LOAD MESSAGES ──
-function showWelcomeCard(title, sub) {
-  document.getElementById('messagesFeed').innerHTML = `
-    <div class="welcome-card">
-      <h3>${title}</h3>
-      <p>${sub}</p>
-    </div>`;
+// ── CHANNELS ──────────────────────────────────────────
+function loadChannels(sid){
+  const list=document.getElementById('channelsList');
+  list.innerHTML='';
+  onValue(ref(db,`servers/${sid}/channels`),snap=>{
+    list.innerHTML='';
+    if(!snap.exists()){setFeedWelcome('No channels yet','Create one below!');return;}
+    const chs=snap.val();
+    let first=null;
+    Object.entries(chs).forEach(([cid,ch])=>{
+      if(!first) first=cid;
+      const li=document.createElement('li');
+      li.className='ch-row';
+      li.id=`ch-${cid}`;
+      const isOwner=serverData[sid]?.owner===CU.uid;
+      li.innerHTML=`<span class="ch-icon">#</span>${esc(cid)}
+        ${isOwner?`<div class="ch-row-actions"><button class="ch-row-act" onclick="deleteCh('${cid}')" title="Delete">🗑</button></div>`:''}`;
+      li.onclick=()=>selectChannel(cid,li);
+      list.appendChild(li);
+    });
+    // Auto-select first channel
+    if(first && curChannel!==first) selectChannel(first,document.getElementById(`ch-${first}`));
+  });
 }
 
-function loadMessages() {
-  const feed = document.getElementById('messagesFeed');
+window.selectChannel = function(cid, el){
+  curChannel=cid; curDmUid=null;
+  document.querySelectorAll('.ch-row').forEach(r=>r.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('topIcon').textContent='#';
+  document.getElementById('topName').textContent=cid;
+  document.getElementById('callBtn').style.display='none';
+  document.getElementById('msgInput').disabled=false;
+  document.getElementById('msgInput').placeholder=`Message #${cid}`;
+  loadMessages();
+  loadServerMembers(curServer);
+};
 
-  // Clean old messages but keep welcome card
-  while (feed.children.length > 1) feed.removeChild(feed.lastChild);
+window.createChannel = async function(){
+  const name=document.getElementById('chNameIn').value.trim().toLowerCase().replace(/\s+/g,'-');
+  if(!name) return toast('Enter channel name','error');
+  if(!curServer||curServer==='dms') return toast('Select a server first','error');
+  try{
+    await set(ref(db,`servers/${curServer}/channels/${name}`),{name,createdBy:CU.uid,createdAt:new Date().toISOString()});
+    closeModal('createChannelModal');
+    document.getElementById('chNameIn').value='';
+    toast(`#${name} created!`,'success');
+  }catch(e){toast(e.message,'error');}
+};
 
-  if (msgListener) { off(msgListener._ref, 'child_added', msgListener._fn); msgListener = null; }
-
-  let msgRef;
-  if (currentServer === 'dms' && currentDmUid) {
-    const dmId = [currentUser.uid, currentDmUid].sort().join('_');
-    msgRef = ref(db, `dms/${dmId}/messages`);
-  } else if (currentServer !== 'dms') {
-    msgRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-  } else {
-    return;
+window.deleteCh = async function(cid){
+  if(!confirm(`Delete #${cid}?`)) return;
+  await remove(ref(db,`servers/${curServer}/channels/${cid}`));
+  if(curChannel===cid){
+    curChannel=null;
+    setFeedWelcome('Channel deleted','Select another channel');
+    document.getElementById('msgInput').disabled=true;
   }
+  toast('Channel deleted','success');
+};
 
-  feed.innerHTML = ''; // clear completely
+// ── CREATE SERVER ─────────────────────────────────────
+window.createServer = async function(){
+  const name=document.getElementById('srvNameIn').value.trim();
+  if(!name) return toast('Enter server name','error');
+  try{
+    const sid=push(ref(db,'servers')).key;
+    const inviteCode=Math.random().toString(36).substring(2,10);
+    await set(ref(db,`servers/${sid}`),{
+      name,color:selectedSrvColor,owner:CU.uid,
+      createdAt:new Date().toISOString(),
+      inviteCode,description:''
+    });
+    // Create default channels
+    await set(ref(db,`servers/${sid}/channels/general`),{name:'general',createdBy:CU.uid,createdAt:new Date().toISOString()});
+    await set(ref(db,`servers/${sid}/channels/welcome`),{name:'welcome',createdBy:CU.uid,createdAt:new Date().toISOString()});
+    // Add welcome message
+    await push(ref(db,`servers/${sid}/channels/general/messages`),{
+      text:`🎉 Welcome to ${name}! This server was created by ${CU.username}.`,
+      sender:'System',senderId:'system',senderAvatar:'🤖',
+      timestamp:new Date().toISOString(),isSystem:true
+    });
+    // Join server
+    await set(ref(db,`servers/${sid}/members/${CU.uid}`),{role:'owner',joinedAt:new Date().toISOString(),username:CU.username});
+    await set(ref(db,`userServers/${CU.uid}/${sid}`),true);
+    serverData[sid]={name,color:selectedSrvColor,owner:CU.uid,inviteCode,description:''};
+    closeModal('createServerModal');
+    document.getElementById('srvNameIn').value='';
+    // Select new server
+    const btn=document.getElementById(`rail-${sid}`);
+    if(btn) selectServer(sid,btn);
+    toast(`Server "${name}" created!`,'success');
+  }catch(e){toast(e.message,'error');}
+};
 
-  const fn = snap => {
-    const msg = snap.val();
-    if (!msg) return;
-    appendMessage(snap.key, msg);
-  };
+// ── SERVER SETTINGS ───────────────────────────────────
+window.openServerSettings = async function(){
+  if(!curServer||curServer==='dms') return;
+  const sd=serverData[curServer]||{};
+  document.getElementById('settingsTitle').textContent=`Settings — ${sd.name||'Server'}`;
+  document.getElementById('editSrvName').value=sd.name||'';
+  document.getElementById('editSrvDesc').value=sd.description||'';
+  editingSrvColor=sd.color||'#7a5fff';
+  // Highlight current color
+  document.querySelectorAll('#editColorRow .color-opt').forEach(o=>{
+    o.classList.toggle('selected',o.dataset.color===editingSrvColor);
+  });
+  // Load members list
+  loadSettingsMembers();
+  // Load invite link
+  const code=sd.inviteCode||'';
+  const link=`${location.origin}${location.pathname}?invite=${code}`;
+  document.getElementById('settingsInviteLink').value=link;
+  // Switch to overview tab
+  switchSettingsTab('overview',document.querySelector('.stab'));
+  openModal('serverSettingsModal');
+};
 
-  onChildAdded(msgRef, fn);
-  msgListener = { _ref: msgRef, _fn: fn };
+window.switchSettingsTab = function(tab, el){
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.stab-content').forEach(c=>c.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById(`stab-${tab}`).classList.add('active');
+};
+
+window.saveServerSettings = async function(){
+  const newName=document.getElementById('editSrvName').value.trim();
+  const newDesc=document.getElementById('editSrvDesc').value.trim();
+  if(!newName) return toast('Name cannot be empty','error');
+  try{
+    await update(ref(db,`servers/${curServer}`),{name:newName,description:newDesc,color:editingSrvColor});
+    serverData[curServer]={...serverData[curServer],name:newName,description:newDesc,color:editingSrvColor};
+    document.getElementById('panelName').textContent=newName;
+    // Update rail button
+    const railBtn=document.getElementById(`rail-${curServer}`);
+    if(railBtn) railBtn.querySelector('.rail-tip').textContent=newName;
+    closeModal('serverSettingsModal');
+    toast('Server updated!','success');
+  }catch(e){toast(e.message,'error');}
+};
+
+async function loadSettingsMembers(){
+  const container=document.getElementById('serverMembersList');
+  container.innerHTML='';
+  const snap=await get(ref(db,`servers/${curServer}/members`));
+  if(!snap.exists()){container.innerHTML='<div class="empty-state">No members</div>';return;}
+  const members=snap.val();
+  const isOwner=serverData[curServer]?.owner===CU.uid;
+  for(const [uid,m] of Object.entries(members)){
+    const usnap=await get(ref(db,`users/${uid}`));
+    const ud=usnap.val();
+    if(!ud) continue;
+    const div=document.createElement('div');
+    div.className='member-manage-row';
+    const roleCls=m.role==='owner'?'role-owner':m.role==='admin'?'role-admin':'role-member';
+    const roleLabel=m.role==='owner'?'Owner':m.role==='admin'?'Admin':'Member';
+    div.innerHTML=`
+      <div class="member-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-raised)"></div></div>
+      <div class="mmr-info"><div class="mmr-name">${esc(ud.username)}</div><div class="mmr-role"><span class="role-badge ${roleCls}">${roleLabel}</span></div></div>
+      <div class="mmr-actions">
+        ${isOwner && uid!==CU.uid?`
+          ${m.role!=='admin'?`<button class="mmr-btn" onclick="promoteAdmin('${uid}','${esc(ud.username)}')">Promote</button>`:''}
+          ${m.role==='admin'?`<button class="mmr-btn" onclick="demoteAdmin('${uid}','${esc(ud.username)}')">Demote</button>`:''}
+          <button class="mmr-btn kick" onclick="kickMember('${uid}','${esc(ud.username)}')">Kick</button>
+        `:''}
+      </div>`;
+    container.appendChild(div);
+  }
 }
 
-function appendMessage(key, msg) {
-  const feed = document.getElementById('messagesFeed');
-  const isDM = currentServer === 'dms';
+window.promoteAdmin = async function(uid,uname){
+  await update(ref(db,`servers/${curServer}/members/${uid}`),{role:'admin'});
+  toast(`${uname} promoted to Admin`,'success');
+  loadSettingsMembers();
+};
+window.demoteAdmin = async function(uid,uname){
+  await update(ref(db,`servers/${curServer}/members/${uid}`),{role:'member'});
+  toast(`${uname} demoted to Member`,'success');
+  loadSettingsMembers();
+};
+window.kickMember = async function(uid,uname){
+  if(!confirm(`Kick ${uname} from server?`)) return;
+  await remove(ref(db,`servers/${curServer}/members/${uid}`));
+  await remove(ref(db,`userServers/${uid}/${curServer}`));
+  toast(`${uname} kicked`,'success');
+  loadSettingsMembers();
+};
 
-  const div = document.createElement('div');
-  div.className = 'msg-group';
-  div.id = `msg-${key}`;
-
-  const time = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  let content = '';
-  if (msg.type === 'image' && msg.imageUrl) {
-    content = `<div class="msg-text">${msg.text || ''}</div>
-    <img src="${msg.imageUrl}" class="msg-image" onclick="viewImage('${msg.imageUrl}')" alt="image">`;
-  } else {
-    content = `<div class="msg-text ${msg.isSystem ? 'system' : ''}">${escapeHtml(msg.text || '')}</div>`;
+window.deleteServer = async function(){
+  if(!confirm('Delete this server? This cannot be undone!')) return;
+  const sd=serverData[curServer];
+  if(sd?.owner!==CU.uid) return toast('Only the owner can delete','error');
+  // Remove all members from userServers
+  const msnap=await get(ref(db,`servers/${curServer}/members`));
+  if(msnap.exists()){
+    for(const uid of Object.keys(msnap.val())){
+      await remove(ref(db,`userServers/${uid}/${curServer}`));
+    }
   }
+  await remove(ref(db,`servers/${curServer}`));
+  delete serverData[curServer];
+  document.getElementById(`rail-${curServer}`)?.remove();
+  closeModal('serverSettingsModal');
+  selectServer('dms',document.getElementById('railDMs'));
+  toast('Server deleted','success');
+};
 
-  const canDelete = msg.senderId === currentUser?.uid;
-  const actionsHtml = canDelete ? `
-    <div class="msg-actions">
-      <button class="msg-action-btn" onclick="deleteMsg('${key}')" title="Delete">🗑</button>
-    </div>` : '';
+window.copySettingsInviteLink = function(){
+  const inp=document.getElementById('settingsInviteLink');
+  navigator.clipboard.writeText(inp.value).then(()=>toast('Link copied!','success'));
+};
 
-  div.innerHTML = `
-    <div class="msg-avatar-wrap">
-      <div class="msg-avatar">${msg.senderAvatar || '?'}</div>
-    </div>
-    <div class="msg-body">
-      <div class="msg-meta">
-        <span class="msg-sender ${isDM ? 'dm-sender' : ''}">${escapeHtml(msg.sender)}</span>
-        <span class="msg-time">${time}</span>
-        ${actionsHtml}
+window.regenerateInviteLink = async function(){
+  const newCode=Math.random().toString(36).substring(2,10);
+  await update(ref(db,`servers/${curServer}`),{inviteCode:newCode});
+  serverData[curServer].inviteCode=newCode;
+  const link=`${location.origin}${location.pathname}?invite=${newCode}`;
+  document.getElementById('settingsInviteLink').value=link;
+  toast('Invite link regenerated!','success');
+};
+
+// ── INVITE FRIENDS TO SERVER ──────────────────────────
+window.openInviteFriendsModal = async function(){
+  if(!curServer||curServer==='dms') return;
+  const sd=serverData[curServer]||{};
+  document.getElementById('inviteSubtitle').textContent=`Invite friends to "${sd.name}"`;
+  const code=sd.inviteCode||'';
+  document.getElementById('inviteLinkInput').value=`${location.origin}${location.pathname}?invite=${code}`;
+  // Load friends not already in server
+  const container=document.getElementById('inviteFriendsList');
+  container.innerHTML='<div class="empty-state">Loading...</div>';
+  const fsnap=await get(ref(db,`friends/${CU.uid}`));
+  const msnap=await get(ref(db,`servers/${curServer}/members`));
+  container.innerHTML='';
+  if(!fsnap.exists()){container.innerHTML='<div class="empty-state">No friends to invite</div>';openModal('inviteFriendsModal');return;}
+  const members=msnap.exists()?msnap.val():{};
+  const friends=fsnap.val();
+  let count=0;
+  for(const fid of Object.keys(friends)){
+    if(members[fid]){continue;} // already member
+    const usnap=await get(ref(db,`users/${fid}`));
+    const ud=usnap.val();if(!ud) continue;
+    count++;
+    const div=document.createElement('div');
+    div.className='invite-friend-item';
+    div.innerHTML=`
+      <input type="checkbox" id="inv-${fid}" value="${fid}">
+      <div class="dm-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}"></div></div>
+      <div class="dm-info"><div class="dm-name">${esc(ud.username)}</div><div class="dm-status-txt">${ud.isOnline?'Online':'Offline'}</div></div>`;
+    div.onclick=e=>{if(e.target.tagName!=='INPUT'){document.getElementById(`inv-${fid}`).click();}};
+    container.appendChild(div);
+  }
+  if(count===0) container.innerHTML='<div class="empty-state">All friends are already in this server!</div>';
+  openModal('inviteFriendsModal');
+};
+
+window.sendSelectedInvites = async function(){
+  const checked=[...document.querySelectorAll('#inviteFriendsList input[type=checkbox]:checked')];
+  if(checked.length===0) return toast('Select at least one friend','error');
+  const sd=serverData[curServer]||{};
+  for(const cb of checked){
+    const fid=cb.value;
+    await set(ref(db,`serverInvites/${fid}/${curServer}`),{
+      from:CU.uid,fromUsername:CU.username,
+      serverName:sd.name,serverId:curServer,
+      inviteCode:sd.inviteCode||'',
+      timestamp:new Date().toISOString(),status:'pending'
+    });
+  }
+  closeModal('inviteFriendsModal');
+  toast(`Invites sent to ${checked.length} friend${checked.length>1?'s':''}!`,'success');
+};
+
+window.copyInviteLink = function(){
+  const inp=document.getElementById('inviteLinkInput');
+  navigator.clipboard.writeText(inp.value).then(()=>toast('Link copied!','success'));
+};
+
+// ── SERVER INVITES (RECEIVED) ─────────────────────────
+async function checkServerInvites(){
+  if(!CU) return;
+  onValue(ref(db,`serverInvites/${CU.uid}`),async snap=>{
+    if(!snap.exists()) return;
+    const invites=snap.val();
+    const pending=Object.entries(invites).filter(([,v])=>v.status==='pending');
+    if(pending.length>0){
+      // Show notification button on rail
+      let notifBtn=document.getElementById('inviteNotifBtn');
+      if(!notifBtn){
+        notifBtn=document.createElement('div');
+        notifBtn.id='inviteNotifBtn';
+        notifBtn.className='rail-btn';
+        notifBtn.style.background='rgba(251,191,36,0.15)';
+        notifBtn.style.borderColor='rgba(251,191,36,0.3)';
+        notifBtn.style.color='var(--amber)';
+        notifBtn.style.fontSize='.8rem';
+        notifBtn.innerHTML=`📬<span class="rail-tip">Server Invites (${pending.length})</span><span style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--amber);color:#000;border-radius:50%;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center">${pending.length}</span>`;
+        notifBtn.onclick=()=>openServerInvitesModal();
+        document.getElementById('railDMs').after(notifBtn);
+      }
+    }else{
+      document.getElementById('inviteNotifBtn')?.remove();
+    }
+  });
+}
+
+window.openServerInvitesModal = async function(){
+  const container=document.getElementById('serverInvitesList');
+  container.innerHTML='<div class="empty-state">Loading...</div>';
+  openModal('serverInvitesModal');
+  const snap=await get(ref(db,`serverInvites/${CU.uid}`));
+  container.innerHTML='';
+  if(!snap.exists()){container.innerHTML='<div class="empty-state">No pending invites</div>';return;}
+  const invites=snap.val();
+  const pending=Object.entries(invites).filter(([,v])=>v.status==='pending');
+  if(pending.length===0){container.innerHTML='<div class="empty-state">No pending invites</div>';return;}
+  for(const [sid,inv] of pending){
+    const div=document.createElement('div');
+    div.className='friend-manage-row';
+    div.style.cssText='display:flex;align-items:center;gap:.7rem;padding:.75rem;background:var(--bg-deep);border-radius:var(--r);margin-bottom:.5rem;border:1px solid var(--border)';
+    div.innerHTML=`
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.9rem">${esc(inv.serverName)}</div>
+        <div style="font-size:.78rem;color:var(--text-muted)">Invited by ${esc(inv.fromUsername)}</div>
       </div>
-      ${content}
-    </div>`;
-
-  feed.appendChild(div);
-  feed.scrollTop = feed.scrollHeight;
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(text));
-  return div.innerHTML;
-}
-
-// ── SEND MESSAGE ──
-window.sendMessage = async function() {
-  if (!currentUser) return;
-  const input = document.getElementById('messageInput');
-  const text = input.value.trim();
-  if (!text && !selectedFile) return;
-
-  try {
-    let msgData = {
-      text: text || (selectedFile ? '📸 Image' : ''),
-      sender: currentUser.username,
-      senderId: currentUser.uid,
-      senderAvatar: currentUser.avatar || currentUser.username[0].toUpperCase(),
-      timestamp: new Date().toISOString(),
-      type: 'text'
-    };
-
-    if (selectedFile) {
-      const fileName = `${Date.now()}_${selectedFile.name}`;
-      const imgRef = sRef(storage, `images/${fileName}`);
-      await uploadBytes(imgRef, selectedFile);
-      const url = await getDownloadURL(imgRef);
-      msgData.imageUrl = url;
-      msgData.imageName = fileName;
-      msgData.type = 'image';
-    }
-
-    let msgRef;
-    if (currentServer === 'dms' && currentDmUid) {
-      const dmId = [currentUser.uid, currentDmUid].sort().join('_');
-      msgRef = ref(db, `dms/${dmId}/messages`);
-    } else {
-      msgRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages`);
-    }
-
-    await push(msgRef, msgData);
-    input.value = '';
-    input.style.height = 'auto';
-    clearImagePreview();
-  } catch(e) {
-    toast('Failed to send: ' + e.message, 'error');
+      <div style="display:flex;gap:.4rem">
+        <button class="mbtn-p" style="padding:.4rem .8rem;font-size:.8rem" onclick="acceptServerInvite('${sid}','${esc(inv.serverName)}')">Join</button>
+        <button class="mbtn-s" style="padding:.4rem .8rem;font-size:.8rem" onclick="declineServerInvite('${sid}')">Decline</button>
+      </div>`;
+    container.appendChild(div);
   }
 };
 
-window.handleKey = function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-};
-
-window.autoGrow = function(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
-};
-
-// ── IMAGE HANDLING ──
-window.handleFileSelect = function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/')) { toast('Please select an image', 'error'); return; }
-  if (file.size > 10 * 1024 * 1024) { toast('Max 10MB image size', 'error'); return; }
-  selectedFile = file;
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('imgPreviewImg').src = e.target.result;
-    document.getElementById('imgPreviewStrip').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-};
-
-window.clearImagePreview = function() {
-  selectedFile = null;
-  document.getElementById('imgPreviewStrip').style.display = 'none';
-  document.getElementById('imgPreviewImg').src = '';
-  document.getElementById('fileInput').value = '';
-};
-
-window.viewImage = function(url) {
-  document.getElementById('enlargedImg').src = url;
-  openModal('imageModal');
-};
-
-// ── DELETE MESSAGE ──
-window.deleteMsg = async function(key) {
-  if (!confirm('Delete this message?')) return;
-  try {
-    let msgRef;
-    if (currentServer === 'dms' && currentDmUid) {
-      const dmId = [currentUser.uid, currentDmUid].sort().join('_');
-      msgRef = ref(db, `dms/${dmId}/messages/${key}`);
-    } else {
-      msgRef = ref(db, `servers/${currentServer}/channels/${currentChannel}/messages/${key}`);
+window.acceptServerInvite = async function(sid,sName){
+  try{
+    // Join server
+    await set(ref(db,`servers/${sid}/members/${CU.uid}`),{role:'member',joinedAt:new Date().toISOString(),username:CU.username});
+    await set(ref(db,`userServers/${CU.uid}/${sid}`),true);
+    await update(ref(db,`serverInvites/${CU.uid}/${sid}`),{status:'accepted'});
+    // Load server data
+    const ssnap=await get(ref(db,`servers/${sid}`));
+    if(ssnap.exists()){
+      const sd=ssnap.val();
+      serverData[sid]=sd;
+      addServerToRail(sid,sd);
     }
-    const snap = await get(msgRef);
-    const msg = snap.val();
-    if (msg?.imageName) {
-      try { await deleteObject(sRef(storage, `images/${msg.imageName}`)); } catch {}
-    }
-    await remove(msgRef);
-    document.getElementById(`msg-${key}`)?.remove();
-  } catch(e) { toast('Failed to delete', 'error'); }
+    closeModal('serverInvitesModal');
+    toast(`Joined "${sName}"!`,'success');
+  }catch(e){toast(e.message,'error');}
 };
 
-// ── FRIENDS ──
-function loadFriends() {
-  const container = document.getElementById('friendsList');
-  if (friendsUnsub) { off(ref(db, `friends/${currentUser.uid}`)); friendsUnsub = null; }
+window.declineServerInvite = async function(sid){
+  await update(ref(db,`serverInvites/${CU.uid}/${sid}`),{status:'declined'});
+  toast('Invite declined','info');
+  openServerInvitesModal();
+};
 
-  onValue(ref(db, `friends/${currentUser.uid}`), async snap => {
-    container.innerHTML = '';
-    const data = snap.val();
-    if (!data || Object.keys(data).length === 0) {
-      container.innerHTML = `<div style="color:var(--text-muted);font-size:.8rem;padding:.5rem;">No friends yet. Add some! 👋</div>`;
+// ── JOIN BY INVITE CODE (URL) ─────────────────────────
+async function checkURLInvite(){
+  const params=new URLSearchParams(location.search);
+  const code=params.get('invite');
+  if(!code||!CU) return;
+  // Find server with this code
+  const snap=await get(ref(db,'servers'));
+  if(!snap.exists()) return;
+  const servers=snap.val();
+  for(const [sid,sd] of Object.entries(servers)){
+    if(sd.inviteCode===code){
+      // Check not already member
+      const msnap=await get(ref(db,`servers/${sid}/members/${CU.uid}`));
+      if(msnap.exists()){toast('Already in this server!','info');history.replaceState({},'',location.pathname);return;}
+      if(confirm(`Join server "${sd.name}"?`)){
+        await set(ref(db,`servers/${sid}/members/${CU.uid}`),{role:'member',joinedAt:new Date().toISOString(),username:CU.username});
+        await set(ref(db,`userServers/${CU.uid}/${sid}`),true);
+        serverData[sid]=sd;
+        addServerToRail(sid,sd);
+        toast(`Joined "${sd.name}"!`,'success');
+      }
+      history.replaceState({},'',location.pathname);
       return;
     }
-    const promises = Object.keys(data).map(async fid => {
-      const usnap = await get(ref(db, `users/${fid}`));
-      const ud = usnap.val();
-      if (!ud) return;
-      const el = document.createElement('div');
-      el.className = 'dm-item';
-      el.id = `dm-${fid}`;
-      if (currentDmUid === fid) el.classList.add('active');
-      el.innerHTML = `
-        <div class="dm-avatar">
-          ${ud.avatar || ud.username[0].toUpperCase()}
-          <div class="status-dot ${ud.isOnline ? 'online' : 'offline'}"></div>
-        </div>
-        <div class="dm-info">
-          <div class="dm-name">${escapeHtml(ud.username)}</div>
-          <div class="dm-status-text">${ud.isOnline ? 'Online' : 'Offline'}</div>
-        </div>
-        <button class="dm-close-btn" onclick="event.stopPropagation(); removeFriend('${fid}','${escapeHtml(ud.username)}')" title="Remove">✕</button>`;
-      el.addEventListener('click', () => startDM(fid, ud.username, ud.avatar || ud.username[0].toUpperCase()));
-      container.appendChild(el);
-    });
-    await Promise.all(promises);
-  });
-  friendsUnsub = true;
+  }
+  toast('Invalid or expired invite link','error');
+  history.replaceState({},'',location.pathname);
 }
 
-function loadFriendRequests() {
-  const container = document.getElementById('friendRequestsList');
-  const badge = document.getElementById('reqBadge');
-  if (reqsUnsub) { off(ref(db, `friendRequests/${currentUser.uid}`)); reqsUnsub = null; }
+// ── MESSAGES ──────────────────────────────────────────
+function detachMsgListener(){
+  if(msgListenerRef&&msgListenerFn){
+    off(msgListenerRef,'child_added',msgListenerFn);
+    msgListenerRef=null;msgListenerFn=null;
+  }
+}
 
-  onValue(ref(db, `friendRequests/${currentUser.uid}`), async snap => {
-    container.innerHTML = '';
-    const data = snap.val();
-    if (!data) { badge.style.display = 'none'; return; }
-    const pending = Object.entries(data).filter(([,v]) => v.status === 'pending');
-    if (pending.length === 0) { badge.style.display = 'none'; return; }
-    badge.textContent = pending.length;
-    badge.style.display = 'flex';
+function setFeedWelcome(title,sub){
+  document.getElementById('feed').innerHTML=`<div class="welcome-card"><h3>${esc(title)}</h3><p>${esc(sub)}</p></div>`;
+}
 
-    const promises = pending.map(async ([rid]) => {
-      const usnap = await get(ref(db, `users/${rid}`));
-      const ud = usnap.val();
-      if (!ud) return;
-      const el = document.createElement('div');
-      el.className = 'friend-req-card';
-      el.innerHTML = `
-        <div class="dm-avatar" style="width:32px;height:32px;">${ud.avatar || ud.username[0].toUpperCase()}</div>
-        <div class="freq-info">
-          <div class="freq-name">${escapeHtml(ud.username)}</div>
-          <div class="freq-sub">Sent you a friend request</div>
-        </div>
-        <div class="freq-btns">
-          <button class="freq-btn accept" onclick="acceptReq('${rid}')">✓</button>
-          <button class="freq-btn reject" onclick="rejectReq('${rid}')">✕</button>
+function loadMessages(){
+  const feed=document.getElementById('feed');
+  feed.innerHTML='';
+  detachMsgListener();
+  let mRef;
+  if(curServer==='dms'&&curDmUid){
+    const dmId=[CU.uid,curDmUid].sort().join('_');
+    mRef=ref(db,`dms/${dmId}/messages`);
+  }else if(curServer&&curServer!=='dms'&&curChannel){
+    mRef=ref(db,`servers/${curServer}/channels/${curChannel}/messages`);
+  }else return;
+  msgListenerRef=mRef;
+  const fn=snap=>{
+    const msg=snap.val();if(!msg) return;
+    appendMsg(snap.key,msg);
+  };
+  msgListenerFn=fn;
+  onChildAdded(mRef,fn);
+}
+
+function appendMsg(key,msg){
+  const feed=document.getElementById('feed');
+  const isDM=curServer==='dms';
+  const div=document.createElement('div');
+  div.className='msg-group';div.id=`msg-${key}`;
+  const time=new Date(msg.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  let content='';
+  if(msg.type==='image'&&msg.imageUrl){
+    content=`<div class="msg-txt">${esc(msg.text||'')}</div><img src="${msg.imageUrl}" class="msg-img" onclick="openModal('imgModal');document.getElementById('bigImg').src='${msg.imageUrl}'" alt="img">`;
+  }else{
+    content=`<div class="msg-txt${msg.isSystem?' sys':''}">${esc(msg.text||'')}</div>`;
+  }
+  const canDel=msg.senderId===CU?.uid;
+  div.innerHTML=`
+    <div class="msg-av-wrap"><div class="msg-av${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.senderAvatar||'?')}</div></div>
+    <div class="msg-body">
+      <div class="msg-meta">
+        <span class="msg-sender${isDM?' dm':''}" onclick="showProfilePopup('${msg.senderId}',event)">${esc(msg.sender)}</span>
+        <span class="msg-time">${time}</span>
+        ${canDel?`<div class="msg-acts"><button class="msg-act" onclick="delMsg('${key}')" title="Delete">🗑</button></div>`:''}
+      </div>${content}
+    </div>`;
+  feed.appendChild(div);
+  feed.scrollTop=feed.scrollHeight;
+}
+
+window.sendMsg = async function(){
+  if(!CU) return;
+  const input=document.getElementById('msgInput');
+  const text=input.value.trim();
+  if(!text&&!selectedFile) return;
+  try{
+    let data={
+      text:text||(selectedFile?'📸 Image':''),
+      sender:CU.username,senderId:CU.uid,
+      senderAvatar:CU.avatar||CU.username[0].toUpperCase(),
+      timestamp:new Date().toISOString(),type:'text'
+    };
+    if(selectedFile){
+      const fname=`${Date.now()}_${selectedFile.name}`;
+      const imgRef=sRef(stor,`images/${fname}`);
+      await uploadBytes(imgRef,selectedFile);
+      const url=await getDownloadURL(imgRef);
+      data.imageUrl=url;data.imageName=fname;data.type='image';
+    }
+    let mRef;
+    if(curServer==='dms'&&curDmUid){
+      const dmId=[CU.uid,curDmUid].sort().join('_');
+      mRef=ref(db,`dms/${dmId}/messages`);
+    }else if(curServer&&curChannel){
+      mRef=ref(db,`servers/${curServer}/channels/${curChannel}/messages`);
+    }else return;
+    await push(mRef,data);
+    input.value='';input.style.height='auto';
+    clearImg();
+  }catch(e){toast('Failed to send: '+e.message,'error');}
+};
+
+window.handleKey = function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}};
+window.autoGrow = function(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,160)+'px';};
+
+window.delMsg = async function(key){
+  if(!confirm('Delete this message?')) return;
+  try{
+    let mRef;
+    if(curServer==='dms'&&curDmUid){
+      const dmId=[CU.uid,curDmUid].sort().join('_');
+      mRef=ref(db,`dms/${dmId}/messages/${key}`);
+    }else{
+      mRef=ref(db,`servers/${curServer}/channels/${curChannel}/messages/${key}`);
+    }
+    const snap=await get(mRef);
+    const msg=snap.val();
+    if(msg?.imageName){try{await deleteObject(sRef(stor,`images/${msg.imageName}`));}catch{}}
+    await remove(mRef);
+    document.getElementById(`msg-${key}`)?.remove();
+  }catch(e){toast('Delete failed','error');}
+};
+
+// Image upload
+window.handleFile = function(e){
+  const file=e.target.files[0];if(!file) return;
+  if(!file.type.startsWith('image/')) return toast('Images only','error');
+  if(file.size>10*1024*1024) return toast('Max 10MB','error');
+  selectedFile=file;
+  const r=new FileReader();
+  r.onload=ev=>{
+    document.getElementById('imgStripImg').src=ev.target.result;
+    document.getElementById('imgStrip').style.display='block';
+  };
+  r.readAsDataURL(file);
+};
+window.clearImg = function(){
+  selectedFile=null;
+  document.getElementById('imgStrip').style.display='none';
+  document.getElementById('imgStripImg').src='';
+  document.getElementById('fileIn').value='';
+};
+
+// ── FRIENDS ───────────────────────────────────────────
+function loadFriends(){
+  const container=document.getElementById('friendsList');
+  off(ref(db,`friends/${CU.uid}`));
+  onValue(ref(db,`friends/${CU.uid}`),async snap=>{
+    container.innerHTML='';
+    const data=snap.val();
+    if(!data||Object.keys(data).length===0){
+      container.innerHTML='<div class="empty-state">No friends yet 👋<br>Add some!</div>';return;
+    }
+    const fids=Object.keys(data);
+    for(const fid of fids){
+      const usnap=await get(ref(db,`users/${fid}`));
+      const ud=usnap.val();if(!ud) continue;
+      const el=document.createElement('div');
+      el.className='dm-item';el.id=`dm-${fid}`;
+      if(curDmUid===fid) el.classList.add('active');
+      el.innerHTML=`
+        <div class="dm-av">${esc(ud.avatar||'?')}<div class="sdot ${ud.isOnline?'on':'off'}"></div></div>
+        <div class="dm-info"><div class="dm-name">${esc(ud.username)}</div><div class="dm-status-txt">${ud.isOnline?'Online':'Offline'}</div></div>
+        <button class="dm-x" onclick="event.stopPropagation();removeFriend('${fid}','${esc(ud.username)}')" title="Remove">✕</button>`;
+      el.onclick=()=>startDM(fid,ud.username);
+      container.appendChild(el);
+    }
+  });
+}
+
+function loadFriendRequests(){
+  const container=document.getElementById('friendReqList');
+  const badge=document.getElementById('reqBadge');
+  off(ref(db,`friendRequests/${CU.uid}`));
+  onValue(ref(db,`friendRequests/${CU.uid}`),async snap=>{
+    container.innerHTML='';
+    const data=snap.val();
+    const pending=data?Object.entries(data).filter(([,v])=>v.status==='pending'):[];
+    if(pending.length===0){badge.style.display='none';container.innerHTML='<div class="empty-state" style="font-size:.75rem">No requests</div>';return;}
+    badge.textContent=pending.length;badge.style.display='inline-flex';
+    for(const [rid] of pending){
+      const usnap=await get(ref(db,`users/${rid}`));
+      const ud=usnap.val();if(!ud) continue;
+      const el=document.createElement('div');
+      el.style.cssText='background:var(--bg-deep);border:1px solid var(--border);border-radius:8px;padding:.6rem;margin:.3rem 0;display:flex;align-items:center;gap:.6rem';
+      el.innerHTML=`
+        <div class="dm-av" style="width:26px;height:26px;font-size:.7rem">${ud.avatar||'?'}</div>
+        <div style="flex:1;font-size:.82rem;font-weight:500">${esc(ud.username)}</div>
+        <div style="display:flex;gap:.25rem">
+          <button style="padding:.25rem .5rem;background:var(--green);border:none;border-radius:6px;color:var(--bg-void);font-size:.75rem;font-weight:700;cursor:pointer" onclick="acceptReq('${rid}')">✓</button>
+          <button style="padding:.25rem .5rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);font-size:.75rem;cursor:pointer" onclick="declineReq('${rid}')">✕</button>
         </div>`;
       container.appendChild(el);
-    });
-    await Promise.all(promises);
-  });
-  reqsUnsub = true;
-}
-
-window.sendFriendRequest = async function() {
-  const username = document.getElementById('friendUsernameInput').value.trim();
-  if (!username) return toast('Enter a username', 'error');
-  if (username.toLowerCase() === currentUser.username.toLowerCase()) return toast('You cannot add yourself!', 'error');
-  try {
-    const usnap = await get(ref(db, `usernames/${username.toLowerCase()}`));
-    if (!usnap.exists()) return toast('User not found', 'error');
-    const fid = usnap.val();
-    const alreadyFriend = await get(ref(db, `friends/${currentUser.uid}/${fid}`));
-    if (alreadyFriend.exists()) return toast('Already friends!', 'error');
-    const existingReq = await get(ref(db, `friendRequests/${fid}/${currentUser.uid}`));
-    if (existingReq.exists() && existingReq.val().status === 'pending') return toast('Request already sent', 'error');
-    await set(ref(db, `friendRequests/${fid}/${currentUser.uid}`), {
-      from: currentUser.uid, fromUsername: currentUser.username,
-      timestamp: new Date().toISOString(), status: 'pending'
-    });
-    closeModal('addFriendModal');
-    document.getElementById('friendUsernameInput').value = '';
-    toast(`Request sent to ${username}! ✓`, 'success');
-  } catch(e) { toast(e.message, 'error'); }
-};
-
-window.acceptReq = async function(rid) {
-  try {
-    const usnap = await get(ref(db, `users/${rid}`));
-    const ud = usnap.val();
-    if (!ud) return;
-    const ts = new Date().toISOString();
-    await set(ref(db, `friends/${currentUser.uid}/${rid}`), { since: ts, username: ud.username });
-    await set(ref(db, `friends/${rid}/${currentUser.uid}`), { since: ts, username: currentUser.username });
-    await update(ref(db, `friendRequests/${currentUser.uid}/${rid}`), { status: 'accepted' });
-    const dmId = [currentUser.uid, rid].sort().join('_');
-    await set(ref(db, `dms/${dmId}`), { participants: [currentUser.uid, rid], createdAt: ts });
-    await push(ref(db, `dms/${dmId}/messages`), {
-      text: `👋 You are now friends! Say hello!`,
-      sender: 'System', senderId: 'system', senderAvatar: '🤖',
-      timestamp: ts, isSystem: true
-    });
-    toast(`You and ${ud.username} are now friends! 🎉`, 'success');
-  } catch(e) { toast(e.message, 'error'); }
-};
-
-window.rejectReq = async function(rid) {
-  await remove(ref(db, `friendRequests/${currentUser.uid}/${rid}`));
-  toast('Request rejected', 'info');
-};
-
-window.removeFriend = async function(fid, name) {
-  if (!confirm(`Remove ${name} from friends?`)) return;
-  await remove(ref(db, `friends/${currentUser.uid}/${fid}`));
-  await remove(ref(db, `friends/${fid}/${currentUser.uid}`));
-  if (currentDmUid === fid) {
-    currentDmUid = null;
-    document.getElementById('topbarName').textContent = 'Direct Messages';
-    document.getElementById('callBtn').style.display = 'none';
-    document.getElementById('messageInput').disabled = true;
-    showWelcomeCard('Direct Messages 💬', 'Select a friend to start chatting');
-  }
-  toast(`${name} removed from friends`, 'info');
-};
-
-// ── MEMBERS ──
-function loadMembers() {
-  const list = document.getElementById('membersList');
-  onValue(ref(db, 'users'), snap => {
-    list.innerHTML = '';
-    const users = snap.val();
-    if (!users) return;
-    // Self first
-    const selfEl = createMemberEl(currentUser.uid, currentUser);
-    list.appendChild(selfEl);
-    Object.entries(users).forEach(([uid, u]) => {
-      if (uid === currentUser.uid) return;
-      list.appendChild(createMemberEl(uid, u));
-    });
-  });
-}
-
-function createMemberEl(uid, u) {
-  const el = document.createElement('div');
-  el.className = 'member-row';
-  el.innerHTML = `
-    <div class="member-av">
-      ${u.avatar || '?'}
-      <div class="status-dot ${u.isOnline ? 'online' : 'offline'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-deep);"></div>
-    </div>
-    <div class="member-name">${escapeHtml(u.username)}</div>`;
-  return el;
-}
-
-// ── SERVERS ──
-window.createServer = async function() {
-  const name = document.getElementById('serverNameInput').value.trim();
-  if (!name) return toast('Enter a server name', 'error');
-  try {
-    const sid = 'srv_' + Date.now();
-    await set(ref(db, `servers/${sid}`), {
-      name, owner: currentUser.uid, createdAt: new Date().toISOString()
-    });
-    for (const ch of ['welcome', 'general']) {
-      await set(ref(db, `servers/${sid}/channels/${ch}`), { name: ch, createdBy: currentUser.uid, createdAt: new Date().toISOString() });
     }
-    // Add to rail
-    const btn = document.createElement('div');
-    btn.className = 'rail-btn';
-    btn.innerHTML = `${name[0].toUpperCase()}<span class="rail-tooltip">${escapeHtml(name)}</span>`;
-    btn.onclick = () => { currentServer = sid; selectChannel('welcome', null); };
-    document.getElementById('addServerBtn').before(btn);
-    closeModal('createServerModal');
-    document.getElementById('serverNameInput').value = '';
-    toast(`Server "${name}" created!`, 'success');
-  } catch(e) { toast(e.message, 'error'); }
+  });
+}
+
+window.sendFriendReq = async function(){
+  const un=document.getElementById('friendUnameIn').value.trim();
+  if(!un) return toast('Enter a username','error');
+  if(un.toLowerCase()===CU.username.toLowerCase()) return toast('You cannot add yourself!','error');
+  try{
+    const snap=await get(ref(db,`usernames/${un.toLowerCase()}`));
+    if(!snap.exists()) return toast('User not found','error');
+    const fid=snap.val();
+    const already=await get(ref(db,`friends/${CU.uid}/${fid}`));
+    if(already.exists()) return toast('Already friends!','error');
+    const existing=await get(ref(db,`friendRequests/${fid}/${CU.uid}`));
+    if(existing.exists()&&existing.val().status==='pending') return toast('Request already sent!','error');
+    await set(ref(db,`friendRequests/${fid}/${CU.uid}`),{from:CU.uid,fromUsername:CU.username,timestamp:new Date().toISOString(),status:'pending'});
+    closeModal('addFriendModal');
+    document.getElementById('friendUnameIn').value='';
+    toast(`Request sent to ${un} ✓`,'success');
+  }catch(e){toast(e.message,'error');}
 };
 
-window.createChannel = async function() {
-  const name = document.getElementById('channelNameInput').value.trim().toLowerCase().replace(/\s+/g, '-');
-  if (!name) return toast('Enter a channel name', 'error');
-  try {
-    await set(ref(db, `servers/${currentServer}/channels/${name}`), {
-      name, createdBy: currentUser.uid, createdAt: new Date().toISOString()
-    });
-    const li = document.createElement('li');
-    li.className = 'channel-row';
-    li.id = `ch-${name}`;
-    li.innerHTML = `<span class="ch-icon">#</span> ${name}`;
-    li.onclick = () => selectChannel(name, li);
-    document.getElementById('channelsList').appendChild(li);
-    closeModal('createChannelModal');
-    document.getElementById('channelNameInput').value = '';
-    toast(`Channel #${name} created!`, 'success');
-  } catch(e) { toast(e.message, 'error'); }
+window.acceptReq = async function(rid){
+  try{
+    const usnap=await get(ref(db,`users/${rid}`));
+    const ud=usnap.val();if(!ud) return;
+    const ts=new Date().toISOString();
+    await set(ref(db,`friends/${CU.uid}/${rid}`),{since:ts,username:ud.username});
+    await set(ref(db,`friends/${rid}/${CU.uid}`),{since:ts,username:CU.username});
+    await update(ref(db,`friendRequests/${CU.uid}/${rid}`),{status:'accepted'});
+    const dmId=[CU.uid,rid].sort().join('_');
+    await set(ref(db,`dms/${dmId}`),{participants:[CU.uid,rid],createdAt:ts});
+    await push(ref(db,`dms/${dmId}/messages`),{text:`👋 You are now friends!`,sender:'System',senderId:'system',senderAvatar:'🤖',timestamp:ts,isSystem:true});
+    toast(`You and ${ud.username} are now friends! 🎉`,'success');
+  }catch(e){toast(e.message,'error');}
 };
 
-// ── PROFILE ──
-// Register the profile loader (has access to module-scoped currentUser and db/ref/get)
-window._openModalProfile = async function() {
-  if (!currentUser) return;
-  document.getElementById('profileAv').textContent = currentUser.avatar || 'U';
-  document.getElementById('profileName').textContent = currentUser.username;
-  document.getElementById('profileEmail').textContent = currentUser.email;
-  document.getElementById('profileBio').textContent = currentUser.bio || 'No bio yet.';
-  document.getElementById('profileSince').textContent = new Date(currentUser.createdAt).getFullYear();
-  try {
-    const fsnap = await get(ref(db, `friends/${currentUser.uid}`));
-    document.getElementById('profileFriends').textContent = fsnap.exists() ? Object.keys(fsnap.val()).length : 0;
-  } catch(e) { document.getElementById('profileFriends').textContent = '0'; }
+window.declineReq = async function(rid){
+  await remove(ref(db,`friendRequests/${CU.uid}/${rid}`));
+  toast('Request declined','info');
 };
 
-window.openEditProfile = function() {
-  document.getElementById('editUsername').value = currentUser.username;
-  document.getElementById('editBio').value = currentUser.bio || '';
-  document.getElementById('editStatus').value = currentUser.status || 'online';
-  closeModal('profileModal');
-  document.getElementById('editProfileModal').style.display = 'flex';
+window.removeFriend = async function(fid,fname){
+  if(!confirm(`Remove ${fname}?`)) return;
+  await remove(ref(db,`friends/${CU.uid}/${fid}`));
+  await remove(ref(db,`friends/${fid}/${CU.uid}`));
+  if(curDmUid===fid){curDmUid=null;document.getElementById('msgInput').disabled=true;setFeedWelcome('Direct Messages','Select a friend');}
+  toast(`${fname} removed`,'info');
 };
 
-window.saveProfile = async function() {
-  const newUsername = document.getElementById('editUsername').value.trim();
-  const newBio = document.getElementById('editBio').value.trim();
-  const newStatus = document.getElementById('editStatus').value;
-  if (!newUsername) return toast('Username cannot be empty', 'error');
-  try {
-    const updates = { username: newUsername, bio: newBio, status: newStatus, avatar: newUsername[0].toUpperCase() };
-    await update(ref(db, `users/${currentUser.uid}`), updates);
-    currentUser = { ...currentUser, ...updates };
-    updateUserBar();
-    closeModal('editProfileModal');
-    toast('Profile updated! ✓', 'success');
-  } catch(e) { toast(e.message, 'error'); }
-};
+// ── DM ────────────────────────────────────────────────
+function startDM(fid,fname){
+  curDmUid=fid;curServer='dms';
+  document.querySelectorAll('.dm-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById(`dm-${fid}`)?.classList.add('active');
+  document.getElementById('topIcon').textContent='💬';
+  document.getElementById('topName').textContent=fname;
+  document.getElementById('callBtn').style.display='flex';
+  document.getElementById('msgInput').disabled=false;
+  document.getElementById('msgInput').placeholder=`Message ${fname}...`;
+  loadMessages();
+  loadMembersPanel([]);
+}
 
-// ── CALL ──
-window.startCall = async function() {
-  if (!currentDmUid) return toast('Select a friend to call', 'error');
-  const fsnap = await get(ref(db, `users/${currentDmUid}`));
-  const fd = fsnap.val();
-  document.getElementById('callTitle').textContent = `📞 Calling ${fd?.username || 'Friend'}...`;
-  document.getElementById('callOverlay').style.display = 'block';
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    document.getElementById('localVideo').srcObject = localStream;
-    toast('Call started! (Demo mode - WebRTC)', 'success');
-    setTimeout(() => {
-      document.getElementById('callTitle').textContent = `📞 In call with ${fd?.username || 'Friend'}`;
-    }, 2000);
-  } catch(e) {
-    toast('Camera/mic permission denied', 'error');
-    endCall();
+// ── MEMBERS PANEL ─────────────────────────────────────
+async function loadServerMembers(sid){
+  const list=document.getElementById('membersList');
+  list.innerHTML='';
+  const snap=await get(ref(db,`servers/${sid}/members`));
+  if(!snap.exists()) return;
+  const members=snap.val();
+  for(const [uid,m] of Object.entries(members)){
+    const usnap=await get(ref(db,`users/${uid}`));
+    const ud=usnap.val();if(!ud) continue;
+    const div=document.createElement('div');
+    div.className='member-row';
+    div.onclick=()=>showProfilePopup(uid,null);
+    div.innerHTML=`
+      <div class="member-av">${ud.avatar||'?'}<div class="sdot ${ud.isOnline?'on':'off'}" style="position:absolute;bottom:-1px;right:-1px;border-color:var(--bg-deep)"></div></div>
+      <div class="member-name">${esc(ud.username)}</div>
+      <div class="member-role">${m.role==='owner'?'👑':m.role==='admin'?'⭐':''}</div>`;
+    list.appendChild(div);
   }
+}
+
+function loadMembersPanel(members){
+  document.getElementById('membersList').innerHTML='';
+}
+
+// ── PROFILE POPUP (Discord style) ────────────────────
+window.showProfilePopup = async function(uid, event){
+  if(!uid||uid==='system') return;
+  closeProfilePopup();
+  const snap=await get(ref(db,`users/${uid}`));
+  const ud=snap.val();if(!ud) return;
+  // Position
+  const popup=document.getElementById('profilePopup');
+  // Set banner color based on avatar
+  const colors=['#7a5fff','#38bdf8','#4ade80','#f87171','#fbbf24','#e879f9','#fb923c'];
+  const ci=ud.username.charCodeAt(0)%colors.length;
+  document.getElementById('ppBanner').style.background=`linear-gradient(135deg,${colors[ci]},${colors[(ci+2)%colors.length]})`;
+  document.getElementById('ppAv').textContent=ud.avatar||'?';
+  document.getElementById('ppUsername').textContent=ud.username;
+  document.getElementById('ppTag').textContent=ud.isOnline?'🟢 Online':'⚫ Offline';
+  // Badges
+  const badgesEl=document.getElementById('ppBadges');
+  badgesEl.innerHTML='';
+  const badges=ud.badges||[];
+  if(badges.includes('og')){
+    badgesEl.innerHTML+=`<div class="badge og"><span class="badge-icon">🌌</span>PartexChat OG</div>`;
+  }
+  const badgesSec=document.getElementById('ppBadgesSection');
+  badgesSec.style.display=badges.length>0?'block':'none';
+  document.getElementById('ppBadgeDiv').style.display=badges.length>0?'block':'none';
+  // Bio
+  const bioEl=document.getElementById('ppBio');
+  const bioLabel=document.getElementById('ppBioLabel');
+  if(ud.bio){bioEl.textContent=ud.bio;bioLabel.style.display='block';}
+  else{bioEl.textContent='';bioLabel.style.display='none';}
+  // Since
+  document.getElementById('ppSince').textContent=new Date(ud.createdAt||Date.now()).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  // Actions
+  const actionsEl=document.getElementById('ppActions');
+  actionsEl.innerHTML='';
+  if(uid===CU.uid){
+    actionsEl.innerHTML=`<button class="pp-action-btn primary" onclick="closeProfilePopup();openModal('editProfileModal');initEditProfile()">✏️ Edit Profile</button>`;
+  }else{
+    // Check if friend
+    const fsnap=await get(ref(db,`friends/${CU.uid}/${uid}`));
+    if(fsnap.exists()){
+      actionsEl.innerHTML=`<button class="pp-action-btn primary" onclick="closeProfilePopup();startDM('${uid}','${esc(ud.username)}');selectServer('dms',document.getElementById('railDMs'))">💬 Message</button>
+        <button class="pp-action-btn" onclick="closeProfilePopup();removeFriend('${uid}','${esc(ud.username)}')">Remove Friend</button>`;
+    }else{
+      actionsEl.innerHTML=`<button class="pp-action-btn primary" onclick="sendFriendReqDirect('${uid}','${esc(ud.username)}')">+ Add Friend</button>`;
+    }
+  }
+  // Position popup
+  popup.style.display='block';
+  if(event){
+    const x=Math.min(event.clientX+15,window.innerWidth-330);
+    const y=Math.min(event.clientY-30,window.innerHeight-500);
+    popup.style.left=x+'px';
+    popup.style.top=Math.max(10,y)+'px';
+    popup.style.right='';
+  }else{
+    popup.style.right='240px';
+    popup.style.top='50%';
+    popup.style.left='';
+    popup.style.transform='translateY(-50%)';
+  }
+  // Close on outside click
+  setTimeout(()=>{
+    document.addEventListener('click',closePopupOutside,{once:true});
+  },10);
 };
 
-window.endCall = function() {
-  if (peerConn) { peerConn.close(); peerConn = null; }
-  if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
-  document.getElementById('callOverlay').style.display = 'none';
-  document.getElementById('localVideo').srcObject = null;
-  document.getElementById('remoteVideo').srcObject = null;
-  isMuted = false;
+function closePopupOutside(e){
+  const popup=document.getElementById('profilePopup');
+  if(!popup.contains(e.target)) closeProfilePopup();
+}
+
+window.closeProfilePopup = function(){
+  const popup=document.getElementById('profilePopup');
+  popup.style.display='none';
+  popup.style.transform='';
 };
 
-window.toggleMute = function() {
-  if (!localStream) return;
-  isMuted = !isMuted;
-  localStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
-  const btn = document.getElementById('muteBtn');
-  btn.textContent = isMuted ? '🔇' : '🎤';
-  btn.classList.toggle('muted', isMuted);
+window.sendFriendReqDirect = async function(fid,fname){
+  try{
+    const existing=await get(ref(db,`friendRequests/${fid}/${CU.uid}`));
+    if(existing.exists()&&existing.val().status==='pending') return toast('Request already sent!','error');
+    await set(ref(db,`friendRequests/${fid}/${CU.uid}`),{from:CU.uid,fromUsername:CU.username,timestamp:new Date().toISOString(),status:'pending'});
+    closeProfilePopup();
+    toast(`Friend request sent to ${fname}!`,'success');
+  }catch(e){toast(e.message,'error');}
 };
 
-// ── MISC ──
-window.showInvite = function() {
-  toast(`Invite link: partexchat.com/invite/${currentServer}`, 'info');
+// ── OWN PROFILE ───────────────────────────────────────
+window.openOwnProfile = function(){showProfilePopup(CU.uid,null);};
+
+window.initEditProfile = function(){
+  document.getElementById('editUname').value=CU.username;
+  document.getElementById('editBio').value=CU.bio||'';
+  document.getElementById('editStatus').value=CU.status||'online';
 };
+
+window.saveProfile = async function(){
+  const newUn=document.getElementById('editUname').value.trim();
+  const newBio=document.getElementById('editBio').value.trim();
+  const newStatus=document.getElementById('editStatus').value;
+  if(!newUn) return toast('Username cannot be empty','error');
+  try{
+    await update(ref(db,`users/${CU.uid}`),{username:newUn,bio:newBio,status:newStatus,avatar:newUn[0].toUpperCase()});
+    CU={...CU,username:newUn,bio:newBio,status:newStatus,avatar:newUn[0].toUpperCase()};
+    document.getElementById('ubAv').textContent=CU.avatar;
+    document.getElementById('ubName').textContent=CU.username;
+    closeModal('editProfileModal');
+    toast('Profile updated ✓','success');
+  }catch(e){toast(e.message,'error');}
+};
+
+// ── CALL ──────────────────────────────────────────────
+window.startCall = async function(){
+  if(!curDmUid) return;
+  const snap=await get(ref(db,`users/${curDmUid}`));
+  const ud=snap.val();
+  document.getElementById('callTitle').textContent=`📞 Calling ${ud?.username||'Friend'}...`;
+  document.getElementById('callOverlay').style.display='block';
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    document.getElementById('localVid').srcObject=localStream;
+    setTimeout(()=>{document.getElementById('callTitle').textContent=`📞 In call with ${ud?.username||'Friend'}`;},2000);
+    toast('Call started (demo mode)','success');
+  }catch(e){toast('Camera/mic permission denied','error');endCall();}
+};
+
+window.endCall = function(){
+  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
+  document.getElementById('callOverlay').style.display='none';
+  document.getElementById('localVid').srcObject=null;
+  document.getElementById('remoteVid').srcObject=null;
+  isMuted=false;
+};
+
+window.toggleMute = function(){
+  if(!localStream) return;
+  isMuted=!isMuted;
+  localStream.getAudioTracks().forEach(t=>t.enabled=!isMuted);
+  const btn=document.getElementById('muteBtn');
+  btn.textContent=isMuted?'🔇':'🎤';
+  btn.classList.toggle('muted',isMuted);
+};
+
+// Check URL invite code after auth
+onAuthStateChanged(auth, user=>{
+  if(user) setTimeout(checkURLInvite,1500);
+});
+
+// Init edit profile when modal opens
+document.getElementById('editProfileModal').addEventListener('click',()=>{});
 </script>
 </body>
 </html>
